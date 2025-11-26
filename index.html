@@ -1,0 +1,2033 @@
+<!--
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>PCIe Configuration Space Viewer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 13px;
+      color: #222;
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* ---------- TOP: structures list ---------- */
+    .top-list {
+      flex: 0 0 40%;
+      border-bottom: 1px solid #ccc;
+      overflow-y: auto;
+      background: #f8fafc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      background: #e2edf7;
+      z-index: 1;
+    }
+
+    th,
+    td {
+      padding: 6px 8px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+    }
+
+    tr.struct-row {
+      cursor: pointer;
+    }
+
+    tr.struct-row:nth-child(even) td {
+      background: #f9fcff;
+    }
+
+    tr.struct-row.selected td {
+      background: #d1e3ff;
+    }
+
+    .id-col {
+      width: 80px;
+    }
+
+    .type-col {
+      width: 70px;
+    }
+
+    /* ---------- BOTTOM: bitfield + bit detail ---------- */
+    .bottom {
+      flex: 1 1 auto;
+      display: flex;
+      min-height: 0;
+    }
+
+    .bottom-left,
+    .bottom-right {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+    }
+
+    .bottom-left {
+      border-right: 1px solid #e5e7eb;
+      background: #fafafa;
+    }
+
+    .section-title {
+      font-weight: 600;
+      margin: 0 0 6px;
+      font-size: 14px;
+    }
+
+    .section-subtitle {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: #555;
+    }
+
+    /* bitfield “map” (Bottom-Left) - Flexbox Layout */
+    .struct-container {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      font-size: 11px;
+      border: 1px solid #ccc;
+    }
+
+    .struct-row-flex {
+      display: flex;
+      border-bottom: 1px solid #ccc;
+      height: 24px;
+      /* Fixed height for consistency */
+    }
+
+    .struct-row-flex:last-child {
+      border-bottom: none;
+    }
+
+    .struct-content-flex {
+      flex: 1;
+      /* Takes remaining space */
+      display: flex;
+    }
+
+    .struct-field-flex {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-right: 1px solid #7f7f7f;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      background: #fff;
+      box-sizing: border-box;
+      /* Include border in width */
+      padding: 0 4px;
+    }
+
+    .struct-field-flex:last-child {
+      border-right: none;
+      /* Last field in content area doesn't need right border */
+    }
+
+    .struct-field-flex:hover {
+      background: #e0f2fe;
+    }
+
+    .struct-field-flex.selected {
+      background: #a3d3a3;
+      border-color: #555;
+    }
+
+    .struct-offset-flex {
+      width: 40px;
+      /* Fixed width */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f0f0f0;
+      border-left: 1px solid #ccc;
+      font-weight: bold;
+      color: #333;
+      flex-shrink: 0;
+      /* Prevent shrinking */
+    }
+
+    /* bit detail (Bottom-Right) */
+    .detail-header {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 5px;
+    }
+
+    .detail-title {
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .detail-subtitle {
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* Visual Bit Bar */
+    .bit-bar-container {
+      margin-bottom: 15px;
+      font-family: monospace;
+      font-size: 10px;
+    }
+
+    .bit-numbers {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 2px;
+      padding: 0 2px;
+      color: #555;
+    }
+
+    .bit-bar {
+      display: flex;
+      border: 1px solid #999;
+      height: 14px;
+    }
+
+    .bit-box {
+      flex: 1;
+      border-right: 1px solid #ccc;
+      background: #eee;
+      /* Default/Reserved */
+    }
+
+    .bit-box:last-child {
+      border-right: none;
+    }
+
+    .bit-box.active {
+      background: #fff;
+      /* Defined bits */
+    }
+
+    .bit-box.set {
+      background: #a3d3a3;
+      /* If we had values, but here just defined */
+    }
+
+    /* Description List */
+    .bit-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .bit-list-item {
+      margin-bottom: 12px;
+    }
+
+    .bit-list-title {
+      font-size: 12px;
+      font-weight: bold;
+      color: #000;
+    }
+
+    .bit-list-desc {
+      font-size: 12px;
+      color: #333;
+      margin-left: 15px;
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+
+    .bit-values-table {
+      margin-top: 4px;
+      margin-left: 15px;
+      border-collapse: collapse;
+      font-size: 11px;
+      width: auto;
+    }
+
+    .bit-values-table td {
+      border: none;
+      padding: 1px 6px 1px 0;
+      vertical-align: top;
+      color: #555;
+      background: transparent !important;
+      /* Override default table striping if any */
+    }
+
+    .bit-value-cell {
+      font-family: monospace;
+      font-weight: bold;
+      color: #444;
+      min-width: 20px;
+    }
+
+    .bit-meaning-cell {
+      color: #666;
+    }
+
+    /* simple top bar for future: config dump input等可以放這 */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 8px;
+      border-bottom: 1px solid #e5e7eb;
+      background: #f3f4f6;
+      font-size: 12px;
+    }
+
+    .toolbar input {
+      font-size: 12px;
+      padding: 3px 6px;
+    }
+
+    /* Splitters */
+    .splitter-horizontal {
+      height: 6px;
+      background: #e5e7eb;
+      cursor: row-resize;
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .splitter-horizontal::after {
+      content: "";
+      width: 30px;
+      height: 2px;
+      background: #bbb;
+      border-radius: 1px;
+    }
+
+    .splitter-horizontal:hover,
+    .splitter-horizontal.active {
+      background: #d1d5db;
+    }
+
+    .splitter-vertical {
+      width: 6px;
+      background: #e5e7eb;
+      cursor: col-resize;
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .splitter-vertical::after {
+      content: "";
+      height: 30px;
+      width: 2px;
+      background: #bbb;
+      border-radius: 1px;
+    }
+
+    .splitter-vertical:hover,
+    .splitter-vertical.active {
+      background: #d1d5db;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <!-- optional toolbar: 之後要加 config dump / 搜尋可以塞這裡 -->
+    <div class="toolbar">
+      <div style="font-weight:600;">PCIe Config Space Viewer</div>
+      <div style="margin-left:auto; font-size:11px; color:#4b5563;">
+      </div>
+    </div>
+
+    <!-- TOP: 所有 Header / Capabilities / Extended Capabilities 列表 -->
+    <div class="top-list" id="top-pane">
+      <table>
+        <thead>
+          <tr>
+            <th class="id-col">ID</th>
+            <th class="type-col">Type</th>
+            <th>Name</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody id="structure-list-body">
+          <!-- JS render -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Horizontal Splitter -->
+    <div class="splitter-horizontal" id="splitter-h"></div>
+
+    <!-- BOTTOM: 左 = bitfield 圖, 右 = bit 描述 -->
+    <div class="bottom" id="bottom-pane">
+      <div class="bottom-left">
+        <div class="section-title" id="struct-title" style="background:#d1d5db; padding:4px; margin:0;">Structure</div>
+        <!-- Removed subtitle to match image style closer, or keep it minimal -->
+        <div style="padding:0;">
+          <div class="struct-container" id="bitfield-container">
+            <!-- JS render -->
+          </div>
+        </div>
+        <div class="placeholder" id="bitfield-placeholder" style="display:none; padding:8px;">
+          No bitfield layout defined.
+        </div>
+      </div>
+
+      <!-- Vertical Splitter -->
+      <div class="splitter-vertical" id="splitter-v"></div>
+
+      <div class="bottom-right" id="bottom-right-pane">
+        <div id="detail-container">
+          <!-- Header -->
+          <div class="detail-header">
+            <div class="detail-title" id="field-title">Select a register</div>
+            <div class="detail-subtitle" id="field-subtitle"></div>
+          </div>
+
+          <!-- Bit Bar -->
+          <div class="bit-bar-container" id="bit-bar-container" style="display:none;">
+            <div class="bit-numbers" id="bit-numbers"></div>
+            <div class="bit-bar" id="bit-bar"></div>
+          </div>
+
+          <!-- Description List -->
+          <ul class="bit-list" id="bit-list"></ul>
+
+          <div class="placeholder" id="bits-placeholder" style="display:none;">
+            No bit descriptions defined.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /**
+     * 注意：
+     * - 這裡的 structures 只是「模板 + 部分例子」，
+     *   你可以照這個格式把 spec 裡的其他 headers / capabilities / extended capabilities 都補上去。
+     *
+     * 結構說明：
+     * - 每個 structure = 一個 Header / Capability / Extended Capability。
+     *   {
+     *     id: "type0",              // 自訂 ID，方便 JS 用
+     *     type: "Header|Cap|ExtCap",
+     *     name: "Type 0 Header",
+     *     description: "簡短說明",
+     *     rows: [                   // 左下 bitfield 圖用
+     *       {
+     *         offset: "00h",
+     *         fields: [
+     *           { id: "vendorid", label: "Vendor ID", range: "[15:0]" },
+     *           ...
+     *         ]
+     *       },
+     *       ...
+     *     ],
+     *     bitfields: {              // 右下 bit 詳細描述
+     *       status: {
+     *         name: "Status",
+     *         offset: "06h",
+     *         range: "[31:16]",
+     *         bits: [
+     *           { range: "[3]",  title: "Interrupt Status", description: "示意用文字，請依照 spec 自行填寫。" },
+     *           ...
+     *         ]
+     *       },
+     *       ...
+     *     }
+     *   }
+     */
+
+    const structures = [
+      /* =========================
+       * Type 0 / Type 1 Headers
+       * ========================= */
+      {
+        id: "type0",
+        type: "Header",
+        name: "Type 0 Header",
+        description: "First 64 bytes of configuration space for a non-bridge function.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "vendorid", label: "Vendor ID", range: "[15:0]" },
+              { id: "deviceid", label: "Device ID", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "command", label: "Command", range: "[15:0]" },
+              { id: "status", label: "Status", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "revid", label: "Revision ID", range: "[7:0]" },
+              { id: "classcode", label: "Class Code", range: "[31:8]" }
+            ]
+          },
+          {
+            offset: "0Ch",
+            fields: [
+              { id: "cacheline", label: "Cache Line Size", range: "[7:0]" },
+              { id: "latency", label: "Latency Timer", range: "[15:8]" },
+              { id: "hdrtype", label: "Header Type", range: "[23:16]" },
+              { id: "bist", label: "BIST", range: "[31:24]" }
+            ]
+          },
+          {
+            offset: "10h",
+            fields: [
+              { id: "bar0", label: "Base Address Register 0", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "14h",
+            fields: [
+              { id: "bar1", label: "Base Address Register 1", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "18h",
+            fields: [
+              { id: "bar2", label: "Base Address Register 2", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "1Ch",
+            fields: [
+              { id: "bar3", label: "Base Address Register 3", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "20h",
+            fields: [
+              { id: "bar4", label: "Base Address Register 4", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "24h",
+            fields: [
+              { id: "bar5", label: "Base Address Register 5", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "28h",
+            fields: [
+              { id: "cardbus", label: "CardBus CIS Pointer", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "2Ch",
+            fields: [
+              { id: "subvendor", label: "Subsystem Vendor ID", range: "[15:0]" },
+              { id: "subsysid", label: "Subsystem ID", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "30h",
+            fields: [
+              { id: "rombar", label: "Expansion ROM Base Address", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "34h",
+            fields: [
+              { id: "capptr", label: "Capabilities Pointer", range: "[7:0]" },
+              { id: "reserved", label: "Reserved", range: "[31:8]" }
+            ]
+          },
+          {
+            offset: "38h",
+            fields: [
+              { id: "reserved2", label: "Reserved", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "3Ch",
+            fields: [
+              { id: "intline", label: "Interrupt Line", range: "[7:0]" },
+              { id: "intpin", label: "Interrupt Pin", range: "[15:8]" },
+              { id: "mingnt", label: "Min_Gnt", range: "[23:16]" },
+              { id: "maxlat", label: "Max_Lat", range: "[31:24]" }
+            ]
+          },
+        ],
+        bitfields: {
+          command: {
+            name: "Command",
+            offset: "04h",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "I/O Space Enable", description: "Controls a Function’s response to I/O Space accesses.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[1]", title: "Memory Space Enable", description: "Controls a Function’s response to Memory Space accesses.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[2]", title: "Bus Master Enable", description: "Controls a Function’s ability to generate PCI accesses.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[3]", title: "Special Cycle Enable", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[4]", title: "Memory Write and Invalidate", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[5]", title: "VGA Palette Snoop", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[6]", title: "Parity Error Response", description: "Controls the Function’s response to parity errors.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[7]", title: "IDSEL Stepping/Wait Cycle", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[8]", title: "SERR# Enable", description: "Controls the Enable for the SERR# driver.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[9]", title: "Fast Back-to-Back Enable", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[10]", title: "Interrupt Disable", description: "Controls the ability of a Function to generate an INTx interrupt message.", values: { "0": "Enable INTx", "1": "Disable INTx" } },
+              { range: "[15:11]", title: "Reserved", description: "Reserved." }
+            ]
+          },
+          status: {
+            name: "Status",
+            offset: "06h",
+            range: "[15:0]",
+            bits: [
+              { range: "[3]", title: "Interrupt Status", description: "Reflects the state of the interrupt in the function.", values: { "0": "Not Pending", "1": "Pending" } },
+              { range: "[4]", title: "Capabilities List", description: "Indicates the presence of a Capabilities list.", values: { "0": "No", "1": "Yes" } },
+              { range: "[5]", title: "66 MHz Capable", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[6]", title: "Reserved", description: "Reserved." },
+              { range: "[7]", title: "Fast Back-to-Back Capable", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[8]", title: "Master Data Parity Error", description: "Set when the Function detects a parity error.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[10:9]", title: "DEVSEL Timing", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[11]", title: "Signaled Target Abort", description: "Set when the Function completes a transaction with a Target Abort.", values: { "0": "Not Signaled", "1": "Signaled" } },
+              { range: "[12]", title: "Received Target Abort", description: "Set when the Function receives a Target Abort.", values: { "0": "Not Received", "1": "Received" } },
+              { range: "[13]", title: "Received Master Abort", description: "Set when the Function receives a Master Abort.", values: { "0": "Not Received", "1": "Received" } },
+              { range: "[14]", title: "Signaled System Error", description: "Set when the Function signals SERR#.", values: { "0": "Not Signaled", "1": "Signaled" } },
+              { range: "[15]", title: "Detected Parity Error", description: "Set when the Function detects a parity error.", values: { "0": "Not Detected", "1": "Detected" } }
+            ]
+          },
+          revid: { name: "Revision ID", offset: "08h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Revision ID", description: "Device specific revision identifier." }] },
+          classcode: { name: "Class Code", offset: "09h", range: "[23:0]", bits: [{ range: "[23:0]", title: "Class Code", description: "Identifies the general function of the device." }] },
+          cacheline: { name: "Cache Line Size", offset: "0Ch", range: "[7:0]", bits: [{ range: "[7:0]", title: "Cache Line Size", description: "Specifies the system cacheline size in 32-bit units." }] },
+          latency: { name: "Latency Timer", offset: "0Dh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Latency Timer", description: "Not used in PCIe, hardwired to 0." }] },
+          hdrtype: { name: "Header Type", offset: "0Eh", range: "[7:0]", bits: [{ range: "[6:0]", title: "Header Layout", description: "Identifies the layout of the header (00h for Endpoint)." }, { range: "[7]", title: "Multi-Function Device", description: "Indicates if the device has multiple functions." }] },
+          bist: { name: "BIST", offset: "0Fh", range: "[7:0]", bits: [{ range: "[3:0]", title: "Completion Code", description: "Result of the BIST." }, { range: "[5:4]", title: "Reserved", description: "Reserved." }, { range: "[6]", title: "Start BIST", description: "Set to invoke BIST." }, { range: "[7]", title: "BIST Capable", description: "Indicates support for BIST." }] },
+          bar0: { name: "BAR0", offset: "10h", range: "[31:0]", bits: [{ range: "[0]", title: "Memory/IO", description: "0=Memory, 1=IO." }, { range: "[31:1]", title: "Base Address", description: "Base address." }] },
+          bar1: { name: "BAR1", offset: "14h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Base Address", description: "Base address." }] },
+          bar2: { name: "BAR2", offset: "18h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Base Address", description: "Base address." }] },
+          bar3: { name: "BAR3", offset: "1Ch", range: "[31:0]", bits: [{ range: "[31:0]", title: "Base Address", description: "Base address." }] },
+          bar4: { name: "BAR4", offset: "20h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Base Address", description: "Base address." }] },
+          bar5: { name: "BAR5", offset: "24h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Base Address", description: "Base address." }] },
+          cardbus: { name: "CardBus CIS Pointer", offset: "28h", range: "[31:0]", bits: [{ range: "[31:0]", title: "CardBus CIS Pointer", description: "Points to the CardBus CIS." }] },
+          subvendor: { name: "Subsystem Vendor ID", offset: "2Ch", range: "[15:0]", bits: [{ range: "[15:0]", title: "Subsystem Vendor ID", description: "Vendor ID of the add-in card." }] },
+          subsysid: { name: "Subsystem ID", offset: "2Eh", range: "[15:0]", bits: [{ range: "[15:0]", title: "Subsystem ID", description: "Device ID of the add-in card." }] },
+          rombar: { name: "Expansion ROM Base Address", offset: "30h", range: "[31:0]", bits: [{ range: "[0]", title: "Address Decode Enable", description: "Enables expansion ROM decoding." }, { range: "[31:11]", title: "Base Address", description: "Base address." }] },
+          capptr: { name: "Capabilities Pointer", offset: "34h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Capabilities Pointer", description: "Points to the first capability in the list." }] },
+          intline: { name: "Interrupt Line", offset: "3Ch", range: "[7:0]", bits: [{ range: "[7:0]", title: "Interrupt Line", description: "System interrupt routing information." }] },
+          intpin: { name: "Interrupt Pin", offset: "3Dh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Interrupt Pin", description: "Identifies the legacy interrupt pin used (1=INTA, etc.)." }] },
+          mingnt: { name: "Min_Gnt", offset: "3Eh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Min_Gnt", description: "Length of burst period required." }] },
+          maxlat: { name: "Max_Lat", offset: "3Fh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Max_Lat", description: "How often the device needs access to the bus." }] }
+        }
+      },
+
+      {
+        id: "type1",
+        type: "Header",
+        name: "Type 1 Header (Bridge)",
+        description: "Configuration header for PCI-to-PCI / PCIe-to-PCIe bridge functions.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "vendorid", label: "Vendor ID", range: "[15:0]" },
+              { id: "deviceid", label: "Device ID", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "command", label: "Command", range: "[15:0]" },
+              { id: "status", label: "Status", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "revid", label: "Revision ID", range: "[7:0]" },
+              { id: "classcode", label: "Class Code", range: "[31:8]" }
+            ]
+          },
+          {
+            offset: "0Ch",
+            fields: [
+              { id: "cacheline", label: "Cache Line Size", range: "[7:0]" },
+              { id: "latency", label: "Latency Timer", range: "[15:8]" },
+              { id: "hdrtype", label: "Header Type", range: "[23:16]" },
+              { id: "bist", label: "BIST", range: "[31:24]" }
+            ]
+          },
+          {
+            offset: "10h",
+            fields: [
+              { id: "bar0", label: "Base Address Register 0", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "14h",
+            fields: [
+              { id: "bar1", label: "Base Address Register 1", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "18h",
+            fields: [
+              { id: "primary_bus", label: "Primary Bus", range: "[7:0]" },
+              { id: "secondary_bus", label: "Secondary Bus", range: "[15:8]" },
+              { id: "subordinate_bus", label: "Subordinate Bus", range: "[23:16]" },
+              { id: "sec_latency", label: "Secondary Latency", range: "[31:24]" }
+            ]
+          },
+          {
+            offset: "1Ch",
+            fields: [
+              { id: "io_base", label: "I/O Base", range: "[7:0]" },
+              { id: "io_limit", label: "I/O Limit", range: "[15:8]" },
+              { id: "sec_status", label: "Secondary Status", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "20h",
+            fields: [
+              { id: "mem_base", label: "Memory Base", range: "[15:0]" },
+              { id: "mem_limit", label: "Memory Limit", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "24h",
+            fields: [
+              { id: "pref_mem_base", label: "Prefetchable Memory Base", range: "[15:0]" },
+              { id: "pref_mem_limit", label: "Prefetchable Memory Limit", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "28h",
+            fields: [
+              { id: "pref_base_upper", label: "Prefetchable Base Upper 32 Bits", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "2Ch",
+            fields: [
+              { id: "pref_limit_upper", label: "Prefetchable Limit Upper 32 Bits", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "30h",
+            fields: [
+              { id: "io_base_upper", label: "I/O Base Upper 16 Bits", range: "[15:0]" },
+              { id: "io_limit_upper", label: "I/O Limit Upper 16 Bits", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "34h",
+            fields: [
+              { id: "capptr", label: "Capabilities Pointer", range: "[7:0]" },
+              { id: "reserved", label: "Reserved", range: "[31:8]" }
+            ]
+          },
+          {
+            offset: "38h",
+            fields: [
+              { id: "rombar", label: "Expansion ROM Base Address", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "3Ch",
+            fields: [
+              { id: "intline", label: "Interrupt Line", range: "[7:0]" },
+              { id: "intpin", label: "Interrupt Pin", range: "[15:8]" },
+              { id: "bridgectl", label: "Bridge Control", range: "[31:16]" }
+            ]
+          },
+        ],
+        bitfields: {
+          command: {
+            name: "Command",
+            offset: "04h",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "I/O Space Enable", description: "Controls a Function’s response to I/O Space accesses.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[1]", title: "Memory Space Enable", description: "Controls a Function’s response to Memory Space accesses.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[2]", title: "Bus Master Enable", description: "Controls a Function’s ability to generate PCI accesses.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[3]", title: "Special Cycle Enable", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[4]", title: "Memory Write and Invalidate", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[5]", title: "VGA Palette Snoop", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[6]", title: "Parity Error Response", description: "Controls the Function’s response to parity errors.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[7]", title: "IDSEL Stepping/Wait Cycle", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[8]", title: "SERR# Enable", description: "Controls the Enable for the SERR# driver.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[9]", title: "Fast Back-to-Back Enable", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[10]", title: "Interrupt Disable", description: "Controls the ability of a Function to generate an INTx interrupt message.", values: { "0": "Enable INTx", "1": "Disable INTx" } },
+              { range: "[15:11]", title: "Reserved", description: "Reserved." }
+            ]
+          },
+          status: {
+            name: "Status",
+            offset: "06h",
+            range: "[15:0]",
+            bits: [
+              { range: "[3]", title: "Interrupt Status", description: "Reflects the state of the interrupt in the function.", values: { "0": "Not Pending", "1": "Pending" } },
+              { range: "[4]", title: "Capabilities List", description: "Indicates the presence of a Capabilities list.", values: { "0": "No", "1": "Yes" } },
+              { range: "[5]", title: "66 MHz Capable", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[6]", title: "Reserved", description: "Reserved." },
+              { range: "[7]", title: "Fast Back-to-Back Capable", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[8]", title: "Master Data Parity Error", description: "Set when the Function detects a parity error.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[10:9]", title: "DEVSEL Timing", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[11]", title: "Signaled Target Abort", description: "Set when the Function completes a transaction with a Target Abort.", values: { "0": "Not Signaled", "1": "Signaled" } },
+              { range: "[12]", title: "Received Target Abort", description: "Set when the Function receives a Target Abort.", values: { "0": "Not Received", "1": "Received" } },
+              { range: "[13]", title: "Received Master Abort", description: "Set when the Function receives a Master Abort.", values: { "0": "Not Received", "1": "Received" } },
+              { range: "[14]", title: "Signaled System Error", description: "Set when the Function signals SERR#.", values: { "0": "Not Signaled", "1": "Signaled" } },
+              { range: "[15]", title: "Detected Parity Error", description: "Set when the Function detects a parity error.", values: { "0": "Not Detected", "1": "Detected" } }
+            ]
+          },
+          revid: { name: "Revision ID", offset: "08h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Revision ID", description: "Device specific revision identifier." }] },
+          classcode: { name: "Class Code", offset: "09h", range: "[31:8]", bits: [{ range: "[31:8]", title: "Class Code", description: "Identifies the general function of the device." }] },
+          cacheline: { name: "Cache Line Size", offset: "0Ch", range: "[7:0]", bits: [{ range: "[7:0]", title: "Cache Line Size", description: "Specifies the system cacheline size in 32-bit units." }] },
+          latency: { name: "Latency Timer", offset: "0Dh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Latency Timer", description: "Not used in PCIe, hardwired to 0." }] },
+
+          hdrtype: { name: "Header Type", offset: "0Eh", range: "[7:0]", bits: [{ range: "[6:0]", title: "Header Layout", description: "Identifies the layout of the header (01h for Bridge)." }, { range: "[7]", title: "Multi-Function Device", description: "Indicates if the device has multiple functions." }] },
+          bist: { name: "BIST", offset: "0Fh", range: "[7:0]", bits: [{ range: "[3:0]", title: "Completion Code", description: "Result of the BIST." }, { range: "[5:4]", title: "Reserved", description: "Reserved." }, { range: "[6]", title: "Start BIST", description: "Set to invoke BIST." }, { range: "[7]", title: "BIST Capable", description: "Indicates support for BIST." }] },
+          bar0: { name: "BAR0", offset: "10h", range: "[31:0]", bits: [{ range: "[0]", title: "Memory/IO", description: "0=Memory, 1=IO." }, { range: "[31:1]", title: "Base Address", description: "Base address." }] },
+          bar1: { name: "BAR1", offset: "14h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Base Address", description: "Base address." }] },
+          primary_bus: { name: "Primary Bus", offset: "18h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Primary Bus Number", description: "Bus number on the upstream side of the bridge." }] },
+          secondary_bus: { name: "Secondary Bus", offset: "19h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Secondary Bus Number", description: "Bus number on the downstream side of the bridge." }] },
+          subordinate_bus: { name: "Subordinate Bus", offset: "1Ah", range: "[7:0]", bits: [{ range: "[7:0]", title: "Subordinate Bus Number", description: "Highest bus number downstream of the bridge." }] },
+          sec_latency: { name: "Secondary Latency Timer", offset: "1Bh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Secondary Latency Timer", description: "Not used in PCIe, hardwired to 0." }] },
+          io_base: { name: "I/O Base", offset: "1Ch", range: "[7:0]", bits: [{ range: "[3:0]", title: "Addressing Capability", description: "01h=32-bit I/O." }, { range: "[7:4]", title: "I/O Base Address", description: "Upper 4 bits of the I/O base address." }] },
+          io_limit: { name: "I/O Limit", offset: "1Dh", range: "[7:0]", bits: [{ range: "[3:0]", title: "Addressing Capability", description: "01h=32-bit I/O." }, { range: "[7:4]", title: "I/O Limit Address", description: "Upper 4 bits of the I/O limit address." }] },
+          sec_status: { name: "Secondary Status", offset: "1Eh", range: "[15:0]", bits: [{ range: "[15:0]", title: "Secondary Status", description: "Status of the secondary interface." }] },
+          mem_base: { name: "Memory Base", offset: "20h", range: "[15:0]", bits: [{ range: "[3:0]", title: "Reserved", description: "Reserved." }, { range: "[15:4]", title: "Memory Base Address", description: "Upper 12 bits of the memory base address." }] },
+          mem_limit: { name: "Memory Limit", offset: "22h", range: "[15:0]", bits: [{ range: "[3:0]", title: "Reserved", description: "Reserved." }, { range: "[15:4]", title: "Memory Limit Address", description: "Upper 12 bits of the memory limit address." }] },
+          pref_mem_base: { name: "Prefetchable Memory Base", offset: "24h", range: "[15:0]", bits: [{ range: "[3:0]", title: "Addressing Capability", description: "0=32-bit, 1=64-bit." }, { range: "[15:4]", title: "Prefetchable Memory Base Address", description: "Upper 12 bits of the prefetchable memory base address." }] },
+          pref_mem_limit: { name: "Prefetchable Memory Limit", offset: "26h", range: "[15:0]", bits: [{ range: "[3:0]", title: "Addressing Capability", description: "0=32-bit, 1=64-bit." }, { range: "[15:4]", title: "Prefetchable Memory Limit Address", description: "Upper 12 bits of the prefetchable memory limit address." }] },
+          pref_base_upper: { name: "Prefetchable Base Upper 32 Bits", offset: "28h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Base Address Upper", description: "Upper 32 bits of the prefetchable base address." }] },
+          pref_limit_upper: { name: "Prefetchable Limit Upper 32 Bits", offset: "2Ch", range: "[31:0]", bits: [{ range: "[31:0]", title: "Limit Address Upper", description: "Upper 32 bits of the prefetchable limit address." }] },
+          io_base_upper: { name: "I/O Base Upper 16 Bits", offset: "30h", range: "[15:0]", bits: [{ range: "[15:0]", title: "I/O Base Upper", description: "Upper 16 bits of the I/O base address." }] },
+          io_limit_upper: { name: "I/O Limit Upper 16 Bits", offset: "32h", range: "[15:0]", bits: [{ range: "[15:0]", title: "I/O Limit Upper", description: "Upper 16 bits of the I/O limit address." }] },
+          capptr: { name: "Capabilities Pointer", offset: "34h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Capabilities Pointer", description: "Points to the first capability in the list." }] },
+          rombar: { name: "Expansion ROM Base Address", offset: "38h", range: "[31:0]", bits: [{ range: "[0]", title: "Address Decode Enable", description: "Enables expansion ROM decoding." }, { range: "[31:11]", title: "Base Address", description: "Base address." }] },
+          intline: { name: "Interrupt Line", offset: "3Ch", range: "[7:0]", bits: [{ range: "[7:0]", title: "Interrupt Line", description: "System interrupt routing information." }] },
+          intpin: { name: "Interrupt Pin", offset: "3Dh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Interrupt Pin", description: "Identifies the legacy interrupt pin used (1=INTA, etc.)." }] },
+          bridgectl: {
+            name: "Bridge Control",
+            offset: "3Eh",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "Parity Error Response", description: "Controls the bridge’s response to parity errors on the secondary interface.", values: { "0": "Ignore", "1": "Report" } },
+              { range: "[1]", title: "SERR# Enable", description: "Controls the forwarding of SERR#.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[2]", title: "ISA Enable", description: "Modifies the response to I/O accesses.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[3]", title: "VGA Enable", description: "Controls the routing of VGA addresses.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[4]", title: "VGA 16-bit Decode", description: "Controls the decoding of VGA I/O addresses.", values: { "0": "10-bit", "1": "16-bit" } },
+              { range: "[5]", title: "Master Abort Mode", description: "Controls the bridge’s behavior when a Master Abort occurs.", values: { "0": "Report", "1": "Ignore" } },
+              { range: "[6]", title: "Secondary Bus Reset", description: "Forces a reset on the secondary bus.", values: { "0": "Clear", "1": "Set" } },
+              { range: "[7]", title: "Fast Back-to-Back Enable", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[8]", title: "Primary Discard Timer", description: "Controls the primary discard timer." },
+              { range: "[9]", title: "Secondary Discard Timer", description: "Controls the secondary discard timer." },
+              { range: "[10]", title: "Discard Timer Status", description: "Status of the discard timer." },
+              { range: "[11]", title: "Discard Timer SERR# Enable", description: "Controls SERR# generation for discard timer." },
+              { range: "[15:12]", title: "Reserved", description: "Reserved." }
+            ]
+          }
+        }
+      },
+
+      /* =========================
+       * PCI Power Management Cap
+       * ========================= */
+      {
+        id: "pm_cap",
+        type: "Cap",
+        name: "Power Management Capability (PM)",
+        description: "Legacy PCI-style Power Management capability structure.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "capid", label: "Cap ID", range: "[7:0]" },
+              { id: "nextptr", label: "Next Ptr", range: "[15:8]" },
+              { id: "pmcap", label: "PM Capabilities", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "pmcsr", label: "PM Control / Status", range: "[15:0]" },
+              { id: "pm_bridge_ext", label: "Bridge Extensions", range: "[23:16]" },
+              { id: "pm_data", label: "Data", range: "[31:24]" }
+            ]
+          }
+        ],
+        bitfields: {
+          capid: { name: "Capability ID", offset: "00h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Capability ID", description: "ID = 01h for Power Management." }] },
+          nextptr: { name: "Next Item Pointer", offset: "01h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Next Item Pointer", description: "Pointer to the next capability." }] },
+          pmcap: {
+            name: "PM Capabilities",
+            offset: "02h",
+            range: "[15:0]",
+            bits: [
+              { range: "[2:0]", title: "Version", description: "PM Spec Version (011b = 1.2).", values: { "2": "1.1", "3": "1.2" } },
+              { range: "[3]", title: "PME Clock", description: "Indicates if PME# generation requires a PCI clock.", values: { "0": "No", "1": "Yes" } },
+              { range: "[4]", title: "Reserved", description: "Reserved." },
+              { range: "[5]", title: "DSI", description: "Device Specific Initialization.", values: { "0": "No", "1": "Yes" } },
+              { range: "[8:6]", title: "Aux_Current", description: "Auxiliary Current Requirements." },
+              { range: "[9]", title: "D1 Support", description: "Supports D1 Power Management State.", values: { "0": "No", "1": "Yes" } },
+              { range: "[10]", title: "D2 Support", description: "Supports D2 Power Management State.", values: { "0": "No", "1": "Yes" } },
+              { range: "[15:11]", title: "PME Support", description: "Indicates PME# support in various power states." }
+            ]
+          },
+          pmcsr: {
+            name: "PM Control / Status",
+            offset: "04h",
+            range: "[15:0]",
+            bits: [
+              { range: "[1:0]", title: "Power State", description: "Current power state (00=D0, 01=D1, 10=D2, 11=D3).", values: { "0": "D0", "1": "D1", "2": "D2", "3": "D3hot" } },
+              { range: "[2]", title: "Reserved", description: "Reserved." },
+              { range: "[3]", title: "No Soft Reset", description: "Device transitions from D3hot to D0 without internal reset.", values: { "0": "Reset", "1": "No Reset" } },
+              { range: "[7:4]", title: "Reserved", description: "Reserved." },
+              { range: "[8]", title: "PME Enable", description: "Enables PME# generation.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[12:9]", title: "Data Select", description: "Selects which data is reported in the Data register." },
+              { range: "[14:13]", title: "Data Scale", description: "Scaling factor for the Data register.", values: { "0": "Unknown", "1": "0.1x", "2": "0.01x", "3": "0.001x" } },
+              { range: "[15]", title: "PME Status", description: "Indicates if a PME event occurred.", values: { "0": "Not Asserted", "1": "Asserted" } }
+            ]
+          },
+          pm_bridge_ext: { name: "PM Bridge Extensions", offset: "06h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Bridge Extensions", description: "Bus Power/Clock Control Enable, B2/B3 support." }] },
+          pm_data: { name: "Data", offset: "07h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Data", description: "Power consumption or heat dissipation data." }] }
+        }
+      },
+
+      /* =========================
+       * PCI Express Capability
+       * ========================= */
+      {
+        id: "pcie_cap",
+        type: "Cap",
+        name: "PCI Express Capability",
+        description: "Registers for PCI Express device, link, slot, and root capabilities / status.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "capid", label: "Cap ID", range: "[7:0]" },
+              { id: "nextptr", label: "Next Ptr", range: "[15:8]" },
+              { id: "pcie_cap_reg", label: "PCIe Capabilities", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "devcap", label: "Device Capabilities", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "devctl", label: "Device Control", range: "[15:0]" },
+              { id: "devsta", label: "Device Status", range: "[15:0]" }
+            ]
+          },
+          {
+            offset: "0Ch",
+            fields: [
+              { id: "linkcap", label: "Link Capabilities", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "10h",
+            fields: [
+              { id: "linkctl", label: "Link Control", range: "[15:0]" },
+              { id: "linksta", label: "Link Status", range: "[15:0]" }
+            ]
+          },
+          {
+            offset: "14h",
+            fields: [
+              { id: "slotcap", label: "Slot Capabilities", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "18h",
+            fields: [
+              { id: "slotctl", label: "Slot Control", range: "[15:0]" },
+              { id: "slotsta", label: "Slot Status", range: "[15:0]" }
+            ]
+          },
+          {
+            offset: "1Ch",
+            fields: [
+              { id: "rootctl", label: "Root Control", range: "[15:0]" },
+              { id: "rootcap", label: "Root Capabilities", range: "[15:0]" }
+            ]
+          },
+          {
+            offset: "20h",
+            fields: [
+              { id: "rootsta", label: "Root Status", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "24h",
+            fields: [
+              { id: "devcap2", label: "Device Capabilities 2", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "28h",
+            fields: [
+              { id: "devctl2", label: "Device Control 2", range: "[15:0]" },
+              { id: "devsta2", label: "Device Status 2", range: "[15:0]" }
+            ]
+          },
+          {
+            offset: "2Ch",
+            fields: [
+              { id: "linkcap2", label: "Link Capabilities 2", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "30h",
+            fields: [
+              { id: "linkctl2", label: "Link Control 2", range: "[15:0]" },
+              { id: "linksta2", label: "Link Status 2", range: "[15:0]" }
+            ]
+          },
+          {
+            offset: "34h",
+            fields: [
+              { id: "slotcap2", label: "Slot Capabilities 2", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "38h",
+            fields: [
+              { id: "slotctl2", label: "Slot Control 2", range: "[15:0]" },
+              { id: "slotsta2", label: "Slot Status 2", range: "[15:0]" }
+            ]
+          }
+        ],
+        bitfields: {
+          capid: { name: "Capability ID", offset: "00h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Capability ID", description: "ID = 10h for PCI Express." }] },
+          nextptr: { name: "Next Item Pointer", offset: "01h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Next Item Pointer", description: "Pointer to the next capability." }] },
+          pcie_cap_reg: {
+            name: "PCIe Capabilities Register",
+            offset: "02h",
+            range: "[15:0]",
+            bits: [
+              { range: "[3:0]", title: "Version", description: "PCI Express Capability Version." },
+              { range: "[7:4]", title: "Device/Port Type", description: "Indicates the type of PCI Express function." },
+              { range: "[8]", title: "Slot Implemented", description: "Set when the Link is connected to a slot." },
+              { range: "[13:9]", title: "Interrupt Message Number", description: "MSI/MSI-X vector used for interrupt messages." },
+              { range: "[15:14]", title: "Reserved", description: "Reserved." }
+            ]
+          },
+          devcap: {
+            name: "Device Capabilities",
+            offset: "04h",
+            range: "[31:0]",
+            bits: [
+              { range: "[2:0]", title: "Max Payload Size Supported", description: "Max payload size the device can support.", values: { "0": "128", "1": "256", "2": "512", "3": "1024", "4": "2048", "5": "4096" } },
+              { range: "[4:3]", title: "Phantom Functions Supported", description: "Support for phantom functions.", values: { "0": "None", "1": "1", "2": "2", "3": "3" } },
+              { range: "[5]", title: "Extended Tag Field Supported", description: "Support for 8-bit Tag field.", values: { "0": "5-bit", "1": "8-bit" } },
+              { range: "[8:6]", title: "Endpoint L0s Acceptable Latency", description: "Acceptable total latency for L0s.", values: { "0": "<64ns", "1": "<128ns", "2": "<256ns", "3": "<512ns", "4": "<1us", "5": "<2us", "6": "<4us", "7": "No Limit" } },
+              { range: "[11:9]", title: "Endpoint L1 Acceptable Latency", description: "Acceptable total latency for L1.", values: { "0": "<1us", "1": "<2us", "2": "<4us", "3": "<8us", "4": "<16us", "5": "<32us", "6": "<64us", "7": "No Limit" } },
+              { range: "[15]", title: "Role-Based Error Reporting", description: "Implements role-based error reporting.", values: { "0": "No", "1": "Yes" } },
+              { range: "[27:26]", title: "Captured Slot Power Limit Scale", description: "Scale for Slot Power Limit.", values: { "0": "1.0x", "1": "0.1x", "2": "0.01x", "3": "0.001x" } },
+              { range: "[31:28]", title: "Captured Slot Power Limit Value", description: "Value for Slot Power Limit." }
+            ]
+          },
+          devctl: {
+            name: "Device Control",
+            offset: "08h",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "Correctable Error Reporting Enable", description: "Enables Correctable Error reporting.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[1]", title: "Non-Fatal Error Reporting Enable", description: "Enables Non-Fatal Error reporting.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[2]", title: "Fatal Error Reporting Enable", description: "Enables Fatal Error reporting.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[3]", title: "Unsupported Request Reporting Enable", description: "Enables UR reporting.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[4]", title: "Enable Relaxed Ordering", description: "Enables Relaxed Ordering.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[7:5]", title: "Max Payload Size", description: "Sets the maximum TLP payload size.", values: { "0": "128", "1": "256", "2": "512", "3": "1024", "4": "2048", "5": "4096" } },
+              { range: "[8]", title: "Extended Tag Field Enable", description: "Enables 8-bit Tag field.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[9]", title: "Phantom Functions Enable", description: "Enables Phantom Functions.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[10]", title: "Aux Power PM Enable", description: "Enables Aux Power PM.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[11]", title: "Enable No Snoop", description: "Enables No Snoop.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[14:12]", title: "Max Read Request Size", description: "Sets the maximum Read Request size.", values: { "0": "128", "1": "256", "2": "512", "3": "1024", "4": "2048", "5": "4096" } },
+              { range: "[15]", title: "Function Level Reset", description: "Initiates Function Level Reset.", values: { "0": "No Action", "1": "Initiate FLR" } }
+            ]
+          },
+          devsta: {
+            name: "Device Status",
+            offset: "0Ah",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "Correctable Error Detected", description: "Indicates a Correctable Error was detected.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[1]", title: "Non-Fatal Error Detected", description: "Indicates a Non-Fatal Error was detected.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[2]", title: "Fatal Error Detected", description: "Indicates a Fatal Error was detected.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[3]", title: "Unsupported Request Detected", description: "Indicates a UR was detected.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[4]", title: "Aux Power Detected", description: "Indicates Aux Power is present.", values: { "0": "No", "1": "Yes" } },
+              { range: "[5]", title: "Transactions Pending", description: "Indicates transactions are pending.", values: { "0": "No", "1": "Yes" } }
+            ]
+          },
+          linkcap: {
+            name: "Link Capabilities",
+            offset: "0Ch",
+            range: "[31:0]",
+            bits: [
+              { range: "[3:0]", title: "Max Link Speed", description: "Maximum supported Link speed.", values: { "1": "2.5 GT/s", "2": "5.0 GT/s", "3": "8.0 GT/s", "4": "16.0 GT/s" } },
+              { range: "[9:4]", title: "Max Link Width", description: "Maximum supported Link width.", values: { "0": "x1", "1": "x2", "2": "x4", "4": "x8", "8": "x12", "12": "x16", "32": "x32" } },
+              { range: "[11:10]", title: "ASPM Support", description: "Level of ASPM support.", values: { "0": "No Support", "1": "L0s", "2": "L1", "3": "L0s and L1" } },
+              { range: "[14:12]", title: "L0s Exit Latency", description: "L0s exit latency.", values: { "0": "<64ns", "1": "<128ns", "2": "<256ns", "3": "<512ns", "4": "<1us", "5": "<2us", "6": "<4us", "7": "No Limit" } },
+              { range: "[17:15]", title: "L1 Exit Latency", description: "L1 exit latency.", values: { "0": "<1us", "1": "<2us", "2": "<4us", "3": "<8us", "4": "<16us", "5": "<32us", "6": "<64us", "7": "No Limit" } },
+              { range: "[18]", title: "Clock Power Management", description: "Supports Clock PM.", values: { "0": "No", "1": "Yes" } },
+              { range: "[19]", title: "Surprise Down Error Reporting", description: "Supports Surprise Down reporting.", values: { "0": "No", "1": "Yes" } },
+              { range: "[20]", title: "Data Link Layer Active Reporting", description: "Supports DLL Active reporting.", values: { "0": "No", "1": "Yes" } },
+              { range: "[21]", title: "Link Bandwidth Notification", description: "Supports Link Bandwidth Notification.", values: { "0": "No", "1": "Yes" } },
+              { range: "[23:22]", title: "ASPM Optionality Compliance", description: "ASPM Optionality Compliance." },
+              { range: "[31:24]", title: "Port Number", description: "Port Number." }
+            ]
+          },
+          linkctl: {
+            name: "Link Control",
+            offset: "10h",
+            range: "[15:0]",
+            bits: [
+              { range: "[1:0]", title: "ASPM Control", description: "Active State Power Management Control. This field controls the level of ASPM enabled on the given PCI Express Link.", values: { "0": "Disabled", "1": "L0s Entry Enabled", "2": "L1 Entry Enabled", "3": "L0s and L1 Entry Enabled" } },
+              { range: "[3]", title: "Read Completion Boundary", description: "Selects RCB.", values: { "0": "64 bytes", "1": "128 bytes" } },
+              { range: "[4]", title: "Link Disable", description: "Disables the Link.", values: { "0": "Enable", "1": "Disable" } },
+              { range: "[5]", title: "Retrain Link", description: "Initiates Link retraining.", values: { "0": "No Action", "1": "Initiate Retrain" } },
+              { range: "[6]", title: "Common Clock Configuration", description: "Indicates common clock usage.", values: { "0": "Asynchronous", "1": "Common Clock" } },
+              { range: "[7]", title: "Extended Synch", description: "Enables Extended Synch.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[8]", title: "Enable Clock Power Management", description: "Enables Clock PM.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[9]", title: "Hardware Autonomous Width Disable", description: "Disables HW autonomous width change.", values: { "0": "Enable", "1": "Disable" } },
+              { range: "[10]", title: "Link Bandwidth Management Interrupt Enable", description: "Enables LBWM interrupt.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[11]", title: "Link Autonomous Bandwidth Interrupt Enable", description: "Enables LABW interrupt.", values: { "0": "Disable", "1": "Enable" } }
+            ]
+          },
+          linksta: {
+            name: "Link Status",
+            offset: "12h",
+            range: "[15:0]",
+            bits: [
+              { range: "[3:0]", title: "Current Link Speed", description: "Current negotiated Link speed.", values: { "1": "2.5 GT/s", "2": "5.0 GT/s", "3": "8.0 GT/s", "4": "16.0 GT/s" } },
+              { range: "[9:4]", title: "Negotiated Link Width", description: "Current negotiated Link width.", values: { "0": "x1", "1": "x2", "2": "x4", "4": "x8", "8": "x12", "12": "x16", "32": "x32" } },
+              { range: "[11]", title: "Link Training", description: "Indicates Link training is in progress.", values: { "0": "Not Training", "1": "Training" } },
+              { range: "[12]", title: "Slot Clock Configuration", description: "Indicates Slot Clock configuration.", values: { "0": "Independent", "1": "Common" } },
+              { range: "[13]", title: "Data Link Layer Active", description: "Indicates DL Layer is active.", values: { "0": "Inactive", "1": "Active" } },
+              { range: "[14]", title: "Link Bandwidth Management Status", description: "Indicates LBWM status.", values: { "0": "No", "1": "Yes" } },
+              { range: "[15]", title: "Link Autonomous Bandwidth Status", description: "Indicates LABW status.", values: { "0": "No", "1": "Yes" } }
+            ]
+          },
+          slotcap: {
+            name: "Slot Capabilities",
+            offset: "14h",
+            range: "[31:0]",
+            bits: [
+              { range: "[0]", title: "Attention Button Present", description: "Attention Button implemented.", values: { "0": "No", "1": "Yes" } },
+              { range: "[1]", title: "Power Controller Present", description: "Power Controller implemented.", values: { "0": "No", "1": "Yes" } },
+              { range: "[2]", title: "MRL Sensor Present", description: "MRL Sensor implemented.", values: { "0": "No", "1": "Yes" } },
+              { range: "[3]", title: "Attention Indicator Present", description: "Attention Indicator implemented.", values: { "0": "No", "1": "Yes" } },
+              { range: "[4]", title: "Power Indicator Present", description: "Power Indicator implemented.", values: { "0": "No", "1": "Yes" } },
+              { range: "[5]", title: "Hot-Plug Surprise", description: "Slot supports Hot-Plug Surprise.", values: { "0": "No", "1": "Yes" } },
+              { range: "[6]", title: "Hot-Plug Capable", description: "Slot is Hot-Plug Capable.", values: { "0": "No", "1": "Yes" } },
+              { range: "[14:7]", title: "Slot Power Limit Value", description: "Slot Power Limit Value." },
+              { range: "[16:15]", title: "Slot Power Limit Scale", description: "Slot Power Limit Scale.", values: { "0": "1.0x", "1": "0.1x", "2": "0.01x", "3": "0.001x" } },
+              { range: "[18:17]", title: "Reserved", description: "Reserved." },
+              { range: "[31:19]", title: "Physical Slot Number", description: "Physical Slot Number." }
+            ]
+          },
+          slotctl: {
+            name: "Slot Control",
+            offset: "18h",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "Attention Button Pressed Enable", description: "Enables Attention Button Pressed interrupt.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[1]", title: "Power Fault Detected Enable", description: "Enables Power Fault Detected interrupt.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[2]", title: "MRL Sensor Changed Enable", description: "Enables MRL Sensor Changed interrupt.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[3]", title: "Presence Detect Changed Enable", description: "Enables Presence Detect Changed interrupt.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[4]", title: "Command Completed Interrupt Enable", description: "Enables Command Completed interrupt.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[5]", title: "Hot-Plug Interrupt Enable", description: "Enables Hot-Plug interrupt.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[7:6]", title: "Attention Indicator Control", description: "Controls Attention Indicator.", values: { "0": "Reserved", "1": "On", "2": "Blink", "3": "Off" } },
+              { range: "[9:8]", title: "Power Indicator Control", description: "Controls Power Indicator.", values: { "0": "Reserved", "1": "On", "2": "Blink", "3": "Off" } },
+              { range: "[10]", title: "Power Controller Control", description: "Controls Power Controller.", values: { "0": "Power On", "1": "Power Off" } },
+              { range: "[11]", title: "Electromechanical Interlock Control", description: "Controls Electromechanical Interlock.", values: { "0": "Unlock", "1": "Lock" } },
+              { range: "[12]", title: "Data Link Layer State Changed Enable", description: "Enables DLL State Changed interrupt.", values: { "0": "Disable", "1": "Enable" } }
+            ]
+          },
+          slotsta: {
+            name: "Slot Status",
+            offset: "1Ah",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "Attention Button Pressed", description: "Attention Button was pressed.", values: { "0": "Not Pressed", "1": "Pressed" } },
+              { range: "[1]", title: "Power Fault Detected", description: "Power Fault was detected.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[2]", title: "MRL Sensor Changed", description: "MRL Sensor state changed.", values: { "0": "No Change", "1": "Changed" } },
+              { range: "[3]", title: "Presence Detect Changed", description: "Presence Detect state changed.", values: { "0": "No Change", "1": "Changed" } },
+              { range: "[4]", title: "Command Completed", description: "Command completed.", values: { "0": "No", "1": "Yes" } },
+              { range: "[5]", title: "MRL Sensor State", description: "Current MRL Sensor state.", values: { "0": "Closed", "1": "Open" } },
+              { range: "[6]", title: "Presence Detect State", description: "Current Presence Detect state.", values: { "0": "Empty", "1": "Card Present" } },
+              { range: "[7]", title: "Electromechanical Interlock Status", description: "Current Electromechanical Interlock status.", values: { "0": "Unlocked", "1": "Locked" } },
+              { range: "[8]", title: "Data Link Layer State Changed", description: "DLL State changed.", values: { "0": "No Change", "1": "Changed" } }
+            ]
+          },
+          rootctl: {
+            name: "Root Control",
+            offset: "1Ch",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "System Error on Correctable Error Enable", description: "Enables System Error on Correctable Error.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[1]", title: "System Error on Non-Fatal Error Enable", description: "Enables System Error on Non-Fatal Error.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[2]", title: "System Error on Fatal Error Enable", description: "Enables System Error on Fatal Error.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[3]", title: "PME Interrupt Enable", description: "Enables PME Interrupt.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[4]", title: "CRS Software Visibility Enable", description: "Enables CRS Software Visibility.", values: { "0": "Disable", "1": "Enable" } }
+            ]
+          },
+          rootcap: {
+            name: "Root Capabilities",
+            offset: "1Eh",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "CRS Software Visibility", description: "Supports CRS Software Visibility.", values: { "0": "No", "1": "Yes" } }
+            ]
+          },
+          rootsta: {
+            name: "Root Status",
+            offset: "20h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "PME Requester ID", description: "PME Requester ID." },
+              { range: "[16]", title: "PME Status", description: "PME Status.", values: { "0": "Not Asserted", "1": "Asserted" } },
+              { range: "[17]", title: "PME Pending", description: "PME Pending.", values: { "0": "Not Pending", "1": "Pending" } }
+            ]
+          },
+          devcap2: {
+            name: "Device Capabilities 2",
+            offset: "24h",
+            range: "[31:0]",
+            bits: [
+              { range: "[3:0]", title: "Completion Timeout Ranges Supported", description: "Supported Completion Timeout ranges." },
+              { range: "[4]", title: "Completion Timeout Disable Supported", description: "Supports Completion Timeout Disable.", values: { "0": "No", "1": "Yes" } },
+              { range: "[5]", title: "ARI Forwarding Supported", description: "Supports ARI Forwarding.", values: { "0": "No", "1": "Yes" } },
+              { range: "[6]", title: "AtomicOp Routing Supported", description: "Supports AtomicOp Routing.", values: { "0": "No", "1": "Yes" } },
+              { range: "[7]", title: "32-bit AtomicOp Completer Supported", description: "Supports 32-bit AtomicOp Completer.", values: { "0": "No", "1": "Yes" } },
+              { range: "[8]", title: "64-bit AtomicOp Completer Supported", description: "Supports 64-bit AtomicOp Completer.", values: { "0": "No", "1": "Yes" } },
+              { range: "[9]", title: "128-bit CAS Completer Supported", description: "Supports 128-bit CAS Completer.", values: { "0": "No", "1": "Yes" } },
+              { range: "[10]", title: "No RO-enabled PR-PR Passing", description: "No RO-enabled PR-PR Passing.", values: { "0": "No", "1": "Yes" } },
+              { range: "[11]", title: "LTR Mechanism Supported", description: "Supports LTR Mechanism.", values: { "0": "No", "1": "Yes" } },
+              { range: "[13:12]", title: "TPH Completer Supported", description: "TPH Completer support.", values: { "0": "No", "1": "Yes" } },
+              { range: "[19:18]", title: "OBFF Supported", description: "OBFF support.", values: { "0": "None", "1": "Message A", "2": "Message B", "3": "WAKE#" } },
+              { range: "[20]", title: "Extended Fmt Field Supported", description: "Supports Extended Fmt Field.", values: { "0": "No", "1": "Yes" } },
+              { range: "[21]", title: "End-End TLP Prefix Supported", description: "Supports End-End TLP Prefix.", values: { "0": "No", "1": "Yes" } },
+              { range: "[23:22]", title: "Max End-End TLP Prefixes", description: "Max End-End TLP Prefixes." }
+            ]
+          },
+          devctl2: {
+            name: "Device Control 2",
+            offset: "28h",
+            range: "[15:0]",
+            bits: [
+              { range: "[3:0]", title: "Completion Timeout Value", description: "Completion Timeout Value." },
+              { range: "[4]", title: "Completion Timeout Disable", description: "Disables Completion Timeout.", values: { "0": "Enable", "1": "Disable" } },
+              { range: "[5]", title: "ARI Forwarding Enable", description: "Enables ARI Forwarding.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[6]", title: "AtomicOp Requester Enable", description: "Enables AtomicOp Requester.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[7]", title: "AtomicOp Egress Blocking", description: "Enables AtomicOp Egress Blocking.", values: { "0": "Unblocked", "1": "Blocked" } },
+              { range: "[8]", title: "IDO Request Enable", description: "Enables IDO Request.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[9]", title: "IDO Completion Enable", description: "Enables IDO Completion.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[10]", title: "LTR Mechanism Enable", description: "Enables LTR Mechanism.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[14:13]", title: "OBFF Enable", description: "Enables OBFF.", values: { "0": "Disable", "1": "Message A", "2": "Message B", "3": "WAKE#" } },
+              { range: "[15]", title: "End-End TLP Prefix Blocking", description: "Enables End-End TLP Prefix Blocking.", values: { "0": "Unblocked", "1": "Blocked" } }
+            ]
+          },
+          devsta2: {
+            name: "Device Status 2",
+            offset: "2Ah",
+            range: "[15:0]",
+            bits: [
+              { range: "[15:0]", title: "Reserved", description: "Reserved." }
+            ]
+          },
+          linkcap2: {
+            name: "Link Capabilities 2",
+            offset: "2Ch",
+            range: "[31:0]",
+            bits: [
+              { range: "[7:1]", title: "Supported Link Speeds Vector", description: "Supported Link Speeds." },
+              { range: "[8]", title: "Crosslink Supported", description: "Supports Crosslink.", values: { "0": "No", "1": "Yes" } }
+            ]
+          },
+          linkctl2: {
+            name: "Link Control 2",
+            offset: "30h",
+            range: "[15:0]",
+            bits: [
+              { range: "[3:0]", title: "Target Link Speed", description: "Target Link Speed.", values: { "1": "2.5 GT/s", "2": "5.0 GT/s", "3": "8.0 GT/s" } },
+              { range: "[4]", title: "Enter Compliance", description: "Enter Compliance.", values: { "0": "No", "1": "Yes" } },
+              { range: "[5]", title: "Hardware Autonomous Speed Disable", description: "Disables HW Autonomous Speed.", values: { "0": "Enable", "1": "Disable" } },
+              { range: "[6]", title: "Selectable De-emphasis", description: "Selectable De-emphasis.", values: { "0": "-3.5 dB", "1": "-6.0 dB" } },
+              { range: "[9:7]", title: "Transmit Margin", description: "Transmit Margin." },
+              { range: "[10]", title: "Enter Modified Compliance", description: "Enter Modified Compliance.", values: { "0": "No", "1": "Yes" } },
+              { range: "[11]", title: "Compliance SOS", description: "Compliance SOS.", values: { "0": "No", "1": "Yes" } },
+              { range: "[15:12]", title: "Compliance Preset/De-emphasis", description: "Compliance Preset/De-emphasis." }
+            ]
+          },
+          linksta2: {
+            name: "Link Status 2",
+            offset: "32h",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "Current De-emphasis Level", description: "Current De-emphasis Level.", values: { "0": "-3.5 dB", "1": "-6.0 dB" } },
+              { range: "[1]", title: "Equalization Complete", description: "Equalization Complete.", values: { "0": "No", "1": "Yes" } },
+              { range: "[2]", title: "Equalization Phase 1 Successful", description: "Equalization Phase 1 Successful.", values: { "0": "No", "1": "Yes" } },
+              { range: "[3]", title: "Equalization Phase 2 Successful", description: "Equalization Phase 2 Successful.", values: { "0": "No", "1": "Yes" } },
+              { range: "[4]", title: "Equalization Phase 3 Successful", description: "Equalization Phase 3 Successful.", values: { "0": "No", "1": "Yes" } },
+              { range: "[5]", title: "Link Equalization Request", description: "Link Equalization Request.", values: { "0": "No", "1": "Yes" } }
+            ]
+          },
+          slotcap2: {
+            name: "Slot Capabilities 2",
+            offset: "34h",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "Reserved", description: "Reserved." }
+            ]
+          },
+          slotctl2: {
+            name: "Slot Control 2",
+            offset: "38h",
+            range: "[15:0]",
+            bits: [
+              { range: "[15:0]", title: "Reserved", description: "Reserved." }
+            ]
+          },
+          slotsta2: {
+            name: "Slot Status 2",
+            offset: "3Ah",
+            range: "[15:0]",
+            bits: [
+              { range: "[15:0]", title: "Reserved", description: "Reserved." }
+            ]
+          }
+        }
+      },
+
+      /* =========================
+       * MSI / MSI-X Capabilities
+       * ========================= */
+      {
+        id: "msi_cap",
+        type: "Cap",
+        name: "MSI Capability",
+        description: "Message Signaled Interrupts capability.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "capid", label: "Cap ID", range: "[7:0]" },
+              { id: "nextptr", label: "Next Ptr", range: "[15:8]" },
+              { id: "msi_ctrl", label: "Message Control", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "msi_addr", label: "Message Address", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "msi_addr_hi", label: "Message Upper Address", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "0Ch",
+            fields: [
+              { id: "msi_data", label: "Message Data", range: "[15:0]" },
+              { id: "reserved", label: "Reserved", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "10h",
+            fields: [
+              { id: "msi_mask", label: "Mask Bits", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "14h",
+            fields: [
+              { id: "msi_pending", label: "Pending Bits", range: "[31:0]" }
+            ]
+          }
+        ],
+        bitfields: {
+          capid: { name: "Capability ID", offset: "00h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Capability ID", description: "ID = 05h for MSI." }] },
+          nextptr: { name: "Next Item Pointer", offset: "01h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Next Item Pointer", description: "Pointer to the next capability." }] },
+          msi_ctrl: {
+            name: "Message Control",
+            offset: "02h",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "MSI Enable", description: "Enables MSI.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[3:1]", title: "Multiple Message Capable", description: "Number of vectors requested.", values: { "0": "1", "1": "2", "2": "4", "3": "8", "4": "16", "5": "32" } },
+              { range: "[6:4]", title: "Multiple Message Enable", description: "Number of vectors allocated.", values: { "0": "1", "1": "2", "2": "4", "3": "8", "4": "16", "5": "32" } },
+              { range: "[7]", title: "64-bit Address Capable", description: "Indicates support for 64-bit addressing.", values: { "0": "32-bit", "1": "64-bit" } },
+              { range: "[8]", title: "Per-vector Masking Capable", description: "Indicates support for masking.", values: { "0": "No", "1": "Yes" } },
+              { range: "[15:9]", title: "Reserved", description: "Reserved." }
+            ]
+          },
+          msi_addr: { name: "Message Address", offset: "04h", range: "[31:0]", bits: [{ range: "[31:2]", title: "Message Address", description: "System-specified message address." }, { range: "[1:0]", title: "Reserved", description: "Reserved." }] },
+          msi_addr_hi: { name: "Message Upper Address", offset: "08h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Message Upper Address", description: "Upper 32 bits of message address." }] },
+          msi_data: { name: "Message Data", offset: "0Ch", range: "[15:0]", bits: [{ range: "[15:0]", title: "Message Data", description: "Pattern to write to message address." }] },
+          msi_mask: { name: "Mask Bits", offset: "10h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Mask Bits", description: "Per-vector mask bits." }] },
+          msi_pending: { name: "Pending Bits", offset: "14h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Pending Bits", description: "Per-vector pending bits." }] }
+        }
+      },
+
+      {
+        id: "msix_cap",
+        type: "Cap",
+        name: "MSI-X Capability",
+        description: "MSI-X table and PBA location / control.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "capid", label: "Cap ID", range: "[7:0]" },
+              { id: "nextptr", label: "Next Ptr", range: "[15:8]" },
+              { id: "msix_ctrl", label: "Message Control", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "msix_table", label: "Table BIR/Offset", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "msix_pba", label: "PBA BIR/Offset", range: "[31:0]" }
+            ]
+          }
+        ],
+        bitfields: {
+          capid: { name: "Capability ID", offset: "00h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Capability ID", description: "ID = 11h for MSI-X." }] },
+          nextptr: { name: "Next Item Pointer", offset: "01h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Next Item Pointer", description: "Pointer to the next capability." }] },
+          msix_ctrl: {
+            name: "Message Control",
+            offset: "02h",
+            range: "[15:0]",
+            bits: [
+              { range: "[10:0]", title: "Table Size", description: "N-1 encoded table size." },
+              { range: "[13:11]", title: "Reserved", description: "Reserved." },
+              { range: "[14]", title: "Function Mask", description: "Global mask for MSI-X interrupts.", values: { "0": "Unmasked", "1": "Masked" } },
+              { range: "[15]", title: "MSI-X Enable", description: "Enables MSI-X.", values: { "0": "Disable", "1": "Enable" } }
+            ]
+          },
+          msix_table: { name: "Table Offset / BIR", offset: "04h", range: "[31:0]", bits: [{ range: "[2:0]", title: "BIR", description: "BAR Indicator Register." }, { range: "[31:3]", title: "Table Offset", description: "Offset into the BAR." }] },
+          msix_pba: { name: "PBA Offset / BIR", offset: "08h", range: "[31:0]", bits: [{ range: "[2:0]", title: "BIR", description: "BAR Indicator Register." }, { range: "[31:3]", title: "PBA Offset", description: "Offset into the BAR." }] }
+        }
+      },
+
+      /* =========================
+       * Advanced Error Reporting
+       * ========================= */
+      {
+        id: "aer_extcap",
+        type: "ExtCap",
+        name: "Advanced Error Reporting (AER)",
+        description: "Extended capability for advanced error logging and control.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "aer_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "uncorr_status", label: "Uncorrectable Error Status", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "uncorr_mask", label: "Uncorrectable Error Mask", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "0Ch",
+            fields: [
+              { id: "uncorr_severity", label: "Uncorrectable Error Severity", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "10h",
+            fields: [
+              { id: "corr_status", label: "Correctable Error Status", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "14h",
+            fields: [
+              { id: "corr_mask", label: "Correctable Error Mask", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "18h",
+            fields: [
+              { id: "aer_cap_ctrl", label: "Advanced Error Cap & Control", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "1Ch",
+            fields: [
+              { id: "header_log_0", label: "Header Log DW0", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "20h",
+            fields: [
+              { id: "header_log_1", label: "Header Log DW1", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "24h",
+            fields: [
+              { id: "header_log_2", label: "Header Log DW2", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "28h",
+            fields: [
+              { id: "header_log_3", label: "Header Log DW3", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "2Ch",
+            fields: [
+              { id: "root_err_cmd", label: "Root Error Command", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "30h",
+            fields: [
+              { id: "root_err_sta", label: "Root Error Status", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "34h",
+            fields: [
+              { id: "err_src_id", label: "Error Source Identification", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "38h",
+            fields: [
+              { id: "tlp_prefix_log_0", label: "TLP Prefix Log DW0", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "3Ch",
+            fields: [
+              { id: "tlp_prefix_log_1", label: "TLP Prefix Log DW1", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "40h",
+            fields: [
+              { id: "tlp_prefix_log_2", label: "TLP Prefix Log DW2", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "44h",
+            fields: [
+              { id: "tlp_prefix_log_3", label: "TLP Prefix Log DW3", range: "[31:0]" }
+            ]
+          }
+        ],
+        bitfields: {
+          aer_hdr: {
+            name: "Enhanced Capability Header",
+            offset: "00h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0001h for AER." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 2h." },
+              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+            ]
+          },
+          uncorr_status: {
+            name: "Uncorrectable Error Status",
+            offset: "04h",
+            range: "[31:0]",
+            bits: [
+              { range: "[0]", title: "Undefined", description: "Undefined." },
+              { range: "[4]", title: "Data Link Protocol Error", description: "Data Link Protocol Error.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[5]", title: "Surprise Down Error", description: "Surprise Down Error.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[12]", title: "Poisoned TLP", description: "Poisoned TLP.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[13]", title: "Flow Control Protocol Error", description: "Flow Control Protocol Error.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[14]", title: "Completion Timeout", description: "Completion Timeout.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[15]", title: "Completer Abort", description: "Completer Abort.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[16]", title: "Unexpected Completion", description: "Unexpected Completion.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[17]", title: "Receiver Overflow", description: "Receiver Overflow.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[18]", title: "Malformed TLP", description: "Malformed TLP.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[19]", title: "ECRC Error", description: "ECRC Error.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[20]", title: "Unsupported Request Error", description: "Unsupported Request Error.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[21]", title: "ACS Violation", description: "ACS Violation.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[22]", title: "Internal Uncorrectable Error", description: "Internal Uncorrectable Error.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[23]", title: "MC Blocked TLP", description: "MC Blocked TLP.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[24]", title: "AtomicOp Egress Blocked", description: "AtomicOp Egress Blocked.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[25]", title: "TLP Prefix Blocked Error", description: "TLP Prefix Blocked Error.", values: { "0": "Not Detected", "1": "Detected" } }
+            ]
+          },
+          uncorr_mask: {
+            name: "Uncorrectable Error Mask",
+            offset: "08h",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "Uncorrectable Error Mask", description: "Mask bits for Uncorrectable Errors (corresponds to Uncorrectable Error Status).", values: { "0": "Unmasked", "1": "Masked" } }
+            ]
+          },
+          uncorr_severity: {
+            name: "Uncorrectable Error Severity",
+            offset: "0Ch",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "Uncorrectable Error Severity", description: "Severity bits for Uncorrectable Errors (corresponds to Uncorrectable Error Status).", values: { "0": "Non-Fatal", "1": "Fatal" } }
+            ]
+          },
+          corr_status: {
+            name: "Correctable Error Status",
+            offset: "10h",
+            range: "[31:0]",
+            bits: [
+              { range: "[0]", title: "Receiver Error", description: "Receiver Error.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[6]", title: "Bad TLP", description: "Bad TLP.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[7]", title: "Bad DLLP", description: "Bad DLLP.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[8]", title: "REPLAY_NUM Rollover", description: "REPLAY_NUM Rollover.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[12]", title: "Replay Timer Timeout", description: "Replay Timer Timeout.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[13]", title: "Advisory Non-Fatal Error", description: "Advisory Non-Fatal Error.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[14]", title: "Internal Correctable Error", description: "Internal Correctable Error.", values: { "0": "Not Detected", "1": "Detected" } },
+              { range: "[15]", title: "Header Log Overflow", description: "Header Log Overflow.", values: { "0": "Not Detected", "1": "Detected" } }
+            ]
+          },
+          corr_mask: {
+            name: "Correctable Error Mask",
+            offset: "14h",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "Correctable Error Mask", description: "Mask bits for Correctable Errors (corresponds to Correctable Error Status).", values: { "0": "Unmasked", "1": "Masked" } }
+            ]
+          },
+          aer_cap_ctrl: {
+            name: "Advanced Error Capabilities and Control",
+            offset: "18h",
+            range: "[31:0]",
+            bits: [
+              { range: "[4:0]", title: "First Error Pointer", description: "Identifies the bit position of the first error reported." },
+              { range: "[5]", title: "ECRC Generation Capable", description: "Capable of generating ECRC.", values: { "0": "No", "1": "Yes" } },
+              { range: "[6]", title: "ECRC Generation Enable", description: "Enables ECRC generation.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[7]", title: "ECRC Check Capable", description: "Capable of checking ECRC.", values: { "0": "No", "1": "Yes" } },
+              { range: "[8]", title: "ECRC Check Enable", description: "Enables ECRC checking.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[9]", title: "Multiple Header Recording Capable", description: "Capable of recording multiple headers.", values: { "0": "No", "1": "Yes" } },
+              { range: "[10]", title: "Multiple Header Recording Enable", description: "Enables multiple header recording.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[11]", title: "TLP Prefix Log Present", description: "Indicates TLP Prefix Log is present.", values: { "0": "No", "1": "Yes" } }
+            ]
+          },
+          header_log_0: { name: "Header Log DW0", offset: "1Ch", range: "[31:0]", bits: [{ range: "[31:0]", title: "Header Log DW0", description: "First DWORD of the TLP Header." }] },
+          header_log_1: { name: "Header Log DW1", offset: "20h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Header Log DW1", description: "Second DWORD of the TLP Header." }] },
+          header_log_2: { name: "Header Log DW2", offset: "24h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Header Log DW2", description: "Third DWORD of the TLP Header." }] },
+          header_log_3: { name: "Header Log DW3", offset: "28h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Header Log DW3", description: "Fourth DWORD of the TLP Header." }] },
+          root_err_cmd: {
+            name: "Root Error Command",
+            offset: "2Ch",
+            range: "[31:0]",
+            bits: [
+              { range: "[0]", title: "Correctable Error Reporting Enable", description: "Enables Correctable Error reporting." },
+              { range: "[1]", title: "Non-Fatal Error Reporting Enable", description: "Enables Non-Fatal Error reporting." },
+              { range: "[2]", title: "Fatal Error Reporting Enable", description: "Enables Fatal Error reporting." }
+            ]
+          },
+          root_err_sta: {
+            name: "Root Error Status",
+            offset: "30h",
+            range: "[31:0]",
+            bits: [
+              { range: "[26:0]", title: "Advanced Error Interrupt Message Number", description: "MSI/MSI-X vector for error interrupts." }
+            ]
+          },
+          err_src_id: { name: "Error Source Identification", offset: "34h", range: "[31:0]", bits: [{ range: "[15:0]", title: "ERR_COR Source ID", description: "Requester ID of the first correctable error." }, { range: "[31:16]", title: "ERR_FATAL/NONFATAL Source ID", description: "Requester ID of the first uncorrectable error." }] },
+          tlp_prefix_log_0: { name: "TLP Prefix Log DW0", offset: "38h", range: "[31:0]", bits: [{ range: "[31:0]", title: "TLP Prefix Log DW0", description: "First DWORD of the TLP Prefix." }] },
+          tlp_prefix_log_1: { name: "TLP Prefix Log DW1", offset: "3Ch", range: "[31:0]", bits: [{ range: "[31:0]", title: "TLP Prefix Log DW1", description: "Second DWORD of the TLP Prefix." }] },
+          tlp_prefix_log_2: { name: "TLP Prefix Log DW2", offset: "40h", range: "[31:0]", bits: [{ range: "[31:0]", title: "TLP Prefix Log DW2", description: "Third DWORD of the TLP Prefix." }] },
+          tlp_prefix_log_3: { name: "TLP Prefix Log DW3", offset: "44h", range: "[31:0]", bits: [{ range: "[31:0]", title: "TLP Prefix Log DW3", description: "Fourth DWORD of the TLP Prefix." }] }
+        }
+      }
+
+      /* 你可以在這裡繼續 append：
+         - 其他常見 ExtCaps：L1 PM Substates, LTR, ARI, Resizable BAR, ACS, DPC, etc.
+         - 或 vendor defined / DVSEC。
+      */
+    ];
+
+    /* ===== 狀態 ===== */
+    let currentStructureId = structures[0]?.id;
+    let currentFieldKey = null;
+
+    /* ===== DOM 參考 ===== */
+    const structListBody = document.getElementById("structure-list-body");
+    const structTitle = document.getElementById("struct-title");
+    const bitfieldContainer = document.getElementById("bitfield-container");
+    const bitfieldPlaceholder = document.getElementById("bitfield-placeholder");
+
+    const fieldTitle = document.getElementById("field-title");
+    const fieldSubtitle = document.getElementById("field-subtitle");
+    const bitBarContainer = document.getElementById("bit-bar-container");
+    const bitNumbers = document.getElementById("bit-numbers");
+    const bitBar = document.getElementById("bit-bar");
+    const bitList = document.getElementById("bit-list");
+    const bitsPlaceholder = document.getElementById("bits-placeholder");
+
+    /* ===== Resizable Logic ===== */
+    // ... (Keep existing resizable logic) ...
+    const splitterH = document.getElementById("splitter-h");
+    const splitterV = document.getElementById("splitter-v");
+    const topPane = document.getElementById("top-pane");
+    const bottomPane = document.getElementById("bottom-pane");
+    const leftPane = document.querySelector(".bottom-left");
+    const rightPane = document.getElementById("bottom-right-pane");
+
+    // Horizontal Splitter
+    let isDraggingH = false;
+    splitterH.addEventListener("mousedown", (e) => {
+      isDraggingH = true;
+      splitterH.classList.add("active");
+      document.body.style.cursor = "row-resize";
+      e.preventDefault();
+    });
+
+    // Vertical Splitter
+    let isDraggingV = false;
+    splitterV.addEventListener("mousedown", (e) => {
+      isDraggingV = true;
+      splitterV.classList.add("active");
+      document.body.style.cursor = "col-resize";
+      e.preventDefault();
+    });
+
+    document.addEventListener("mousemove", (e) => {
+      if (isDraggingH) {
+        const toolbarHeight = document.querySelector(".toolbar").offsetHeight;
+        const newHeight = e.clientY - toolbarHeight;
+        if (newHeight > 50 && newHeight < window.innerHeight - 100) {
+          topPane.style.flex = `0 0 ${newHeight}px`;
+        }
+      }
+      if (isDraggingV) {
+        const newWidth = e.clientX;
+        if (newWidth > 100 && newWidth < window.innerWidth - 100) {
+          leftPane.style.flex = `0 0 ${newWidth}px`;
+        }
+      }
+    });
+
+    document.addEventListener("mouseup", () => {
+      if (isDraggingH) {
+        isDraggingH = false;
+        splitterH.classList.remove("active");
+        document.body.style.cursor = "";
+      }
+      if (isDraggingV) {
+        isDraggingV = false;
+        splitterV.classList.remove("active");
+        document.body.style.cursor = "";
+      }
+    });
+
+    /* ===== Render functions ===== */
+
+    function renderStructureList() {
+      structListBody.innerHTML = "";
+      structures.forEach(struct => {
+        const tr = document.createElement("tr");
+        tr.className = "struct-row";
+        tr.dataset.id = struct.id;
+        if (struct.id === currentStructureId) tr.classList.add("selected");
+
+        const tdId = document.createElement("td");
+        const tdType = document.createElement("td");
+        const tdName = document.createElement("td");
+        const tdDesc = document.createElement("td");
+
+        tdId.textContent = struct.id;
+        tdType.textContent = struct.type || "";
+        tdName.textContent = struct.name;
+        tdDesc.textContent = struct.description || "";
+
+        tr.appendChild(tdId);
+        tr.appendChild(tdType);
+        tr.appendChild(tdName);
+        tr.appendChild(tdDesc);
+
+        tr.addEventListener("click", () => {
+          currentStructureId = struct.id;
+          currentFieldKey = pickDefaultFieldKey(struct);
+          updateAll();
+        });
+
+        structListBody.appendChild(tr);
+      });
+    }
+
+    function pickDefaultFieldKey(struct) {
+      if (!struct || !struct.bitfields) return null;
+      const keys = Object.keys(struct.bitfields);
+      return keys.length ? keys[0] : null;
+    }
+
+    function renderBitfieldMap(struct) {
+      bitfieldContainer.innerHTML = "";
+      structTitle.textContent = struct.name || "Structure";
+
+      const hasRows = Array.isArray(struct.rows) && struct.rows.length > 0;
+      bitfieldPlaceholder.style.display = hasRows ? "none" : "block";
+      if (!hasRows) return;
+
+      struct.rows.forEach(row => {
+        const rowDiv = document.createElement("div");
+        rowDiv.className = "struct-row-flex";
+
+        // 1. Content Area (Fields)
+        const contentDiv = document.createElement("div");
+        contentDiv.className = "struct-content-flex";
+
+        // We need to reverse the fields because in PCI, higher bits (left) come first in visual representation if we want [31:0]
+        // But usually the spec lists fields from low to high or high to low.
+        // Let's assume the `fields` array is ordered from Low Bit to High Bit? 
+        // Or High to Low? 
+        // Standard practice: Vendor ID [15:0] (Offset 00h), Device ID [31:16] (Offset 02h/part of 00h row)
+        // If the row is 00h, and fields are [VendorID, DeviceID], 
+        // VendorID is bits 0-15, DeviceID is bits 16-31.
+        // Visually, 31 is on the LEFT, 0 is on the RIGHT.
+        // So we should render Device ID then Vendor ID.
+        // Let's check our data. 
+        // type0: fields: [{id: "vendorid", range: "[15:0]"}, {id: "deviceid", range: "[31:16]"}]
+        // We want Device ID (Left) -> Vendor ID (Right).
+        // So we should reverse the fields array for rendering if it's sorted by low bit.
+        // Let's assume input order is Low->High (Vendor, then Device).
+        // So we reverse it.
+
+        const fieldsToRender = [...(row.fields || [])].reverse();
+
+        fieldsToRender.forEach(field => {
+          const fieldDiv = document.createElement("div");
+          fieldDiv.className = "struct-field-flex";
+          fieldDiv.dataset.fieldKey = field.id;
+          fieldDiv.textContent = field.label;
+
+          // Calculate width
+          const bits = parseRangeWidth(field.range);
+          const widthPercent = (bits / 32) * 100;
+          fieldDiv.style.width = `${widthPercent}%`;
+
+          if (field.id === currentFieldKey) {
+            fieldDiv.classList.add("selected");
+          }
+
+          fieldDiv.addEventListener("click", () => {
+            currentFieldKey = field.id;
+            updateBitfieldSelection(struct);
+            renderBitDetails(struct);
+          });
+
+          contentDiv.appendChild(fieldDiv);
+        });
+
+        rowDiv.appendChild(contentDiv);
+
+        // 2. Offset (Right)
+        const offsetDiv = document.createElement("div");
+        offsetDiv.className = "struct-offset-flex";
+        offsetDiv.textContent = row.offset;
+        rowDiv.appendChild(offsetDiv);
+
+        bitfieldContainer.appendChild(rowDiv);
+      });
+    }
+
+    function parseRangeWidth(rangeStr) {
+      // rangeStr example: "[31:0]" or "[15:0]" or "[7]"
+      if (!rangeStr) return 32;
+      const match = rangeStr.match(/\[(\d+)(?::(\d+))?\]/);
+      if (!match) return 32;
+      const high = parseInt(match[1], 10);
+      const low = match[2] ? parseInt(match[2], 10) : high;
+      return (high - low) + 1;
+    }
+
+    function updateBitfieldSelection(struct) {
+      const cells = bitfieldContainer.querySelectorAll(".struct-field-flex");
+      cells.forEach(cell => {
+        if (cell.dataset.fieldKey === currentFieldKey) {
+          cell.classList.add("selected");
+        } else {
+          cell.classList.remove("selected");
+        }
+      });
+    }
+
+    function renderBitDetails(struct) {
+      bitList.innerHTML = "";
+      bitsPlaceholder.style.display = "none";
+      bitBarContainer.style.display = "none";
+      fieldSubtitle.textContent = "";
+
+      if (!currentFieldKey || !struct.bitfields || !struct.bitfields[currentFieldKey]) {
+        fieldTitle.textContent = "Select a register";
+        bitsPlaceholder.style.display = "block";
+        return;
+      }
+
+      const field = struct.bitfields[currentFieldKey];
+      fieldTitle.textContent = field.name || currentFieldKey;
+      fieldSubtitle.textContent = `(${field.name || currentFieldKey})`; // Mimic "Status (Status)"
+
+      // 1. Render Bit Bar
+      bitBarContainer.style.display = "block";
+      renderBitBar(field);
+
+      // 2. Render Description List
+      (field.bits || []).forEach(bit => {
+        const li = document.createElement("li");
+        li.className = "bit-list-item";
+
+        const titleDiv = document.createElement("div");
+        titleDiv.className = "bit-list-title";
+        // Format: "3 - Interrupt Status (RO)"
+        // We don't have RO/RW in data yet, so just use title
+        // Parse range to see if single bit or range
+        const rangeText = bit.range.replace(/[\[\]]/g, "");
+        titleDiv.textContent = `${rangeText} - ${bit.title}`;
+
+        const descDiv = document.createElement("div");
+        descDiv.className = "bit-list-desc";
+        descDiv.textContent = bit.description;
+
+        li.appendChild(titleDiv);
+        li.appendChild(descDiv);
+
+        if (bit.values) {
+          const valuesTable = document.createElement("table");
+          valuesTable.className = "bit-values-table";
+          for (const [val, meaning] of Object.entries(bit.values)) {
+            const row = document.createElement("tr");
+            const valCell = document.createElement("td");
+            valCell.className = "bit-value-cell";
+            valCell.textContent = Number(val).toString(2) + "b";
+            const meanCell = document.createElement("td");
+            meanCell.className = "bit-meaning-cell";
+            meanCell.textContent = meaning;
+            row.appendChild(valCell);
+            row.appendChild(meanCell);
+            valuesTable.appendChild(row);
+          }
+          li.appendChild(valuesTable);
+        }
+
+        bitList.appendChild(li);
+      });
+    }
+
+    function renderBitBar(field) {
+      bitNumbers.innerHTML = "";
+      bitBar.innerHTML = "";
+
+      // Determine total bits for this register (e.g. 16 or 32)
+      const totalBits = parseRangeWidth(field.range);
+      const { high, low } = parseRange(field.range);
+
+      // Create numbers row
+      const numSpanHigh = document.createElement("span");
+      numSpanHigh.textContent = high;
+      const numSpanLow = document.createElement("span");
+      numSpanLow.textContent = low;
+
+      bitNumbers.appendChild(numSpanHigh);
+      bitNumbers.appendChild(numSpanLow);
+
+      // Create bit boxes
+      for (let b = high; b >= low; b--) {
+        const box = document.createElement("div");
+        box.className = "bit-box";
+
+        // Check if this bit is defined in field.bits
+        const bitDef = (field.bits || []).find(def => {
+          const r = parseRange(def.range);
+          return b <= r.high && b >= r.low;
+        });
+
+        if (bitDef) {
+          // If defined, check if it is Reserved. 
+          // If NOT Reserved, add .active (white). Reserved stays default (gray).
+          const isReserved = /reserved|rsvd/i.test(bitDef.title);
+          if (!isReserved) {
+            box.classList.add("active");
+          }
+          box.title = `Bit ${b}: ${bitDef.title}`;
+        } else {
+          box.title = `Bit ${b}`;
+        }
+
+        bitBar.appendChild(box);
+      }
+    }
+
+
+    function parseRange(rangeStr) {
+      const match = rangeStr.match(/\[(\d+)(?::(\d+))?\]/);
+      if (!match) return { high: 0, low: 0 };
+      const high = parseInt(match[1], 10);
+      const low = match[2] ? parseInt(match[2], 10) : high;
+      return { high, low };
+    }
+
+    function updateAll() {
+      renderStructureList();
+      const struct = structures.find(s => s.id === currentStructureId);
+      if (struct) {
+        renderBitfieldMap(struct);
+        renderBitDetails(struct);
+      }
+    }
+
+    // Init
+    renderStructureList();
+    updateAll();
+  </script>
+</body>
+
+</html>
+```
