@@ -356,14 +356,14 @@
 
 <body>
   <div class="app">
-    <!-- optional toolbar: 之後要加 config dump / 搜尋可以塞這裡 -->
+    <!-- optional toolbar: config dump / search can be added here later -->
     <div class="toolbar">
       <div style="font-weight:600;">PCIe Config Space Viewer</div>
       <div style="margin-left:auto; font-size:11px; color:#4b5563;">
       </div>
     </div>
 
-    <!-- TOP: 所有 Header / Capabilities / Extended Capabilities 列表 -->
+    <!-- TOP: List of all Headers / Capabilities / Extended Capabilities -->
     <div class="top-list" id="top-pane">
       <table>
         <thead>
@@ -383,7 +383,7 @@
     <!-- Horizontal Splitter -->
     <div class="splitter-horizontal" id="splitter-h"></div>
 
-    <!-- BOTTOM: 左 = bitfield 圖, 右 = bit 描述 -->
+    <!-- BOTTOM: Left = bitfield diagram, Right = bit description -->
     <div class="bottom" id="bottom-pane">
       <div class="bottom-left">
         <div class="section-title" id="struct-title" style="background:#d1d5db; padding:4px; margin:0;">Structure</div>
@@ -428,18 +428,18 @@
 
   <script>
     /**
-     * 注意：
-     * - 這裡的 structures 只是「模板 + 部分例子」，
-     *   你可以照這個格式把 spec 裡的其他 headers / capabilities / extended capabilities 都補上去。
+     * Note:
+     * - The structures here are just "templates + partial examples",
+     *   you can follow this format to add other headers / capabilities / extended capabilities from the spec.
      *
-     * 結構說明：
-     * - 每個 structure = 一個 Header / Capability / Extended Capability。
+     * Structure Explanation:
+     * - Each structure = One Header / Capability / Extended Capability.
      *   {
-     *     id: "type0",              // 自訂 ID，方便 JS 用
+     *     id: "type0",              // Custom ID, for JS use
      *     type: "Header|Cap|ExtCap",
      *     name: "Type 0 Header",
-     *     description: "簡短說明",
-     *     rows: [                   // 左下 bitfield 圖用
+     *     description: "Brief description",
+     *     rows: [                   // For bottom-left bitfield diagram
      *       {
      *         offset: "00h",
      *         fields: [
@@ -449,13 +449,13 @@
      *       },
      *       ...
      *     ],
-     *     bitfields: {              // 右下 bit 詳細描述
+     *     bitfields: {              // For bottom-right bit detailed description
      *       status: {
      *         name: "Status",
      *         offset: "06h",
      *         range: "[31:16]",
      *         bits: [
-     *           { range: "[3]",  title: "Interrupt Status", description: "示意用文字，請依照 spec 自行填寫。" },
+     *           { range: "[3]",  title: "Interrupt Status", description: "Placeholder text, please fill in according to the spec." },
      *           ...
      *         ]
      *       },
@@ -1769,17 +1769,17 @@
         }
       }
 
-      /* 你可以在這裡繼續 append：
-         - 其他常見 ExtCaps：L1 PM Substates, LTR, ARI, Resizable BAR, ACS, DPC, etc.
-         - 或 vendor defined / DVSEC。
+      /* You can continue appending here:
+         - Other common ExtCaps: L1 PM Substates, LTR, ARI, Resizable BAR, ACS, DPC, etc.
+         - Or vendor defined / DVSEC.
       */
     ];
 
-    /* ===== 狀態 ===== */
+    /* ===== State ===== */
     let currentStructureId = structures[0]?.id;
     let currentFieldKey = null;
 
-    /* ===== DOM 參考 ===== */
+    /* ===== DOM References ===== */
     const structListBody = document.getElementById("structure-list-body");
     const structTitle = document.getElementById("struct-title");
     const bitfieldContainer = document.getElementById("bitfield-container");
