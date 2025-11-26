@@ -1685,6 +1685,88 @@
           tlp_prefix_log_2: { name: "TLP Prefix Log DW2", offset: "40h", range: "[31:0]", bits: [{ range: "[31:0]", title: "TLP Prefix Log DW2", description: "Third DWORD of the TLP Prefix." }] },
           tlp_prefix_log_3: { name: "TLP Prefix Log DW3", offset: "44h", range: "[31:0]", bits: [{ range: "[31:0]", title: "TLP Prefix Log DW3", description: "Fourth DWORD of the TLP Prefix." }] }
         }
+      },
+      {
+        id: "l1pm_extcap",
+        type: "ExtCap",
+        name: "L1 PM Substates",
+        description: "Extended capability for L1 Power Management Substates.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "l1pm_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "l1pm_cap", label: "L1 PM Substates Capabilities", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "l1pm_ctl1", label: "L1 PM Substates Control 1", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "0Ch",
+            fields: [
+              { id: "l1pm_ctl2", label: "L1 PM Substates Control 2", range: "[31:0]" }
+            ]
+          }
+        ],
+        bitfields: {
+          l1pm_hdr: {
+            name: "Enhanced Capability Header",
+            offset: "00h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 001Eh for L1 PM Substates." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+            ]
+          },
+          l1pm_cap: {
+            name: "L1 PM Substates Capabilities",
+            offset: "04h",
+            range: "[31:0]",
+            bits: [
+              { range: "[0]", title: "PCI-PM L1.2 Supported", description: "Supports PCI-PM L1.2.", values: { "0": "No", "1": "Yes" } },
+              { range: "[1]", title: "PCI-PM L1.1 Supported", description: "Supports PCI-PM L1.1.", values: { "0": "No", "1": "Yes" } },
+              { range: "[2]", title: "ASPM L1.2 Supported", description: "Supports ASPM L1.2.", values: { "0": "No", "1": "Yes" } },
+              { range: "[3]", title: "ASPM L1.1 Supported", description: "Supports ASPM L1.1.", values: { "0": "No", "1": "Yes" } },
+              { range: "[4]", title: "L1 PM Substates Supported", description: "Supports L1 PM Substates.", values: { "0": "No", "1": "Yes" } },
+              { range: "[15:8]", title: "Port Common Mode Restore Time", description: "Time required to restore common mode." },
+              { range: "[23:16]", title: "Port T_POWER_ON Scale", description: "Scale for T_POWER_ON.", values: { "0": "2us", "1": "10us", "2": "100us" } },
+              { range: "[31:24]", title: "Port T_POWER_ON Value", description: "Value for T_POWER_ON." }
+            ]
+          },
+          l1pm_ctl1: {
+            name: "L1 PM Substates Control 1",
+            offset: "08h",
+            range: "[31:0]",
+            bits: [
+              { range: "[0]", title: "PCI-PM L1.2 Enable", description: "Enables PCI-PM L1.2.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[1]", title: "PCI-PM L1.1 Enable", description: "Enables PCI-PM L1.1.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[2]", title: "ASPM L1.2 Enable", description: "Enables ASPM L1.2.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[3]", title: "ASPM L1.1 Enable", description: "Enables ASPM L1.1.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[15:8]", title: "Common Mode Restore Time", description: "Time required to restore common mode." },
+              { range: "[28:16]", title: "LTR L1.2 Threshold Value", description: "LTR Threshold Value for L1.2." },
+              { range: "[31:29]", title: "LTR L1.2 Threshold Scale", description: "LTR Threshold Scale for L1.2.", values: { "0": "1ns", "1": "32ns", "2": "1024ns", "3": "32768ns", "4": "1048576ns", "5": "33554432ns" } }
+            ]
+          },
+          l1pm_ctl2: {
+            name: "L1 PM Substates Control 2",
+            offset: "0Ch",
+            range: "[31:0]",
+            bits: [
+              { range: "[7:3]", title: "T_POWER_ON", description: "T_POWER_ON value." },
+              { range: "[1:0]", title: "T_POWER_ON Scale", description: "T_POWER_ON scale.", values: { "0": "2us", "1": "10us", "2": "100us" } }
+            ]
+          }
+        }
       }
 
       /* 你可以在這裡繼續 append：
