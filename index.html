@@ -2325,6 +2325,320 @@
          - Other common ExtCaps: L1 PM Substates, LTR, ARI, Resizable BAR, ACS, DPC, etc.
          - Or vendor defined / DVSEC.
       */
+      ,
+      {
+        id: "resizable_bar_extcap",
+        type: "ExtCap",
+        name: "Resizable BAR",
+        description: "Extended capability for Resizable BAR.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "rbar_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "rbar_cap", label: "Resizable BAR Capability", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "rbar_ctl", label: "Resizable BAR Control", range: "[31:0]" }
+            ]
+          }
+        ],
+        bitfields: {
+          rbar_hdr: {
+            name: "Enhanced Capability Header",
+            offset: "00h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0015h for Resizable BAR." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+            ]
+          },
+          rbar_cap: {
+            name: "Resizable BAR Capability",
+            offset: "04h",
+            range: "[31:0]",
+            bits: [
+              { range: "[4]", title: "1 MB Supported", description: "Supports 1 MB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[5]", title: "2 MB Supported", description: "Supports 2 MB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[6]", title: "4 MB Supported", description: "Supports 4 MB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[7]", title: "8 MB Supported", description: "Supports 8 MB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[8]", title: "16 MB Supported", description: "Supports 16 MB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[9]", title: "32 MB Supported", description: "Supports 32 MB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[10]", title: "64 MB Supported", description: "Supports 64 MB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[11]", title: "128 MB Supported", description: "Supports 128 MB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[12]", title: "256 MB Supported", description: "Supports 256 MB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[13]", title: "512 MB Supported", description: "Supports 512 MB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[14]", title: "1 GB Supported", description: "Supports 1 GB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[15]", title: "2 GB Supported", description: "Supports 2 GB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[16]", title: "4 GB Supported", description: "Supports 4 GB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[17]", title: "8 GB Supported", description: "Supports 8 GB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[18]", title: "16 GB Supported", description: "Supports 16 GB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[19]", title: "32 GB Supported", description: "Supports 32 GB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[20]", title: "64 GB Supported", description: "Supports 64 GB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[21]", title: "128 GB Supported", description: "Supports 128 GB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[22]", title: "256 GB Supported", description: "Supports 256 GB BAR size.", values: { "0": "No", "1": "Yes" } },
+              { range: "[23]", title: "512 GB Supported", description: "Supports 512 GB BAR size.", values: { "0": "No", "1": "Yes" } }
+            ]
+          },
+          rbar_ctl: {
+            name: "Resizable BAR Control",
+            offset: "08h",
+            range: "[31:0]",
+            bits: [
+              { range: "[2:0]", title: "BAR Index", description: "Selects which BAR to control." },
+              { range: "[4]", title: "Num BARs", description: "Number of Resizable BARs." },
+              { range: "[12:8]", title: "BAR Size", description: "Encoded BAR Size." },
+              { range: "[31:13]", title: "Reserved", description: "Reserved." }
+            ]
+          }
+        }
+      },
+      {
+        id: "ari_extcap",
+        type: "ExtCap",
+        name: "ARI (Alternative Routing-ID Interpretation)",
+        description: "Extended capability for ARI.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "ari_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "ari_cap", label: "ARI Capability", range: "[15:0]" },
+              { id: "ari_ctl", label: "ARI Control", range: "[31:16]" }
+            ]
+          }
+        ],
+        bitfields: {
+          ari_hdr: {
+            name: "Enhanced Capability Header",
+            offset: "00h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 000Eh for ARI." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+            ]
+          },
+          ari_cap: {
+            name: "ARI Capability",
+            offset: "04h",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "MFVC Function Groups Capability", description: "Supports MFVC Function Groups.", values: { "0": "No", "1": "Yes" } },
+              { range: "[1]", title: "ACS Function Groups Capability", description: "Supports ACS Function Groups.", values: { "0": "No", "1": "Yes" } },
+              { range: "[15:8]", title: "Next Function Number", description: "Next Function Number in the device." }
+            ]
+          },
+          ari_ctl: {
+            name: "ARI Control",
+            offset: "06h",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "MFVC Function Groups Enable", description: "Enables MFVC Function Groups.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[1]", title: "ACS Function Groups Enable", description: "Enables ACS Function Groups.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[6:4]", title: "Function Group", description: "Function Group Number." }
+            ]
+          }
+        }
+      },
+      {
+        id: "pasid_extcap",
+        type: "ExtCap",
+        name: "PASID (Process Address Space ID)",
+        description: "Extended capability for PASID.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "pasid_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "pasid_cap", label: "PASID Capability", range: "[15:0]" },
+              { id: "pasid_ctl", label: "PASID Control", range: "[31:16]" }
+            ]
+          }
+        ],
+        bitfields: {
+          pasid_hdr: {
+            name: "Enhanced Capability Header",
+            offset: "00h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 001Bh for PASID." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+            ]
+          },
+          pasid_cap: {
+            name: "PASID Capability",
+            offset: "04h",
+            range: "[15:0]",
+            bits: [
+              { range: "[1]", title: "Execute Permission Supported", description: "Supports Execute Permission.", values: { "0": "No", "1": "Yes" } },
+              { range: "[2]", title: "Privileged Mode Supported", description: "Supports Privileged Mode.", values: { "0": "No", "1": "Yes" } },
+              { range: "[12:8]", title: "Max PASID Width", description: "Maximum supported PASID width." }
+            ]
+          },
+          pasid_ctl: {
+            name: "PASID Control",
+            offset: "06h",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "PASID Enable", description: "Enables PASID.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[1]", title: "Execute Permission Enable", description: "Enables Execute Permission.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[2]", title: "Privileged Mode Enable", description: "Enables Privileged Mode.", values: { "0": "Disable", "1": "Enable" } }
+            ]
+          }
+        }
+      },
+      {
+        id: "frs_extcap",
+        type: "ExtCap",
+        name: "FRS Queueing",
+        description: "Extended capability for FRS Queueing.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "frs_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "frs_cap", label: "FRS Queueing Capability", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "frs_status", label: "FRS Queueing Status", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "0Ch",
+            fields: [
+              { id: "frs_ctl", label: "FRS Queueing Control", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "10h",
+            fields: [
+              { id: "frs_msg_queue", label: "FRS Message Queue", range: "[31:0]" }
+            ]
+          }
+        ],
+        bitfields: {
+          frs_hdr: {
+            name: "Enhanced Capability Header",
+            offset: "00h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0021h for FRS Queueing." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+            ]
+          },
+          frs_cap: {
+            name: "FRS Queueing Capability",
+            offset: "04h",
+            range: "[31:0]",
+            bits: [
+              { range: "[11:0]", title: "FRS Queue Depth", description: "Maximum depth of the FRS message queue." },
+              { range: "[20:16]", title: "FRS Interrupt Message Number", description: "MSI/MSI-X vector for FRS interrupts." }
+            ]
+          },
+          frs_status: {
+            name: "FRS Queueing Status",
+            offset: "08h",
+            range: "[31:0]",
+            bits: [
+              { range: "[0]", title: "FRS Message Received", description: "Indicates FRS message received.", values: { "0": "No", "1": "Yes" } },
+              { range: "[1]", title: "FRS Message Overflow", description: "Indicates FRS message overflow.", values: { "0": "No", "1": "Yes" } }
+            ]
+          },
+          frs_ctl: {
+            name: "FRS Queueing Control",
+            offset: "0Ch",
+            range: "[31:0]",
+            bits: [
+              { range: "[0]", title: "FRS Interrupt Enable", description: "Enables FRS interrupts.", values: { "0": "Disable", "1": "Enable" } }
+            ]
+          },
+          frs_msg_queue: {
+            name: "FRS Message Queue",
+            offset: "10h",
+            range: "[31:0]",
+            bits: [
+              { range: "[3:0]", title: "FRS Reason", description: "Reason for the FRS message." },
+              { range: "[31:16]", title: "FRS Requester ID", description: "Requester ID of the FRS message source." }
+            ]
+          }
+        }
+      },
+      {
+        id: "fpb_extcap",
+        type: "ExtCap",
+        name: "Flattening Portal Bridge (FPB)",
+        description: "Extended capability for Flattening Portal Bridge.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "fpb_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "fpb_cap", label: "FPB Capabilities", range: "[31:0]" }
+            ]
+          }
+        ],
+        bitfields: {
+          fpb_hdr: {
+            name: "Enhanced Capability Header",
+            offset: "00h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0022h (TBD) for FPB." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+            ]
+          },
+          fpb_cap: {
+            name: "FPB Capabilities",
+            offset: "04h",
+            range: "[31:0]",
+            bits: [
+              { range: "[0]", title: "RidDecodeMechanismSupported", description: "Supports RID Decode Mechanism.", values: { "0": "No", "1": "Yes" } },
+              { range: "[1]", title: "MemLowDecodeMechanismSupported", description: "Supports Mem Low Decode Mechanism.", values: { "0": "No", "1": "Yes" } },
+              { range: "[2]", title: "MemHighDecodeMechanismSupported", description: "Supports Mem High Decode Mechanism.", values: { "0": "No", "1": "Yes" } },
+              { range: "[7:3]", title: "NumSecDev", description: "Number of Secondary Devices." },
+              { range: "[10:8]", title: "RidVectorSizeSupported", description: "Supported RID Vector Size." },
+              { range: "[18:16]", title: "MemLowVectorSizeSupported", description: "Supported Mem Low Vector Size." },
+              { range: "[26:24]", title: "MemHighVectorSizeSupported", description: "Supported Mem High Vector Size." }
+            ]
+          }
+        }
+      }
     ];
 
     /* ===== State ===== */
