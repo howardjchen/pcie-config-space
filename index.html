@@ -1767,6 +1767,558 @@
             ]
           }
         }
+      },
+      {
+        id: "sec_pcie_extcap",
+        type: "ExtCap",
+        name: "Secondary PCI Express",
+        description: "Extended capability for Secondary PCI Express features (Link Control 3, Lane Error Status, Equalization).",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "sec_pcie_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "linkctl3", label: "Link Control 3", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "lane_err_stat", label: "Lane Error Status", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "0Ch",
+            fields: [
+              { id: "lane_eq_ctl", label: "Lane Equalization Control (Lane 0)", range: "[31:0]" } // Showing Lane 0 as example
+            ]
+          }
+        ],
+        bitfields: {
+          sec_pcie_hdr: {
+            name: "Enhanced Capability Header",
+            offset: "00h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0019h for Secondary PCI Express." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+            ]
+          },
+          linkctl3: {
+            name: "Link Control 3",
+            offset: "04h",
+            range: "[31:0]",
+            bits: [
+              { range: "[0]", title: "Perform Equalization", description: "Request to perform equalization.", values: { "0": "No Action", "1": "Perform Equalization" } },
+              { range: "[1]", title: "Link Equalization Request Interrupt Enable", description: "Enables interrupt for Link Equalization Request.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[31:2]", title: "Reserved", description: "Reserved." }
+            ]
+          },
+          lane_err_stat: {
+            name: "Lane Error Status",
+            offset: "08h",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "Lane Error Status", description: "Indicates error status for each lane (Bit 0 = Lane 0, etc.)." }
+            ]
+          },
+          lane_eq_ctl: {
+            name: "Lane Equalization Control (Lane 0)",
+            offset: "0Ch",
+            range: "[15:0]", // Usually 16 bits per lane pair, but here we simplify or show 32 bits if it's 2 lanes per register? 
+            // Spec says: Lane 0 is bits 15:0 of offset 0Ch. Lane 1 is bits 31:16 of offset 0Ch.
+            // Let's define it as 16 bits for Lane 0 for simplicity in this view, or show full 32 bits with 2 lanes.
+            // The row defined above says "Lane Equalization Control (Lane 0)" range "[31:0]". 
+            // If I want to match that, I should probably show Lane 0 and Lane 1 in the row or just Lane 0.
+            // Let's stick to the row definition: range "[31:0]". 
+            // Wait, I defined the row as `lane_eq_ctl` range `[31:0]`.
+            // So I should probably define bits for [15:0] (Lane 0) and [31:16] (Lane 1).
+            // Or just Lane 0 if I want to keep it simple as "Lane 0".
+            // Let's update the row to be more accurate or just show Lane 0/1.
+            // For now, I'll define bits for Lane 0 in [15:0] and Lane 1 in [31:16].
+            range: "[31:0]",
+            bits: [
+              // Lane 0
+              { range: "[3:0]", title: "Lane 0 Downstream Port Transmitter Preset", description: "Transmitter Preset for Lane 0." },
+              { range: "[7:4]", title: "Lane 0 Downstream Port Receiver Preset Hint", description: "Receiver Preset Hint for Lane 0." },
+              { range: "[11:8]", title: "Lane 0 Upstream Port Transmitter Preset", description: "Transmitter Preset for Lane 0." },
+              { range: "[14:12]", title: "Lane 0 Upstream Port Receiver Preset Hint", description: "Receiver Preset Hint for Lane 0." },
+              { range: "[15]", title: "Lane 0 Reserved", description: "Reserved." },
+              // Lane 1
+              { range: "[19:16]", title: "Lane 1 Downstream Port Transmitter Preset", description: "Transmitter Preset for Lane 1." },
+              { range: "[23:20]", title: "Lane 1 Downstream Port Receiver Preset Hint", description: "Receiver Preset Hint for Lane 1." },
+              { range: "[27:24]", title: "Lane 1 Upstream Port Transmitter Preset", description: "Transmitter Preset for Lane 1." },
+              { range: "[30:28]", title: "Lane 1 Upstream Port Receiver Preset Hint", description: "Receiver Preset Hint for Lane 1." },
+              { range: "[31]", title: "Lane 1 Reserved", description: "Reserved." }
+            ]
+          }
+        }
+      },
+      {
+        id: "dlf_extcap",
+        type: "ExtCap",
+        name: "Data Link Feature",
+        description: "Extended capability for Data Link Layer features (Scaled Flow Control, etc.).",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "dlf_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "dlf_cap", label: "Data Link Feature Capabilities", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "dlf_status", label: "Data Link Feature Status", range: "[31:0]" }
+            ]
+          }
+        ],
+        bitfields: {
+          dlf_hdr: {
+            name: "Enhanced Capability Header",
+            offset: "00h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0025h for Data Link Feature." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+            ]
+          },
+          dlf_cap: {
+            name: "Data Link Feature Capabilities",
+            offset: "04h",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "Data Link Feature Capabilities", description: "Indicates supported Data Link features (e.g., Scaled Flow Control)." }
+            ]
+          },
+          dlf_status: {
+            name: "Data Link Feature Status",
+            offset: "08h",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "Data Link Feature Status", description: "Status of Data Link features." }
+            ]
+          }
+        }
+      },
+      {
+        id: "pl_16g_extcap",
+        type: "ExtCap",
+        name: "Physical Layer 16.0 GT/s",
+        description: "Extended capability for 16.0 GT/s Physical Layer features.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "pl_16g_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "pl_16g_cap", label: "16.0 GT/s Capabilities", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "pl_16g_ctl", label: "16.0 GT/s Control", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "0Ch",
+            fields: [
+              { id: "pl_16g_status", label: "16.0 GT/s Status", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "10h",
+            fields: [
+              { id: "pl_16g_eq_ctl", label: "16.0 GT/s Lane Equalization Control", range: "[31:0]" }
+            ]
+          }
+        ],
+        bitfields: {
+          pl_16g_hdr: {
+            name: "Enhanced Capability Header",
+            offset: "00h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0026h for Physical Layer 16.0 GT/s." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+            ]
+          },
+          pl_16g_cap: {
+            name: "16.0 GT/s Capabilities",
+            offset: "04h",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "16.0 GT/s Capabilities", description: "Indicates supported 16.0 GT/s features." }
+            ]
+          },
+          pl_16g_ctl: {
+            name: "16.0 GT/s Control",
+            offset: "08h",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "16.0 GT/s Control", description: "Controls 16.0 GT/s features." }
+            ]
+          },
+          pl_16g_status: {
+            name: "16.0 GT/s Status",
+            offset: "0Ch",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "16.0 GT/s Status", description: "Status of 16.0 GT/s features." }
+            ]
+          },
+          pl_16g_eq_ctl: {
+            name: "16.0 GT/s Lane Equalization Control",
+            offset: "10h",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "Lane Equalization Control", description: "Controls lane equalization for 16.0 GT/s." }
+            ]
+          }
+        }
+      },
+      {
+        id: "pl_32g_extcap",
+        type: "ExtCap",
+        name: "Physical Layer 32.0 GT/s",
+        description: "Extended capability for 32.0 GT/s Physical Layer features.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "pl_32g_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "pl_32g_cap", label: "32.0 GT/s Capabilities", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "pl_32g_ctl", label: "32.0 GT/s Control", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "0Ch",
+            fields: [
+              { id: "pl_32g_status", label: "32.0 GT/s Status", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "10h",
+            fields: [
+              { id: "pl_32g_eq_ctl", label: "32.0 GT/s Lane Equalization Control", range: "[31:0]" }
+            ]
+          }
+        ],
+        bitfields: {
+          pl_32g_hdr: {
+            name: "Enhanced Capability Header",
+            offset: "00h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 002Ah for Physical Layer 32.0 GT/s." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+            ]
+          },
+          pl_32g_cap: {
+            name: "32.0 GT/s Capabilities",
+            offset: "04h",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "32.0 GT/s Capabilities", description: "Indicates supported 32.0 GT/s features." }
+            ]
+          },
+          pl_32g_ctl: {
+            name: "32.0 GT/s Control",
+            offset: "08h",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "32.0 GT/s Control", description: "Controls 32.0 GT/s features." }
+            ]
+          },
+          pl_32g_status: {
+            name: "32.0 GT/s Status",
+            offset: "0Ch",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "32.0 GT/s Status", description: "Status of 32.0 GT/s features." }
+            ]
+          },
+          pl_32g_eq_ctl: {
+            name: "32.0 GT/s Lane Equalization Control",
+            offset: "10h",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "Lane Equalization Control", description: "Controls lane equalization for 32.0 GT/s." }
+            ]
+          }
+        }
+      },
+      {
+        id: "lmr_extcap",
+        type: "ExtCap",
+        name: "Lane Margining at the Receiver",
+        description: "Extended capability for Lane Margining at the Receiver.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "lmr_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "lmr_port_cap", label: "Margining Port Capabilities", range: "[15:0]" },
+              { id: "lmr_port_status", label: "Margining Port Status", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "lmr_lane_ctl", label: "Margining Lane Control", range: "[15:0]" },
+              { id: "lmr_lane_status", label: "Margining Lane Status", range: "[31:16]" }
+            ]
+          }
+        ],
+        bitfields: {
+          lmr_hdr: {
+            name: "Enhanced Capability Header",
+            offset: "00h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0027h for Lane Margining at the Receiver." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+            ]
+          },
+          lmr_port_cap: {
+            name: "Margining Port Capabilities",
+            offset: "04h",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "Margining Uses Driver Software", description: "Indicates if margining uses driver software.", values: { "0": "No", "1": "Yes" } }
+            ]
+          },
+          lmr_port_status: {
+            name: "Margining Port Status",
+            offset: "06h",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "Margining Software Ready", description: "Indicates if margining software is ready.", values: { "0": "No", "1": "Yes" } }
+            ]
+          },
+          lmr_lane_ctl: {
+            name: "Margining Lane Control",
+            offset: "08h",
+            range: "[15:0]",
+            bits: [
+              { range: "[15:0]", title: "Margining Lane Control", description: "Controls lane margining." }
+            ]
+          },
+          lmr_lane_status: {
+            name: "Margining Lane Status",
+            offset: "0Ah",
+            range: "[15:0]",
+            bits: [
+              { range: "[15:0]", title: "Margining Lane Status", description: "Status of lane margining." }
+            ]
+          }
+        }
+      },
+      {
+        id: "acs_extcap",
+        type: "ExtCap",
+        name: "Access Control Services (ACS)",
+        description: "Extended capability for Access Control Services.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "acs_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "acs_cap", label: "ACS Capability", range: "[15:0]" },
+              { id: "acs_ctl", label: "ACS Control", range: "[31:16]" }
+            ]
+          }
+        ],
+        bitfields: {
+          acs_hdr: {
+            name: "Enhanced Capability Header",
+            offset: "00h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 000Dh for ACS." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+            ]
+          },
+          acs_cap: {
+            name: "ACS Capability",
+            offset: "04h",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "ACS Source Validation", description: "Indicates support for Source Validation.", values: { "0": "No", "1": "Yes" } },
+              { range: "[1]", title: "ACS Translation Blocking", description: "Indicates support for Translation Blocking.", values: { "0": "No", "1": "Yes" } },
+              { range: "[2]", title: "ACS P2P Request Redirect", description: "Indicates support for P2P Request Redirect.", values: { "0": "No", "1": "Yes" } },
+              { range: "[3]", title: "ACS P2P Completion Redirect", description: "Indicates support for P2P Completion Redirect.", values: { "0": "No", "1": "Yes" } },
+              { range: "[4]", title: "ACS Upstream Forwarding", description: "Indicates support for Upstream Forwarding.", values: { "0": "No", "1": "Yes" } },
+              { range: "[5]", title: "ACS P2P Egress Control", description: "Indicates support for P2P Egress Control.", values: { "0": "No", "1": "Yes" } },
+              { range: "[6]", title: "ACS Direct Translated P2P", description: "Indicates support for Direct Translated P2P.", values: { "0": "No", "1": "Yes" } }
+            ]
+          },
+          acs_ctl: {
+            name: "ACS Control",
+            offset: "06h",
+            range: "[15:0]",
+            bits: [
+              { range: "[0]", title: "ACS Source Validation Enable", description: "Enables Source Validation.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[1]", title: "ACS Translation Blocking Enable", description: "Enables Translation Blocking.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[2]", title: "ACS P2P Request Redirect Enable", description: "Enables P2P Request Redirect.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[3]", title: "ACS P2P Completion Redirect Enable", description: "Enables P2P Completion Redirect.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[4]", title: "ACS Upstream Forwarding Enable", description: "Enables Upstream Forwarding.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[5]", title: "ACS P2P Egress Control Enable", description: "Enables P2P Egress Control.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[6]", title: "ACS Direct Translated P2P Enable", description: "Enables Direct Translated P2P.", values: { "0": "Disable", "1": "Enable" } }
+            ]
+          }
+        }
+      },
+      {
+        id: "ltr_extcap",
+        type: "ExtCap",
+        name: "Latency Tolerance Reporting (LTR)",
+        description: "Extended capability for Latency Tolerance Reporting.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "ltr_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "ltr_max_snoop", label: "Max Snoop Latency", range: "[15:0]" },
+              { id: "ltr_max_nosnoop", label: "Max No-Snoop Latency", range: "[31:16]" }
+            ]
+          }
+        ],
+        bitfields: {
+          ltr_hdr: {
+            name: "Enhanced Capability Header",
+            offset: "00h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0018h for LTR." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+            ]
+          },
+          ltr_max_snoop: {
+            name: "Max Snoop Latency",
+            offset: "04h",
+            range: "[15:0]",
+            bits: [
+              { range: "[9:0]", title: "Max Snoop Latency Value", description: "Value for Max Snoop Latency." },
+              { range: "[12:10]", title: "Max Snoop Latency Scale", description: "Scale for Max Snoop Latency.", values: { "0": "1ns", "1": "32ns", "2": "1024ns", "3": "32768ns", "4": "1048576ns", "5": "33554432ns" } },
+              { range: "[15:13]", title: "Reserved", description: "Reserved." }
+            ]
+          },
+          ltr_max_nosnoop: {
+            name: "Max No-Snoop Latency",
+            offset: "06h",
+            range: "[15:0]",
+            bits: [
+              { range: "[9:0]", title: "Max No-Snoop Latency Value", description: "Value for Max No-Snoop Latency." },
+              { range: "[12:10]", title: "Max No-Snoop Latency Scale", description: "Scale for Max No-Snoop Latency.", values: { "0": "1ns", "1": "32ns", "2": "1024ns", "3": "32768ns", "4": "1048576ns", "5": "33554432ns" } },
+              { range: "[15:13]", title: "Reserved", description: "Reserved." }
+            ]
+          }
+        }
+      },
+      {
+        id: "ea_extcap",
+        type: "ExtCap",
+        name: "Enhanced Allocation (EA)",
+        description: "Extended capability for Enhanced Allocation.",
+        rows: [
+          {
+            offset: "00h",
+            fields: [
+              { id: "ea_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "04h",
+            fields: [
+              { id: "ea_num_entries", label: "Num Entries / Match Offset", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "ea_first_entry", label: "First Entry", range: "[31:0]" }
+            ]
+          }
+        ],
+        bitfields: {
+          ea_hdr: {
+            name: "Enhanced Capability Header",
+            offset: "00h",
+            range: "[31:0]",
+            bits: [
+              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0014h for EA." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+            ]
+          },
+          ea_num_entries: {
+            name: "Num Entries / Match Offset",
+            offset: "04h",
+            range: "[31:0]",
+            bits: [
+              { range: "[5:0]", title: "Num Entries", description: "Number of entries in the EA capability." },
+              { range: "[15:6]", title: "Reserved", description: "Reserved." },
+              { range: "[31:16]", title: "Fixed", description: "Fixed value." } // Simplified
+            ]
+          },
+          ea_first_entry: {
+            name: "First Entry",
+            offset: "08h",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "First Entry", description: "First EA Entry (simplified view)." }
+            ]
+          }
+        }
       }
 
       /* You can continue appending here:

@@ -2,14 +2,6 @@
 
 A single-file, interactive HTML5 application for visualizing and exploring PCIe Configuration Space headers, Capabilities, and Extended Capabilities.
 
-## Features
-
--   **Interactive Visualization:** Clickable bitfields to see detailed descriptions.
--   **Standard Support:** Type 0 and Type 1 Headers.
--   **Capabilities:** Power Management, MSI, MSI-X, PCI Express.
--   **Extended Capabilities:** Advanced Error Reporting (AER), L1 PM Substates.
--   **Zero Dependencies:** Runs entirely in the browser with no build step required.
-
 ## Contributing
 
 We welcome contributions to add more PCIe Capabilities and Extended Capabilities!
