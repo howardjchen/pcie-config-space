@@ -463,7 +463,7 @@
      *     }
      *   }
      */
-
+    
     const structures = [
       /* =========================
        * Type 0 / Type 1 Headers
@@ -588,37 +588,11 @@
             offset: "04h",
             range: "[15:0]",
             bits: [
-              { range: "[0]", title: "I/O Space Enable", description: "Controls a Function's response to I/O Space accesses. When this bit is Clear, all received I/O accesses are caused to be handled as Unsupported Requests. When this bit is Set, the Function is enabled to decode the address and further process I/O Space accesses. For a Function with a Type 1 Configuration Space Header, this bit controls the response to I/O Space accesses received on its Primary Side. Default value of this bit is 0b. This bit is permitted to be hardwired to 0b if a Function does not support I/O Space accesses", values: { "0": "Disable", "1": "Enable" } },
-
-              { range: "[1]", title: "Memory Space Enable", description: "\
-              Controls a Function's response to Memory Space accesses. When this bit is \
-              Clear, all received Memory Space accesses are caused to be handled as Unsupported Requests. When \
-              this bit is Set, the Function is enabled to decode the address and further process Memory Space\
-              accesses. For a Function with a Type 1 Configuration Space Header, this bit controls the response to\
-              Memory Space accesses received on its Primary Side.\
-              Default value of this bit is 0b.\
-              This bit is permitted to be hardwired to 0b if a Function does not support Memory Space accesses.", values: { "0": "Disable", "1": "Enable" } },
-
-              { range: "[2]", title: "Bus Master Enable", description: "\
-              Controls the ability of a Function to issue Memory and I/O Read/Write Requests,\
-              and the ability of a Port to forward Memory and I/O Read/Write Requests in the Upstream direction\
-              When this bit is Set, the Function is allowed to issue Memory or I/O Requests.\
-              When this bit is Clear, the Function is not allowed to issue any Memory or I/O Requests.\
-              Note that as MSI/MSI-X interrupt Messages are in-band memory writes, setting the Bus Master\
-              Enable bit to 0b disables MSI/MSI-X interrupt Messages as well.\
-              Requests other than Memory or I/O Requests are not controlled by this bit.\
-              Default value of this bit is 0b.\
-              This bit is hardwired to 0b if a Function does not generate Memory or I/O Requests.", values: { "0": "Disable", "1": "Enable" } },
-
-              { range: "[3]", title: "Special Cycle Enable", description: "\
-              This bit was originally described in the [PCI]. Its functionality does not apply to\
-              PCI Express and the bit must be hardwired to 0b." },
-
-              { range: "[4]", title: "Memory Write and Invalidate", description: "\
-              This bit was originally described in the [PCI] and the [PCI-to-PCI-Bridge].\
-              Its functionality does not apply to PCI Express and the bit must be hardwired to 0b. For PCI Express to\
-              PCI/PCI-X Bridges, refer to the [PCIe-to-PCI-PCI-X-Bridge] for requirements for this register" },
-
+              { range: "[0]", title: "I/O Space Enable", description: "Controls a Function’s response to I/O Space accesses.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[1]", title: "Memory Space Enable", description: "Controls a Function’s response to Memory Space accesses.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[2]", title: "Bus Master Enable", description: "Controls a Function’s ability to generate PCI accesses.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[3]", title: "Special Cycle Enable", description: "RO for PCIe. Hardwired to 0." },
+              { range: "[4]", title: "Memory Write and Invalidate", description: "RO for PCIe. Hardwired to 0." },
               { range: "[5]", title: "VGA Palette Snoop", description: "RO for PCIe. Hardwired to 0." },
               { range: "[6]", title: "Parity Error Response", description: "Controls the Function’s response to parity errors.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[7]", title: "IDSEL Stepping/Wait Cycle", description: "RO for PCIe. Hardwired to 0." },
@@ -670,7 +644,7 @@
           maxlat: { name: "Max_Lat", offset: "3Fh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Max_Lat", description: "How often the device needs access to the bus." }] }
         }
       },
-
+    
       {
         id: "type1",
         type: "Header",
@@ -834,7 +808,7 @@
           classcode: { name: "Class Code", offset: "09h", range: "[31:8]", bits: [{ range: "[31:8]", title: "Class Code", description: "Identifies the general function of the device." }] },
           cacheline: { name: "Cache Line Size", offset: "0Ch", range: "[7:0]", bits: [{ range: "[7:0]", title: "Cache Line Size", description: "Specifies the system cacheline size in 32-bit units." }] },
           latency: { name: "Latency Timer", offset: "0Dh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Latency Timer", description: "Not used in PCIe, hardwired to 0." }] },
-
+    
           hdrtype: { name: "Header Type", offset: "0Eh", range: "[7:0]", bits: [{ range: "[6:0]", title: "Header Layout", description: "Identifies the layout of the header (01h for Bridge)." }, { range: "[7]", title: "Multi-Function Device", description: "Indicates if the device has multiple functions." }] },
           bist: { name: "BIST", offset: "0Fh", range: "[7:0]", bits: [{ range: "[3:0]", title: "Completion Code", description: "Result of the BIST." }, { range: "[5:4]", title: "Reserved", description: "Reserved." }, { range: "[6]", title: "Start BIST", description: "Set to invoke BIST." }, { range: "[7]", title: "BIST Capable", description: "Indicates support for BIST." }] },
           bar0: { name: "BAR0", offset: "10h", range: "[31:0]", bits: [{ range: "[0]", title: "Memory/IO", description: "0=Memory, 1=IO." }, { range: "[31:1]", title: "Base Address", description: "Base address." }] },
@@ -880,7 +854,7 @@
           }
         }
       },
-
+    
       /* =========================
        * PCI Power Management Cap
        * ========================= */
@@ -944,7 +918,7 @@
           pm_data: { name: "Data", offset: "07h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Data", description: "Power consumption or heat dissipation data." }] }
         }
       },
-
+    
       /* =========================
        * PCI Express Capability
        * ========================= */
@@ -1356,7 +1330,7 @@
           }
         }
       },
-
+    
       /* =========================
        * MSI / MSI-X Capabilities
        * ========================= */
@@ -1429,7 +1403,7 @@
           msi_pending: { name: "Pending Bits", offset: "14h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Pending Bits", description: "Per-vector pending bits." }] }
         }
       },
-
+    
       {
         id: "msix_cap",
         type: "Cap",
@@ -1475,7 +1449,7 @@
           msix_pba: { name: "PBA Offset / BIR", offset: "08h", range: "[31:0]", bits: [{ range: "[2:0]", title: "BIR", description: "BAR Indicator Register." }, { range: "[31:3]", title: "PBA Offset", description: "Offset into the BAR." }] }
         }
       },
-
+    
       /* =========================
        * Advanced Error Reporting
        * ========================= */
@@ -1741,12 +1715,6 @@
             fields: [
               { id: "l1pm_ctl2", label: "L1 PM Substates Control 2", range: "[31:0]" }
             ]
-          },
-          {
-            offset: "10h",
-            fields: [
-              { id: "l1pm_status", label: "L1 PM Substates Status", range: "[31:0]" }
-            ]
           }
         ],
         bitfields: {
@@ -1794,17 +1762,8 @@
             offset: "0Ch",
             range: "[31:0]",
             bits: [
-              { range: "[1:0]", title: "T_POWER_ON Scale", description: "T_POWER_ON scale.", values: { "0": "2us", "1": "10us", "2": "100us" } },
-              { range: "[7:3]", title: "T_POWER_ON Value", description: "T_POWER_ON value. Multiplied by T_POWER_ON Scale to determine T_POWER_ON time. Default value is 00101b." }
-            ]
-          },
-          l1pm_status: {
-            name: "L1 PM Substates Status",
-            offset: "10h",
-            range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "Link Activation Status", description: "Indicates the status of Link Activation. Required for Downstream Ports when the Link Activation Supported bit is Set, otherwise hardwired to 0b. Must be RsvdZ for Upstream Ports. Default value is 0b.", values: { "0": "Not activated", "1": "Activated" } },
-              { range: "[31:1]", title: "Reserved", description: "Reserved (RsvdZ)." }
+              { range: "[7:3]", title: "T_POWER_ON", description: "T_POWER_ON value." },
+              { range: "[1:0]", title: "T_POWER_ON Scale", description: "T_POWER_ON scale.", values: { "0": "2us", "1": "10us", "2": "100us" } }
             ]
           }
         }
@@ -1872,12 +1831,12 @@
           lane_eq_ctl: {
             name: "Lane Equalization Control (Lane 0)",
             offset: "0Ch",
-            range: "[15:0]", // Usually 16 bits per lane pair, but here we simplify or show 32 bits if it's 2 lanes per register?
+            range: "[15:0]", // Usually 16 bits per lane pair, but here we simplify or show 32 bits if it's 2 lanes per register? 
             // Spec says: Lane 0 is bits 15:0 of offset 0Ch. Lane 1 is bits 31:16 of offset 0Ch.
             // Let's define it as 16 bits for Lane 0 for simplicity in this view, or show full 32 bits with 2 lanes.
-            // The row defined above says "Lane Equalization Control (Lane 0)" range "[31:0]".
+            // The row defined above says "Lane Equalization Control (Lane 0)" range "[31:0]". 
             // If I want to match that, I should probably show Lane 0 and Lane 1 in the row or just Lane 0.
-            // Let's stick to the row definition: range "[31:0]".
+            // Let's stick to the row definition: range "[31:0]". 
             // Wait, I defined the row as `lane_eq_ctl` range `[31:0]`.
             // So I should probably define bits for [15:0] (Lane 0) and [31:16] (Lane 1).
             // Or just Lane 0 if I want to keep it simple as "Lane 0".
@@ -1988,30 +1947,6 @@
           {
             offset: "10h",
             fields: [
-              { id: "pl_16g_local_parity", label: "Local Data Parity Mismatch Status", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "14h",
-            fields: [
-              { id: "pl_16g_first_ret_parity", label: "First Retimer Data Parity Mismatch Status", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "18h",
-            fields: [
-              { id: "pl_16g_second_ret_parity", label: "Second Retimer Data Parity Mismatch Status", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "1Ch",
-            fields: [
-              { id: "pl_16g_reserved", label: "Reserved", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "20h",
-            fields: [
               { id: "pl_16g_eq_ctl", label: "16.0 GT/s Lane Equalization Control", range: "[31:0]" }
             ]
           }
@@ -2051,45 +1986,12 @@
               { range: "[31:0]", title: "16.0 GT/s Status", description: "Status of 16.0 GT/s features." }
             ]
           },
-          pl_16g_local_parity: {
-            name: "16.0 GT/s Local Data Parity Mismatch Status",
+          pl_16g_eq_ctl: {
+            name: "16.0 GT/s Lane Equalization Control",
             offset: "10h",
             range: "[31:0]",
             bits: [
-              { range: "[31:0]", title: "Local Data Parity Mismatch Status", description: "Each bit indicates if the local receiver detected a Data Parity mismatch on the Lane with the corresponding Lane number (invariant to Link width and Lane reversal). A value of 1b indicates a mismatch was detected. Collects parity errors for 16.0 GT/s and higher data rates. Default value of each bit is 0b. Unused upper bits [31:Maximum Link Width] are RsvdZ." }
-            ]
-          },
-          pl_16g_first_ret_parity: {
-            name: "16.0 GT/s First Retimer Data Parity Mismatch Status",
-            offset: "14h",
-            range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "First Retimer Data Parity Mismatch Status", description: "Each bit indicates if the first Retimer of a Path detected a Data Parity mismatch on the corresponding Lane. A value of 1b indicates a mismatch was detected. Undefined when no Retimers are present. Default value of each bit is 0b." }
-            ]
-          },
-          pl_16g_second_ret_parity: {
-            name: "16.0 GT/s Second Retimer Data Parity Mismatch Status",
-            offset: "18h",
-            range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "Second Retimer Data Parity Mismatch Status", description: "Each bit indicates if the second Retimer of a Path detected a Data Parity mismatch on the corresponding Lane. Undefined when no Retimers are present or only one Retimer is present. Default value of each bit is 0b." }
-            ]
-          },
-          pl_16g_reserved: {
-            name: "Physical Layer 16.0 GT/s Reserved",
-            offset: "1Ch",
-            range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "Reserved", description: "This register is RsvdP." }
-            ]
-          },
-          pl_16g_eq_ctl: {
-            name: "16.0 GT/s Lane Equalization Control",
-            offset: "20h",
-            range: "[31:0]",
-            bits: [
-              { range: "[3:0]", title: "Downstream Port 16.0 GT/s Transmitter Preset", description: "Transmitter Preset used for 16.0 GT/s equalization when operating as a Downstream Port. Ignored when operating as an Upstream Port. Default value is 1111b." },
-              { range: "[7:4]", title: "Upstream Port 16.0 GT/s Transmitter Preset", description: "Field contains the Transmit Preset value sent or received during 16.0 GT/s Link Equalization. For Downstream Ports, contains value sent during Link Equalization (HwInit). For Upstream Ports without crosslink, contains value captured during Link Equalization (RO). Default value is 1111b." }
+              { range: "[31:0]", title: "Lane Equalization Control", description: "Controls lane equalization for 16.0 GT/s." }
             ]
           }
         }
@@ -2126,30 +2028,6 @@
           },
           {
             offset: "10h",
-            fields: [
-              { id: "pl_32g_rx_mts1", label: "Received Modified TS Data 1", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "14h",
-            fields: [
-              { id: "pl_32g_rx_mts2", label: "Received Modified TS Data 2", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "18h",
-            fields: [
-              { id: "pl_32g_tx_mts1", label: "Transmitted Modified TS Data 1", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "1Ch",
-            fields: [
-              { id: "pl_32g_tx_mts2", label: "Transmitted Modified TS Data 2", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "20h",
             fields: [
               { id: "pl_32g_eq_ctl", label: "32.0 GT/s Lane Equalization Control", range: "[31:0]" }
             ]
@@ -2190,53 +2068,12 @@
               { range: "[31:0]", title: "32.0 GT/s Status", description: "Status of 32.0 GT/s features." }
             ]
           },
-          pl_32g_rx_mts1: {
-            name: "Received Modified TS Data 1",
+          pl_32g_eq_ctl: {
+            name: "32.0 GT/s Lane Equalization Control",
             offset: "10h",
             range: "[31:0]",
             bits: [
-              { range: "[2:0]", title: "Received Modified TS Usage Mode", description: "If Modified TS Received is Set, contains the Modified TS Usage field from the received Modified TS1/TS2 Ordered Set. Default is 000b." },
-              { range: "[15:3]", title: "Received Modified TS Information 1", description: "If Modified TS Received is Set, contains the Modified TS Information 1 field. Bits 15:8 contain Symbol 9; bits 7:3 contain bits 7:3 of Symbol 8. Default is 0 0000 0000 0000b." },
-              { range: "[31:16]", title: "Received Modified TS Vendor ID", description: "If Modified TS Received is Set, contains the Training Set Message Vendor ID or Alternate Protocol Vendor ID. Bits 15:8 = Symbol 11; bits 7:0 = Symbol 10. Default is 0000h." }
-            ]
-          },
-          pl_32g_rx_mts2: {
-            name: "Received Modified TS Data 2",
-            offset: "14h",
-            range: "[31:0]",
-            bits: [
-              { range: "[23:0]", title: "Received Modified TS Information 2", description: "If Modified TS Received is Set, contains the Modified TS Information 2 field. Bits 23:16 = Symbol 14; bits 16:8 = Symbol 13; bits 7:0 = Symbol 12. Default is 00 0000h." },
-              { range: "[25:24]", title: "Alternate Protocol Negotiation Status", description: "Indicates the status of Alternate Protocol Negotiation.", values: { "0": "Not supported", "1": "Disabled", "2": "Failed", "3": "Succeeded" } },
-              { range: "[31:26]", title: "Reserved", description: "Reserved (RsvdP)." }
-            ]
-          },
-          pl_32g_tx_mts1: {
-            name: "Transmitted Modified TS Data 1",
-            offset: "18h",
-            range: "[31:0]",
-            bits: [
-              { range: "[2:0]", title: "Transmitted Modified TS Usage Mode", description: "If Modified TS Received is Set, contains the Modified TS Usage field from the Modified TS2 transmitted during Configuration.Complete LTSSM State. Default is 000b." },
-              { range: "[15:3]", title: "Transmitted Modified TS Information 1", description: "If Modified TS Received is Set, contains the Modified TS Information 1 field from the transmitted Modified TS2. Bits 15:8 = Symbol 9; bits 7:3 = bits 7:3 of Symbol 8. Default is 0 0000 0000 0000b." },
-              { range: "[31:16]", title: "Transmitted Modified TS Vendor ID", description: "If Modified TS Received is Set, contains the Training Set Message Vendor ID or Alternate Protocol Vendor ID from the transmitted Modified TS2. Default is 0000h." }
-            ]
-          },
-          pl_32g_tx_mts2: {
-            name: "Transmitted Modified TS Data 2",
-            offset: "1Ch",
-            range: "[31:0]",
-            bits: [
-              { range: "[23:0]", title: "Transmitted Modified TS Information 2", description: "If Modified TS Received is Set, contains the Modified TS Information 2 field from the transmitted Modified TS2. Bits 23:16 = Symbol 14; bits 16:8 = Symbol 13; bits 7:0 = Symbol 12. Default is 00 0000h." },
-              { range: "[25:24]", title: "Alternate Protocol Negotiation Status", description: "Indicates the status of Alternate Protocol Negotiation.", values: { "0": "Not supported", "1": "Disabled", "2": "Failed", "3": "Succeeded" } },
-              { range: "[31:26]", title: "Reserved", description: "Reserved (RsvdP)." }
-            ]
-          },
-          pl_32g_eq_ctl: {
-            name: "32.0 GT/s Lane Equalization Control",
-            offset: "20h",
-            range: "[31:0]",
-            bits: [
-              { range: "[3:0]", title: "Downstream Port 32.0 GT/s Transmitter Preset", description: "Transmitter Preset used for 32.0 GT/s equalization when operating as a Downstream Port. Default value is 1111b." },
-              { range: "[7:4]", title: "Upstream Port 32.0 GT/s Transmitter Preset", description: "Contains Transmit Preset value sent or received during 32.0 GT/s Link Equalization. For Downstream Ports, contains value sent during Link Equalization. For Upstream Ports, contains captured value or is used for future crosslink negotiation. Default value is 1111b." }
+              { range: "[31:0]", title: "Lane Equalization Control", description: "Controls lane equalization for 32.0 GT/s." }
             ]
           }
         }
@@ -2331,12 +2168,6 @@
               { id: "acs_cap", label: "ACS Capability", range: "[15:0]" },
               { id: "acs_ctl", label: "ACS Control", range: "[31:16]" }
             ]
-          },
-          {
-            offset: "08h",
-            fields: [
-              { id: "acs_egress_ctl", label: "Egress Control Vector", range: "[31:0]" }
-            ]
           }
         ],
         bitfields: {
@@ -2375,18 +2206,7 @@
               { range: "[3]", title: "ACS P2P Completion Redirect Enable", description: "Enables P2P Completion Redirect.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[4]", title: "ACS Upstream Forwarding Enable", description: "Enables Upstream Forwarding.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[5]", title: "ACS P2P Egress Control Enable", description: "Enables P2P Egress Control.", values: { "0": "Disable", "1": "Enable" } },
-              { range: "[6]", title: "ACS Direct Translated P2P Enable", description: "Enables Direct Translated P2P.", values: { "0": "Disable", "1": "Enable" } },
-              { range: "[9:8]", title: "ACS DSP Memory Target Access Control", description: "Controls how a Switch Downstream Port handles Upstream Memory Requests targeting Memory BAR Space of other Switch Downstream Ports. Required for Root Ports and Switch Downstream Ports if ACS Enhanced Capability bit is Set.", values: { "0": "Direct Request access enabled", "1": "Request blocking enabled", "2": "Request redirect enabled" } },
-              { range: "[11:10]", title: "ACS USP Memory Target Access Control", description: "Controls how a Switch Downstream Port handles Upstream Memory Requests targeting Memory BAR Space of the Switch Upstream Port.", values: { "0": "Direct Request access enabled", "1": "Request blocking enabled", "2": "Request redirect enabled" } },
-              { range: "[12]", title: "ACS Unclaimed Request Redirect Control", description: "Controls how a Switch Downstream Port handles incoming Requests targeting Memory Space within the Switch Upstream Port memory aperture that is not within any Downstream Port aperture. When Set, the Switch forwards such Requests Upstream; when Clear, handled as Unsupported Request." }
-            ]
-          },
-          acs_egress_ctl: {
-            name: "Egress Control Vector",
-            offset: "08h",
-            range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "Egress Control Vector", description: "An N-bit bit-array configured by software, where N is given by the Egress Control Vector Size field. When a given bit is Set, peer-to-peer Requests targeting the associated Port, Function, or Function Group are blocked or redirected. For Root Ports and Switch Downstream Ports each bit corresponds to a Port Number. For Functions within a Multi-Function Device, each bit corresponds to one or more Function Numbers. The bit corresponding to the Function implementing this Extended Capability must be hardwired to 0b. Default value of each bit is 0b." }
+              { range: "[6]", title: "ACS Direct Translated P2P Enable", description: "Enables Direct Translated P2P.", values: { "0": "Disable", "1": "Enable" } }
             ]
           }
         }
@@ -2500,1843 +2320,657 @@
           }
         }
       }
-
+    
       /* You can continue appending here:
          - Other common ExtCaps: L1 PM Substates, LTR, ARI, Resizable BAR, ACS, DPC, etc.
          - Or vendor defined / DVSEC.
       */
-      ,
-      {
-        id: "resizable_bar_extcap",
-        type: "ExtCap",
-        name: "Resizable BAR",
-        description: "Extended capability for Resizable BAR.",
-        rows: [
-          {
-            offset: "00h",
-            fields: [
-              { id: "rbar_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "04h",
-            fields: [
-              { id: "rbar_cap", label: "Resizable BAR Capability", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "08h",
-            fields: [
-              { id: "rbar_ctl", label: "Resizable BAR Control", range: "[31:0]" }
-            ]
-          }
-        ],
-        bitfields: {
-          rbar_hdr: {
-            name: "Enhanced Capability Header",
-            offset: "00h",
-            range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0015h for Resizable BAR." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
-            ]
-          },
-          rbar_cap: {
-            name: "Resizable BAR Capability",
-            offset: "04h",
-            range: "[31:0]",
-            bits: [
-              { range: "[4]", title: "1 MB Supported", description: "Supports 1 MB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[5]", title: "2 MB Supported", description: "Supports 2 MB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[6]", title: "4 MB Supported", description: "Supports 4 MB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[7]", title: "8 MB Supported", description: "Supports 8 MB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[8]", title: "16 MB Supported", description: "Supports 16 MB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[9]", title: "32 MB Supported", description: "Supports 32 MB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[10]", title: "64 MB Supported", description: "Supports 64 MB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[11]", title: "128 MB Supported", description: "Supports 128 MB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[12]", title: "256 MB Supported", description: "Supports 256 MB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[13]", title: "512 MB Supported", description: "Supports 512 MB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[14]", title: "1 GB Supported", description: "Supports 1 GB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[15]", title: "2 GB Supported", description: "Supports 2 GB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[16]", title: "4 GB Supported", description: "Supports 4 GB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[17]", title: "8 GB Supported", description: "Supports 8 GB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[18]", title: "16 GB Supported", description: "Supports 16 GB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[19]", title: "32 GB Supported", description: "Supports 32 GB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[20]", title: "64 GB Supported", description: "Supports 64 GB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[21]", title: "128 GB Supported", description: "Supports 128 GB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[22]", title: "256 GB Supported", description: "Supports 256 GB BAR size.", values: { "0": "No", "1": "Yes" } },
-              { range: "[23]", title: "512 GB Supported", description: "Supports 512 GB BAR size.", values: { "0": "No", "1": "Yes" } }
-            ]
-          },
-          rbar_ctl: {
-            name: "Resizable BAR Control",
-            offset: "08h",
-            range: "[31:0]",
-            bits: [
-              { range: "[2:0]", title: "BAR Index", description: "Selects which BAR to control." },
-              { range: "[4]", title: "Num BARs", description: "Number of Resizable BARs." },
-              { range: "[12:8]", title: "BAR Size", description: "Encoded BAR Size." },
-              { range: "[31:13]", title: "Reserved", description: "Reserved." }
-            ]
-          }
+    ];
+    
+    /* =========================
+     * Chapter 7 completion data
+     * =========================
+     * Generated entries below keep the same structure shape used above:
+     * rows[] drive the bit map and bitfields{} drives the detail pane.
+     */
+    
+    const existingStructureIds = new Set(structures.map(struct => struct.id));
+    
+    function makeChapter7Bit(range, title, description, values) {
+      const item = { range, title, description };
+      if (values) item.values = values;
+      return item;
+    }
+    
+    function makeChapter7Reserved(range) {
+      return makeChapter7Bit(range, "Reserved", "Reserved. Software must preserve this field unless the register definition says otherwise.");
+    }
+    
+    function makeChapter7Flag(range, title, description) {
+      return makeChapter7Bit(range, title, description, { "0": "Not set / disabled / inactive", "1": "Set / enabled / active" });
+    }
+    
+    function chapter7FieldId(prefix, label) {
+      return `${prefix}_${label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "")}`;
+    }
+    
+    function chapter7HeaderBits(isExtended) {
+      return isExtended
+        ? [
+            makeChapter7Bit("[15:0]", "PCI Express Extended Capability ID", "Identifies the Extended Capability structure."),
+            makeChapter7Bit("[19:16]", "Capability Version", "Version number for this Extended Capability structure."),
+            makeChapter7Bit("[31:20]", "Next Capability Offset", "Offset to the next Extended Capability, or 000h when this is the final item.")
+          ]
+        : [
+            makeChapter7Bit("[7:0]", "Capability ID", "Identifies the PCI-compatible Capability structure."),
+            makeChapter7Bit("[15:8]", "Next Capability Pointer", "Pointer to the next capability, or 00h when this is the final item."),
+            makeChapter7Reserved("[31:16]")
+          ];
+    }
+    
+    function chapter7WholeRegisterBits(range, label, description) {
+      return [makeChapter7Bit(range, label, description)];
+    }
+    
+    function makeChapter7Structure(def) {
+      const bitfields = {};
+      const rows = def.registers.map(register => {
+        const offset = register[0];
+        const label = register[1];
+        const fieldId = chapter7FieldId(def.id, label);
+        const bits = register[2] || chapter7WholeRegisterBits("[31:0]", label, `${label} register from Chapter 7.`);
+    
+        bitfields[fieldId] = {
+          name: label,
+          offset,
+          range: "[31:0]",
+          bits
+        };
+    
+        return {
+          offset,
+          fields: [{ id: fieldId, label, range: "[31:0]" }]
+        };
+      });
+    
+      return {
+        id: def.id,
+        type: def.type,
+        name: def.name,
+        description: def.description,
+        rows,
+        bitfields
+      };
+    }
+    
+    function addChapter7Structures(definitions) {
+      definitions.forEach(def => {
+        if (!existingStructureIds.has(def.id)) {
+          structures.push(makeChapter7Structure(def));
+          existingStructureIds.add(def.id);
         }
+      });
+    }
+    
+    const chapter7MissingStructures = [
+      {
+        id: "vpd_cap",
+        type: "Cap",
+        name: "Vital Product Data (VPD) Capability",
+        description: "Provides an address/data window for reading and writing Vital Product Data.",
+        registers: [
+          ["00h", "VPD Capability Header / Address", [
+            ...chapter7HeaderBits(false),
+            makeChapter7Bit("[30:16]", "VPD Address", "Address within VPD storage."),
+            makeChapter7Flag("[31]", "F / Transfer Complete", "Indicates transfer completion or starts a selected VPD access.")
+          ]],
+          ["04h", "VPD Data", chapter7WholeRegisterBits("[31:0]", "VPD Data", "Data returned from or written to the selected VPD address.")]
+        ]
+      },
+      {
+        id: "vendor_cap",
+        type: "Cap",
+        name: "Vendor-Specific Capability",
+        description: "PCI-compatible capability containing vendor-defined registers after the standard capability header.",
+        registers: [
+          ["00h", "Vendor-Specific Capability Header", [
+            ...chapter7HeaderBits(false),
+            makeChapter7Bit("[23:16]", "Capability Length", "Total length of the vendor-specific capability structure in bytes."),
+            makeChapter7Bit("[31:24]", "Vendor-Specific Data", "First byte of vendor-defined data.")
+          ]],
+          ["04h", "Vendor-Specific Registers", chapter7WholeRegisterBits("[31:0]", "Vendor-Specific Registers", "Vendor-defined capability payload.")]
+        ]
+      },
+      {
+        id: "af_cap",
+        type: "Cap",
+        name: "Conventional PCI Advanced Features Capability (AF)",
+        description: "Conventional PCI capability used to report and control advanced feature transactions.",
+        registers: [
+          ["00h", "AF Capability Header", chapter7HeaderBits(false)],
+          ["03h", "AF Capabilities", [makeChapter7Flag("[0]", "Transaction Pending Supported", "Reports support for transaction-pending status."), makeChapter7Flag("[1]", "Function Level Reset Supported", "Reports support for Function Level Reset."), makeChapter7Reserved("[31:2]")]],
+          ["04h", "AF Control", [makeChapter7Flag("[0]", "Initiate FLR", "Writing 1 initiates Function Level Reset when supported."), makeChapter7Reserved("[31:1]")]],
+          ["05h", "AF Status", [makeChapter7Flag("[0]", "Transaction Pending", "Indicates the Function has outstanding transactions."), makeChapter7Reserved("[31:1]")]]
+        ]
+      },
+      {
+        id: "subsystem_cap",
+        type: "Cap",
+        name: "Subsystem ID and Subsystem Vendor ID Capability",
+        description: "Provides Subsystem Vendor ID and Subsystem ID for functions that do not expose them in the Type 0 header.",
+        registers: [
+          ["00h", "Subsystem Capability Header", chapter7HeaderBits(false)],
+          ["04h", "Subsystem ID and Subsystem Vendor ID", [makeChapter7Bit("[15:0]", "Subsystem Vendor ID", "Vendor ID assigned to the subsystem."), makeChapter7Bit("[31:16]", "Subsystem ID", "Subsystem-specific identifier assigned by the vendor.")]]
+        ]
+      },
+      {
+        id: "null_cap",
+        type: "Cap",
+        name: "Null Capability",
+        description: "A capability-list terminator or placeholder with no function-specific register payload.",
+        registers: [["00h", "Null Capability Header", chapter7HeaderBits(false)]]
+      },
+      {
+        id: "power_budget_extcap",
+        type: "ExtCap",
+        name: "Power Budgeting",
+        description: "Reports power-budget data entries selected through a data selector register.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Power Budgeting Data Select / Control", [makeChapter7Bit("[7:0]", "Data Select", "Selects which power-budget data entry is exposed."), makeChapter7Bit("[15:8]", "Data Scale", "Scale applied to selected power data."), makeChapter7Bit("[23:16]", "Power Rail", "Power rail associated with the selected entry."), makeChapter7Bit("[31:24]", "Power Type", "Type of power-budget data.")]],
+          ["08h", "Power Budgeting Data", [makeChapter7Bit("[7:0]", "Base Power", "Power value for the selected entry."), makeChapter7Bit("[9:8]", "Data Scale", "Scale for the base power value."), makeChapter7Bit("[12:10]", "PM Sub State", "Power-management substate associated with the entry."), makeChapter7Bit("[14:13]", "PM State", "Power-management state associated with the entry."), makeChapter7Bit("[17:15]", "Type", "Type of power information reported."), makeChapter7Bit("[20:18]", "Power Rail", "Power rail for this entry."), makeChapter7Reserved("[31:21]")]],
+          ["0Ch", "Power Budgeting Capability / Sense Detect", [makeChapter7Flag("[0]", "System Allocated", "Reports system-allocated power budget support."), makeChapter7Bit("[15:8]", "Sense Detect", "Reports power-sense detection information."), makeChapter7Reserved("[31:16]")]]
+        ]
+      },
+      {
+        id: "device3_extcap",
+        type: "ExtCap",
+        name: "Device 3",
+        description: "Adds additional device capability, control, and status registers introduced after Device Capabilities 2.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Device Capabilities 3", [makeChapter7Flag("[0]", "Emergency Power Reduction Supported", "Reports support for Emergency Power Reduction."), makeChapter7Flag("[1]", "Device Readiness Notification Supported", "Reports support for readiness notification behavior."), makeChapter7Flag("[2]", "16-bit Tag Completer Supported", "Reports completer support for 16-bit tags."), makeChapter7Reserved("[31:3]")]],
+          ["08h", "Device Control 3", [makeChapter7Flag("[0]", "Emergency Power Reduction Request", "Requests Emergency Power Reduction behavior."), makeChapter7Flag("[1]", "Device Readiness Notification Enable", "Enables readiness notifications."), makeChapter7Flag("[2]", "16-bit Tag Requester Enable", "Enables requester use of 16-bit tags when supported."), makeChapter7Reserved("[31:3]")]],
+          ["0Ch", "Device Status 3", [makeChapter7Flag("[0]", "Emergency Power Reduction Status", "Reports Emergency Power Reduction state."), makeChapter7Flag("[1]", "Device Readiness Status", "Reports whether the Function is ready for normal operation."), makeChapter7Reserved("[31:2]")]]
+        ]
+      },
+      {
+        id: "pl_64g_extcap",
+        type: "ExtCap",
+        name: "Physical Layer 64.0 GT/s",
+        description: "Controls and reports 64.0 GT/s link equalization and physical-layer state.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "64.0 GT/s Capabilities", [makeChapter7Flag("[0]", "64.0 GT/s Supported", "Reports whether the port supports 64.0 GT/s operation."), makeChapter7Flag("[1]", "Retimer Presence Detect Supported", "Reports support for retimer presence detection."), makeChapter7Reserved("[31:2]")]],
+          ["08h", "64.0 GT/s Control", [makeChapter7Flag("[0]", "Equalization Control", "Controls 64.0 GT/s equalization procedures."), makeChapter7Flag("[1]", "Start Equalization", "Starts equalization when written by software."), makeChapter7Reserved("[31:2]")]],
+          ["0Ch", "64.0 GT/s Status", [makeChapter7Flag("[0]", "Equalization Complete", "Indicates that 64.0 GT/s equalization completed."), makeChapter7Flag("[1]", "Equalization Phase 1 Successful", "Reports phase 1 success."), makeChapter7Flag("[2]", "Equalization Phase 2 Successful", "Reports phase 2 success."), makeChapter7Flag("[3]", "Equalization Phase 3 Successful", "Reports phase 3 success."), makeChapter7Reserved("[31:4]")]],
+          ["10h", "64.0 GT/s Lane Equalization Control", chapter7WholeRegisterBits("[31:0]", "Lane Equalization Control", "Per-lane equalization control fields; repeated for implemented lanes.")]
+        ]
+      },
+      {
+        id: "flit_logging_extcap",
+        type: "ExtCap",
+        name: "Flit Logging",
+        description: "Captures flit error logs and supports Flit Bit Error Ratio measurements.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Flit Error Log 1"],
+          ["08h", "Flit Error Log 2"],
+          ["0Ch", "Flit Error Counter Control / Status", [makeChapter7Flag("[0]", "Counter Enable", "Enables flit error counting."), makeChapter7Flag("[1]", "Counter Reset", "Resets flit error counters."), makeChapter7Flag("[16]", "Counter Valid", "Indicates counter values are valid."), makeChapter7Flag("[17]", "Counter Overflow", "Indicates a counter overflow occurred."), makeChapter7Reserved("[31:18]")]],
+          ["10h", "FBER Measurement Control", [makeChapter7Flag("[0]", "Measurement Enable", "Enables FBER measurement."), makeChapter7Flag("[1]", "Measurement Reset", "Resets FBER measurement state."), makeChapter7Reserved("[31:2]")]],
+          ["14h", "FBER Measurement Status 1"],
+          ["18h", "FBER Measurement Status 2"],
+          ["1Ch", "FBER Measurement Status 3"],
+          ["20h", "FBER Measurement Status 4"],
+          ["24h", "FBER Measurement Status 5"],
+          ["28h", "FBER Measurement Status 6"],
+          ["2Ch", "FBER Measurement Status 7"],
+          ["30h", "FBER Measurement Status 8"],
+          ["34h", "FBER Measurement Status 9"],
+          ["38h", "FBER Measurement Status 10"]
+        ]
       },
       {
         id: "ari_extcap",
         type: "ExtCap",
-        name: "ARI (Alternative Routing-ID Interpretation)",
-        description: "Extended capability for ARI.",
-        rows: [
-          {
-            offset: "00h",
-            fields: [
-              { id: "ari_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "04h",
-            fields: [
-              { id: "ari_cap", label: "ARI Capability", range: "[15:0]" },
-              { id: "ari_ctl", label: "ARI Control", range: "[31:16]" }
-            ]
-          }
-        ],
-        bitfields: {
-          ari_hdr: {
-            name: "Enhanced Capability Header",
-            offset: "00h",
-            range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 000Eh for ARI." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
-            ]
-          },
-          ari_cap: {
-            name: "ARI Capability",
-            offset: "04h",
-            range: "[15:0]",
-            bits: [
-              { range: "[0]", title: "MFVC Function Groups Capability", description: "Supports MFVC Function Groups.", values: { "0": "No", "1": "Yes" } },
-              { range: "[1]", title: "ACS Function Groups Capability", description: "Supports ACS Function Groups.", values: { "0": "No", "1": "Yes" } },
-              { range: "[15:8]", title: "Next Function Number", description: "Next Function Number in the device." }
-            ]
-          },
-          ari_ctl: {
-            name: "ARI Control",
-            offset: "06h",
-            range: "[15:0]",
-            bits: [
-              { range: "[0]", title: "MFVC Function Groups Enable", description: "Enables MFVC Function Groups.", values: { "0": "Disable", "1": "Enable" } },
-              { range: "[1]", title: "ACS Function Groups Enable", description: "Enables ACS Function Groups.", values: { "0": "Disable", "1": "Enable" } },
-              { range: "[6:4]", title: "Function Group", description: "Function Group Number." }
-            ]
-          }
-        }
+        name: "Alternative Routing-ID Interpretation (ARI)",
+        description: "Extends routing ID interpretation so a device can expose more than eight functions.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "ARI Capability / Control", [makeChapter7Bit("[7:0]", "Next Function Number", "Next ARI function number in the linked list."), makeChapter7Flag("[8]", "MFVC Function Groups Capability", "Reports MFVC function group support."), makeChapter7Flag("[9]", "ACS Function Groups Capability", "Reports ACS function group support."), makeChapter7Bit("[23:16]", "Function Group", "Function group assigned to this function."), makeChapter7Flag("[24]", "MFVC Function Groups Enable", "Enables MFVC function group operation."), makeChapter7Flag("[25]", "ACS Function Groups Enable", "Enables ACS function group operation."), makeChapter7Reserved("[31:26]")]]
+        ]
       },
       {
         id: "pasid_extcap",
         type: "ExtCap",
-        name: "PASID (Process Address Space ID)",
-        description: "Extended capability for PASID.",
-        rows: [
-          {
-            offset: "00h",
-            fields: [
-              { id: "pasid_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "04h",
-            fields: [
-              { id: "pasid_cap", label: "PASID Capability", range: "[15:0]" },
-              { id: "pasid_ctl", label: "PASID Control", range: "[31:16]" }
-            ]
-          }
-        ],
-        bitfields: {
-          pasid_hdr: {
-            name: "Enhanced Capability Header",
-            offset: "00h",
-            range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 001Bh for PASID." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
-            ]
-          },
-          pasid_cap: {
-            name: "PASID Capability",
-            offset: "04h",
-            range: "[15:0]",
-            bits: [
-              { range: "[1]", title: "Execute Permission Supported", description: "Supports Execute Permission.", values: { "0": "No", "1": "Yes" } },
-              { range: "[2]", title: "Privileged Mode Supported", description: "Supports Privileged Mode.", values: { "0": "No", "1": "Yes" } },
-              { range: "[12:8]", title: "Max PASID Width", description: "Maximum supported PASID width." }
-            ]
-          },
-          pasid_ctl: {
-            name: "PASID Control",
-            offset: "06h",
-            range: "[15:0]",
-            bits: [
-              { range: "[0]", title: "PASID Enable", description: "Enables PASID.", values: { "0": "Disable", "1": "Enable" } },
-              { range: "[1]", title: "Execute Permission Enable", description: "Enables Execute Permission.", values: { "0": "Disable", "1": "Enable" } },
-              { range: "[2]", title: "Privileged Mode Enable", description: "Enables Privileged Mode.", values: { "0": "Disable", "1": "Enable" } }
-            ]
-          }
-        }
+        name: "PASID",
+        description: "Reports and controls Process Address Space ID support for memory requests.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "PASID Capability / Control", [makeChapter7Flag("[0]", "Exec Permission Supported", "Supports PASID execute permission checks."), makeChapter7Flag("[1]", "Privileged Mode Supported", "Supports PASID privileged-mode indication."), makeChapter7Bit("[6:2]", "Max PASID Width", "Maximum PASID width supported."), makeChapter7Flag("[16]", "PASID Enable", "Enables use of PASID by this Function."), makeChapter7Flag("[17]", "Exec Permission Enable", "Enables execute permission use."), makeChapter7Flag("[18]", "Privileged Mode Enable", "Enables privileged-mode use."), makeChapter7Reserved("[31:19]")]]
+        ]
       },
       {
         id: "frs_extcap",
         type: "ExtCap",
         name: "FRS Queueing",
-        description: "Extended capability for FRS Queueing.",
-        rows: [
-          {
-            offset: "00h",
-            fields: [
-              { id: "frs_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "04h",
-            fields: [
-              { id: "frs_cap", label: "FRS Queueing Capability", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "08h",
-            fields: [
-              { id: "frs_status", label: "FRS Queueing Status", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "0Ch",
-            fields: [
-              { id: "frs_ctl", label: "FRS Queueing Control", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "10h",
-            fields: [
-              { id: "frs_msg_queue", label: "FRS Message Queue", range: "[31:0]" }
-            ]
-          }
-        ],
-        bitfields: {
-          frs_hdr: {
-            name: "Enhanced Capability Header",
-            offset: "00h",
-            range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0021h for FRS Queueing." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
-            ]
-          },
-          frs_cap: {
-            name: "FRS Queueing Capability",
-            offset: "04h",
-            range: "[31:0]",
-            bits: [
-              { range: "[11:0]", title: "FRS Queue Depth", description: "Maximum depth of the FRS message queue." },
-              { range: "[20:16]", title: "FRS Interrupt Message Number", description: "MSI/MSI-X vector for FRS interrupts." }
-            ]
-          },
-          frs_status: {
-            name: "FRS Queueing Status",
-            offset: "08h",
-            range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "FRS Message Received", description: "Indicates FRS message received.", values: { "0": "No", "1": "Yes" } },
-              { range: "[1]", title: "FRS Message Overflow", description: "Indicates FRS message overflow.", values: { "0": "No", "1": "Yes" } }
-            ]
-          },
-          frs_ctl: {
-            name: "FRS Queueing Control",
-            offset: "0Ch",
-            range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "FRS Interrupt Enable", description: "Enables FRS interrupts.", values: { "0": "Disable", "1": "Enable" } }
-            ]
-          },
-          frs_msg_queue: {
-            name: "FRS Message Queue",
-            offset: "10h",
-            range: "[31:0]",
-            bits: [
-              { range: "[3:0]", title: "FRS Reason", description: "Reason for the FRS message." },
-              { range: "[31:16]", title: "FRS Requester ID", description: "Requester ID of the FRS message source." }
-            ]
-          }
-        }
+        description: "Provides Function Readiness Status queueing and message queue state.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "FRS Queueing Capability", [makeChapter7Bit("[4:0]", "Maximum Queue Depth", "Maximum number of FRS messages that can be queued."), makeChapter7Reserved("[31:5]")]],
+          ["08h", "FRS Queueing Status / Control", [makeChapter7Flag("[0]", "Queue Empty", "No FRS messages are queued."), makeChapter7Flag("[1]", "Queue Overflow", "An FRS queue overflow occurred."), makeChapter7Flag("[16]", "Queue Enable", "Enables FRS queueing."), makeChapter7Flag("[17]", "Interrupt Enable", "Enables interrupt signaling for queue events."), makeChapter7Reserved("[31:18]")]],
+          ["0Ch", "FRS Message Queue"]
+        ]
       },
       {
         id: "fpb_extcap",
         type: "ExtCap",
         name: "Flattening Portal Bridge (FPB)",
-        description: "Extended capability for Flattening Portal Bridge.",
-        rows: [
-          {
-            offset: "00h",
-            fields: [
-              { id: "fpb_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "04h",
-            fields: [
-              { id: "fpb_cap", label: "FPB Capabilities", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "08h",
-            fields: [
-              { id: "fpb_rid_ctl1", label: "FPB RID Vector Control 1", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "0Ch",
-            fields: [
-              { id: "fpb_rid_ctl2", label: "FPB RID Vector Control 2", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "10h",
-            fields: [
-              { id: "fpb_mem_low_ctl", label: "FPB MEM Low Vector Control", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "14h",
-            fields: [
-              { id: "fpb_mem_high_ctl1", label: "FPB MEM High Vector Control 1", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "18h",
-            fields: [
-              { id: "fpb_mem_high_ctl2", label: "FPB MEM High Vector Control 2", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "1Ch",
-            fields: [
-              { id: "fpb_vec_acc_ctl", label: "FPB Vector Access Control", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "20h",
-            fields: [
-              { id: "fpb_vec_acc_data", label: "FPB Vector Access Data", range: "[31:0]" }
-            ]
-          }
-        ],
-        bitfields: {
-          fpb_hdr: {
-            name: "Enhanced Capability Header",
-            offset: "00h",
-            range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0022h (TBD) for FPB." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
-            ]
-          },
-          fpb_cap: {
-            name: "FPB Capabilities",
-            offset: "04h",
-            range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "FPB RID Decode Mechanism Supported", description: "If Set, indicates that the FPB RID Vector mechanism is supported.", values: { "0": "No", "1": "Yes" } },
-              { range: "[1]", title: "FPB MEM Low Decode Mechanism Supported", description: "If Set, indicates that the FPB MEM Low Vector mechanism is supported.", values: { "0": "No", "1": "Yes" } },
-              { range: "[2]", title: "FPB MEM High Decode Mechanism Supported", description: "If Set, indicates that the FPB MEM High mechanism is supported.", values: { "0": "No", "1": "Yes" } },
-              { range: "[7:3]", title: "FPB Num Sec Dev", description: "For Upstream Ports of Switches only, indicates quantity of Device Numbers associated with the Secondary Side. Quantity = field value + 1. Reserved for Downstream Ports." },
-              { range: "[10:8]", title: "FPB RID Vector Size Supported", description: "Indicates size of FPB RID Vector implemented in hardware. 000b=256 bits, 010b=1K bits, 101b=8K bits." },
-              { range: "[18:16]", title: "FPB MEM Low Vector Size Supported", description: "Indicates size of FPB MEM Low Vector. 000b=256 bits, 001b=512 bits, 010b=1K bits, 011b=2K bits, 100b=4K bits." },
-              { range: "[26:24]", title: "FPB MEM High Vector Size Supported", description: "Indicates size of FPB MEM High Vector. 000b=256 bits, 001b=512 bits, 010b=1K bits, 011b=2K bits, 100b=4K bits, 101b=8K bits." }
-            ]
-          },
-          fpb_rid_ctl1: {
-            name: "FPB RID Vector Control 1",
-            offset: "08h",
-            range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "FPB RID Decode Mechanism Enable", description: "When Set, enables the FPB RID Decode mechanism. Default value is 0b.", values: { "0": "Disabled", "1": "Enabled" } },
-              { range: "[7:4]", title: "FPB RID Vector Granularity", description: "Controls granularity of FPB RID Vector. 0000b=8 RIDs, 0011b=64 RIDs, 0101b=256 RIDs. Default is 0000b." },
-              { range: "[31:19]", title: "FPB RID Vector Start", description: "Controls the offset at which the FPB RID Vector is applied. Value represents a RID offset in units of 8 RIDs. Must be naturally aligned per the Granularity field. Default is 0000 0000 0000 0b." }
-            ]
-          },
-          fpb_rid_ctl2: {
-            name: "FPB RID Vector Control 2",
-            offset: "0Ch",
-            range: "[31:0]",
-            bits: [
-              { range: "[15:3]", title: "RID Secondary Start", description: "Controls the RID offset at which Type 1 Configuration Requests passing downstream through the bridge are converted to Type 0. Bits[2:0] are fixed as 000b. Default is 0000 0000 0000 0b." }
-            ]
-          },
-          fpb_mem_low_ctl: {
-            name: "FPB MEM Low Vector Control",
-            offset: "10h",
-            range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "FPB MEM Low Decode Mechanism Enable", description: "When Set, enables the FPB MEM Low Decode mechanism. Default value is 0b.", values: { "0": "Disabled", "1": "Enabled" } },
-              { range: "[7:4]", title: "FPB MEM Low Vector Granularity", description: "Controls granularity of FPB MEM Low Vector. 0000b=1MB, 0001b=2MB, 0010b=4MB, 0011b=8MB, 0100b=16MB. Default is 0000b." },
-              { range: "[31:20]", title: "FPB MEM Low Vector Start", description: "Sets bits 31:20 of the base address at which the FPB MEM Low Vector is applied. Must be naturally aligned per Granularity field. Default is 000h." }
-            ]
-          },
-          fpb_mem_high_ctl1: {
-            name: "FPB MEM High Vector Control 1",
-            offset: "14h",
-            range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "FPB MEM High Decode Mechanism Enable", description: "When Set, enables the FPB MEM High Decode mechanism. Default value is 0b.", values: { "0": "Disabled", "1": "Enabled" } },
-              { range: "[7:4]", title: "FPB MEM High Vector Granularity", description: "Controls granularity of FPB MEM High Vector. 0000b=256MB, 0001b=512MB, 0010b=1GB, 0011b=2GB, 0100b=4GB, 0101b=8GB, 0110b=16GB, 0111b=32GB. Default is 0000b." },
-              { range: "[31:28]", title: "FPB MEM High Vector Start Lower", description: "Sets the lower bits of the base address at which the FPB MEM High Vector is applied. Must be naturally aligned per Granularity field. Default is 0h." }
-            ]
-          },
-          fpb_mem_high_ctl2: {
-            name: "FPB MEM High Vector Control 2",
-            offset: "18h",
-            range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "FPB MEM High Vector Start Upper", description: "Sets bits 63:32 of the base address at which the FPB MEM High Vector is applied. Must be naturally aligned per Granularity field. Default is 0000 0000h." }
-            ]
-          },
-          fpb_vec_acc_ctl: {
-            name: "FPB Vector Access Control",
-            offset: "1Ch",
-            range: "[31:0]",
-            bits: [
-              { range: "[7:0]", title: "FPB Vector Access Offset", description: "Indicates the offset of the DWORD portion of the FPB RID, MEM Low or MEM High Vector accessible via the FPB Vector Access Data register. Default is 00h." },
-              { range: "[15:14]", title: "FPB Vector Select", description: "Selects the Vector to be accessed. Software must only write values corresponding to supported FPB mechanisms.", values: { "0": "RID", "1": "MEM Low", "2": "MEM High" } }
-            ]
-          },
-          fpb_vec_acc_data: {
-            name: "FPB Vector Access Data",
-            offset: "20h",
-            range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "FPB Vector Access Data", description: "Reads return the DW of data from the FPB Vector at the location determined by FPB Vector Access Offset. Writes replace the DW of data at that location. Default is 0000 0000h." }
-            ]
-          }
-        }
+        description: "Controls FPB routing vectors and vector access windows.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "FPB Capabilities", [makeChapter7Flag("[0]", "FPB Supported", "Reports FPB capability."), makeChapter7Bit("[7:1]", "RID Vector Size", "Size encoding for RID vector resources."), makeChapter7Bit("[15:8]", "Memory Vector Size", "Size encoding for memory vector resources."), makeChapter7Reserved("[31:16]")]],
+          ["08h", "FPB RID Vector Control 1"],
+          ["0Ch", "FPB RID Vector Control 2"],
+          ["10h", "FPB MEM Low Vector Control"],
+          ["14h", "FPB MEM High Vector Control 1"],
+          ["18h", "FPB MEM High Vector Control 2"],
+          ["1Ch", "FPB Vector Access Control", [makeChapter7Bit("[15:0]", "Vector Select", "Selects vector entry for indirect access."), makeChapter7Flag("[16]", "Write Enable", "Enables writes through the vector access window."), makeChapter7Reserved("[31:17]")]],
+          ["20h", "FPB Vector Access Data"]
+        ]
       },
-      /* =========================
-       * 7.9 Additional Capabilities
-       * ========================= */
+      {
+        id: "flit_perf_extcap",
+        type: "ExtCap",
+        name: "Flit Performance Measurement",
+        description: "Measures flit-mode performance and LTSSM timing/status information.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Flit Performance Measurement Capability", [makeChapter7Flag("[0]", "Measurement Supported", "Reports support for flit performance measurement."), makeChapter7Bit("[7:1]", "Counter Width", "Width of performance measurement counters."), makeChapter7Reserved("[31:8]")]],
+          ["08h", "Flit Performance Measurement Control", [makeChapter7Flag("[0]", "Measurement Enable", "Enables performance measurement."), makeChapter7Flag("[1]", "Measurement Reset", "Resets measurement counters."), makeChapter7Bit("[7:2]", "Measurement Select", "Selects the measurement to report."), makeChapter7Reserved("[31:8]")]],
+          ["0Ch", "Flit Performance Measurement Status", [makeChapter7Flag("[0]", "Measurement Valid", "Indicates measurement data is valid."), makeChapter7Flag("[1]", "Overflow", "Indicates a measurement overflow."), makeChapter7Reserved("[31:2]")]],
+          ["10h", "LTSSM Performance Measurement Status 1"],
+          ["14h", "LTSSM Performance Measurement Status 2"],
+          ["18h", "LTSSM Performance Measurement Status 3"],
+          ["1Ch", "LTSSM Performance Measurement Status 4"],
+          ["20h", "LTSSM Performance Measurement Status 5"]
+        ]
+      },
+      {
+        id: "flit_error_inj_extcap",
+        type: "ExtCap",
+        name: "Flit Error Injection",
+        description: "Provides controls and status for injecting flit and ordered-set errors for validation.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Flit Error Injection Capability", [makeChapter7Flag("[0]", "Flit Injection Supported", "Reports support for flit error injection."), makeChapter7Flag("[1]", "Ordered Set Injection Supported", "Reports support for ordered-set error injection."), makeChapter7Reserved("[31:2]")]],
+          ["08h", "Flit Error Injection Control 1", [makeChapter7Flag("[0]", "Injection Enable", "Enables selected flit error injection."), makeChapter7Bit("[7:1]", "Injection Type", "Selects the type of flit error to inject."), makeChapter7Reserved("[31:8]")]],
+          ["0Ch", "Flit Error Injection Control 2"],
+          ["10h", "Flit Error Injection Status", [makeChapter7Flag("[0]", "Injection Busy", "Injection is in progress."), makeChapter7Flag("[1]", "Injection Complete", "Selected injection completed."), makeChapter7Flag("[2]", "Injection Error", "Selected injection could not be performed."), makeChapter7Reserved("[31:3]")]],
+          ["14h", "Ordered Set Error Injection Control 1"],
+          ["18h", "Ordered Set Error Injection Control 2"],
+          ["1Ch", "Ordered Set Error Tx Injection Status"],
+          ["20h", "Ordered Set Error Rx Injection Status"]
+        ]
+      },
+      {
+        id: "nop_flit_extcap",
+        type: "ExtCap",
+        name: "NOP Flit",
+        description: "Reports and controls NOP flit generation, monitoring, and related status.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "NOP Flit Capabilities", [makeChapter7Flag("[0]", "NOP Flit Supported", "Reports NOP flit support."), makeChapter7Bit("[7:1]", "Maximum NOP Rate", "Maximum supported NOP flit rate encoding."), makeChapter7Reserved("[31:8]")]],
+          ["08h", "NOP Flit Control 1", [makeChapter7Flag("[0]", "NOP Enable", "Enables NOP flit behavior."), makeChapter7Bit("[7:1]", "NOP Rate", "Requested NOP flit rate encoding."), makeChapter7Reserved("[31:8]")]],
+          ["0Ch", "NOP Flit Control 2"],
+          ["10h", "NOP Flit Status", [makeChapter7Flag("[0]", "NOP Active", "NOP flit behavior is active."), makeChapter7Flag("[1]", "NOP Error", "A NOP flit-related error was detected."), makeChapter7Reserved("[31:2]")]]
+        ]
+      },
       {
         id: "vc_extcap",
         type: "ExtCap",
         name: "Virtual Channel (VC)",
-        description: "Optional Extended Capability for devices supporting functionality beyond TC0 over VC0. Two IDs permitted: 0002h (without MFVC) or 0009h (with MFVC). Controls Virtual Channel assignment for PCIe Links.",
-        rows: [
-          { offset: "00h", fields: [{ id: "vc_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "vc_port_cap1", label: "Port VC Capability 1", range: "[31:0]" }] },
-          { offset: "08h", fields: [{ id: "vc_port_cap2", label: "Port VC Capability 2", range: "[31:0]" }] },
-          { offset: "0Ch", fields: [{ id: "vc_port_ctl", label: "Port VC Control", range: "[15:0]" }, { id: "vc_port_sta", label: "Port VC Status", range: "[31:16]" }] },
-          { offset: "10h", fields: [{ id: "vc_res_cap", label: "VC Resource Capability (VC0)", range: "[31:0]" }] },
-          { offset: "14h", fields: [{ id: "vc_res_ctl", label: "VC Resource Control (VC0)", range: "[31:0]" }] },
-          { offset: "18h", fields: [{ id: "vc_res_sta", label: "VC Resource Status (VC0)", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          vc_hdr: {
-            name: "Virtual Channel Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0002h (without MFVC) or 0009h (with MFVC)." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h if no other items exist." }
-            ]
-          },
-          vc_port_cap1: {
-            name: "Port VC Capability Register 1",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[2:0]", title: "Extended VC Count", description: "Number of extended Virtual Channels in addition to the default VC. Minimum 0 (only VC0), maximum 7." },
-              { range: "[6:4]", title: "Low Priority Extended VC Count", description: "Number of extended VCs beyond default VC belonging to the low-priority VC (LPVC) group. Maximum value equals Extended VC Count." },
-              { range: "[9:8]", title: "Reference Clock", description: "Reference clock for VCs supporting time-based WRR Port Arbitration.", values: { "0": "100 ns reference clock" } },
-              { range: "[11:10]", title: "Port Arbitration Table Entry Size", description: "Size in bits of Port Arbitration table entry.", values: { "0": "1 bit", "1": "2 bits", "2": "4 bits", "3": "8 bits" } }
-            ]
-          },
-          vc_port_cap2: {
-            name: "Port VC Capability Register 2",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[7:0]", title: "VC Arbitration Capability", description: "Types of VC Arbitration supported for the LPVC group. Bit 0=HW fixed (RR), Bit 1=WRR-32, Bit 2=WRR-64, Bit 3=WRR-128." },
-              { range: "[31:24]", title: "VC Arbitration Table Offset", description: "Zero-based offset of the VC Arbitration Table in DQWORDs (16 bytes) from base of VC Extended Capability. 0 = table not present." }
-            ]
-          },
-          vc_port_ctl: {
-            name: "Port VC Control Register",
-            offset: "0Ch", range: "[15:0]",
-            bits: [
-              { range: "[0]", title: "Load VC Arbitration Table", description: "Software sets to request hardware to apply new values programmed into VC Arbitration Table. Always reads 0b." },
-              { range: "[3:1]", title: "VC Arbitration Select", description: "Selects one of the supported VC Arbitration schemes indicated by the VC Arbitration Capability field. Cannot be modified when more than one VC in LPVC group is enabled." }
-            ]
-          },
-          vc_port_sta: {
-            name: "Port VC Status Register",
-            offset: "0Eh", range: "[15:0]",
-            bits: [
-              { range: "[0]", title: "VC Arbitration Table Status", description: "Set by hardware when any VC Arbitration Table entry is written. Cleared by hardware after hardware finishes loading values following software setting Load VC Arbitration Table bit.", values: { "0": "Coherent", "1": "Updated, not yet latched" } }
-            ]
-          },
-          vc_res_cap: {
-            name: "VC Resource Capability Register (VC0)",
-            offset: "10h", range: "[31:0]",
-            bits: [
-              { range: "[7:0]", title: "Port Arbitration Capability", description: "Types of Port Arbitration supported by this VC resource. Bit 0=RR, Bit 1=WRR-32, Bit 2=WRR-64, Bit 3=WRR-128, Bit 4=Time-based WRR-128, Bit 5=WRR-256." },
-              { range: "[15]", title: "Reject Snoop Transactions", description: "When Set, transactions without No Snoop attribute may be rejected as Unsupported Request. Valid for Root Ports and RCRB only." },
-              { range: "[22:16]", title: "Maximum Time Slots", description: "Maximum number of time slots minus one that the VC resource can support for time-based WRR Port Arbitration." },
-              { range: "[31:24]", title: "Port Arbitration Table Offset", description: "Zero-based offset of the Port Arbitration Table in DQWORDs from base of VC Extended Capability. 00h = not present." }
-            ]
-          },
-          vc_res_ctl: {
-            name: "VC Resource Control Register (VC0)",
-            offset: "14h", range: "[31:0]",
-            bits: [
-              { range: "[7:0]", title: "TC/VC Map", description: "Indicates TCs mapped to this VC resource. Bit N set = TC N mapped to this VC. Bit 0 is RO=1 for VC0. Default: FFh for first VC, 00h for others." },
-              { range: "[16]", title: "Load Port Arbitration Table", description: "When Set, updates Port Arbitration logic from Port Arbitration Table. Always reads 0b." },
-              { range: "[19:17]", title: "Port Arbitration Select", description: "Configures VC resource to provide a particular Port Arbitration service. Value must correspond to an asserted bit in Port Arbitration Capability." },
-              { range: "[26:24]", title: "VC ID", description: "Assigns a VC ID to the VC resource. RO=000b for first VC (VC0). Cannot be modified when VC is enabled." },
-              { range: "[31]", title: "VC Enable", description: "When Set, enables the Virtual Channel. Hardwired 1b for VC0. Default: 1b for first VC, 0b for others.", values: { "0": "Disabled", "1": "Enabled" } }
-            ]
-          },
-          vc_res_sta: {
-            name: "VC Resource Status Register (VC0)",
-            offset: "18h", range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "Port Arbitration Table Status", description: "Set by hardware when Port Arbitration Table entry is written. Cleared when hardware finishes loading values after Load Port Arbitration Table bit is set.", values: { "0": "Coherent", "1": "Updated, not yet latched" } },
-              { range: "[1]", title: "VC Negotiation Pending", description: "Indicates VC negotiation (initialization or disabling) is pending. Set by hardware when VC resource has not completed negotiation. Cleared by hardware after VC negotiation is complete.", values: { "0": "Complete", "1": "Pending" } }
-            ]
-          }
-        }
+        description: "Reports and controls Virtual Channel resources and arbitration tables.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Port VC Capability Register 1", [makeChapter7Bit("[2:0]", "Extended VC Count", "Number of additional Virtual Channels supported."), makeChapter7Bit("[6:4]", "Low Priority Extended VC Count", "Number of low-priority Extended VCs supported."), makeChapter7Reserved("[31:7]")]],
+          ["08h", "Port VC Capability Register 2", [makeChapter7Bit("[7:0]", "VC Arbitration Capability", "Supported VC arbitration mechanisms."), makeChapter7Bit("[31:24]", "VC Arbitration Table Offset", "Offset to the VC arbitration table.")]],
+          ["0Ch", "Port VC Control / Status"],
+          ["10h", "VC Resource Capability"],
+          ["14h", "VC Resource Control"],
+          ["18h", "VC Resource Status"],
+          ["1Ch", "VC Arbitration Table"],
+          ["20h", "Port Arbitration Table"]
+        ]
       },
       {
         id: "mfvc_extcap",
         type: "ExtCap",
         name: "Multi-Function Virtual Channel (MFVC)",
-        description: "Optional Extended Capability permitting enhanced QoS in Multi-Function Devices. Must be in Function 0 of Upstream Port. ID = 0008h. Controls Virtual Channel assignment at the PCIe Upstream Port of the Multi-Function Device.",
-        rows: [
-          { offset: "00h", fields: [{ id: "mfvc_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "mfvc_port_cap1", label: "MFVC Port VC Capability 1", range: "[31:0]" }] },
-          { offset: "08h", fields: [{ id: "mfvc_port_cap2", label: "MFVC Port VC Capability 2", range: "[31:0]" }] },
-          { offset: "0Ch", fields: [{ id: "mfvc_port_ctl", label: "MFVC Port VC Control", range: "[15:0]" }, { id: "mfvc_port_sta", label: "MFVC Port VC Status", range: "[31:16]" }] },
-          { offset: "10h", fields: [{ id: "mfvc_res_cap", label: "MFVC VC Resource Capability (VC0)", range: "[31:0]" }] },
-          { offset: "14h", fields: [{ id: "mfvc_res_ctl", label: "MFVC VC Resource Control (VC0)", range: "[31:0]" }] },
-          { offset: "18h", fields: [{ id: "mfvc_res_sta", label: "MFVC VC Resource Status (VC0)", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          mfvc_hdr: {
-            name: "MFVC Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0008h for MFVC." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h if no other items exist." }
-            ]
-          },
-          mfvc_port_cap1: {
-            name: "MFVC Port VC Capability Register 1",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[2:0]", title: "Extended VC Count", description: "Number of extended VCs in addition to the default VC. Minimum 0, maximum 7." },
-              { range: "[6:4]", title: "Low Priority Extended VC Count", description: "Number of extended VCs beyond default VC in the LPVC group." },
-              { range: "[9:8]", title: "Reference Clock", description: "Reference clock for VCs supporting time-based WRR.", values: { "0": "100 ns reference clock" } },
-              { range: "[11:10]", title: "Function Arbitration Table Entry Size", description: "Size in bits of Function Arbitration table entry.", values: { "0": "1 bit", "1": "2 bits", "2": "4 bits", "3": "8 bits" } }
-            ]
-          },
-          mfvc_port_cap2: {
-            name: "MFVC Port VC Capability Register 2",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[7:0]", title: "VC Arbitration Capability", description: "Types of VC Arbitration supported for the LPVC group. Bit 0=HW fixed (RR), Bit 1=WRR-32, Bit 2=WRR-64, Bit 3=WRR-128." },
-              { range: "[31:24]", title: "VC Arbitration Table Offset", description: "Zero-based offset of VC Arbitration Table in DQWORDs from base of MFVC Capability structure. 0 = not present." }
-            ]
-          },
-          mfvc_port_ctl: {
-            name: "MFVC Port VC Control Register",
-            offset: "0Ch", range: "[15:0]",
-            bits: [
-              { range: "[0]", title: "Load VC Arbitration Table", description: "Software sets to apply new VC Arbitration Table values. Always reads 0b." },
-              { range: "[3:1]", title: "VC Arbitration Select", description: "Selects one of the supported VC Arbitration schemes." }
-            ]
-          },
-          mfvc_port_sta: {
-            name: "MFVC Port VC Status Register",
-            offset: "0Eh", range: "[15:0]",
-            bits: [
-              { range: "[0]", title: "VC Arbitration Table Status", description: "Set by hardware when any VC Arbitration Table entry is written. Cleared after hardware latches new values.", values: { "0": "Coherent", "1": "Updated, not yet latched" } }
-            ]
-          },
-          mfvc_res_cap: {
-            name: "MFVC VC Resource Capability Register (VC0)",
-            offset: "10h", range: "[31:0]",
-            bits: [
-              { range: "[7:0]", title: "Function Arbitration Capability", description: "Types of Function Arbitration supported. Bit 0=RR, Bit 1=WRR-32, Bit 2=WRR-64, Bit 3=WRR-128, Bit 4=Time-based WRR-128, Bit 5=WRR-256." },
-              { range: "[22:16]", title: "Maximum Time Slots", description: "Maximum number of time slots minus one for time-based WRR Function Arbitration." },
-              { range: "[31:24]", title: "Function Arbitration Table Offset", description: "Zero-based offset of Function Arbitration Table in DQWORDs from base. 00h = not present." }
-            ]
-          },
-          mfvc_res_ctl: {
-            name: "MFVC VC Resource Control Register (VC0)",
-            offset: "14h", range: "[31:0]",
-            bits: [
-              { range: "[7:0]", title: "TC/VC Map", description: "Indicates TCs mapped to this VC resource. Bit 0 is RO=1 for VC0. Default: FFh for first VC, 00h for others." },
-              { range: "[16]", title: "Load Function Arbitration Table", description: "When Set, updates Function Arbitration logic. Always reads 0b." },
-              { range: "[19:17]", title: "Function Arbitration Select", description: "Selects one of the supported Function Arbitration schemes." },
-              { range: "[26:24]", title: "VC ID", description: "Assigns VC ID. RO=000b for first VC (VC0)." },
-              { range: "[31]", title: "VC Enable", description: "Hardwired 1b for VC0. Default: 0b for other VCs.", values: { "0": "Disabled", "1": "Enabled" } }
-            ]
-          },
-          mfvc_res_sta: {
-            name: "MFVC VC Resource Status Register (VC0)",
-            offset: "18h", range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "Function Arbitration Table Status", description: "Set when Function Arbitration Table entry is written. Cleared after hardware latches new values." },
-              { range: "[1]", title: "VC Negotiation Pending", description: "Indicates VC negotiation is pending.", values: { "0": "Complete", "1": "Pending" } }
-            ]
-          }
-        }
+        description: "Virtual Channel controls for multi-function devices.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "MFVC Port VC Capability Register 1"],
+          ["08h", "MFVC Port VC Capability Register 2"],
+          ["0Ch", "MFVC Port VC Control / Status"],
+          ["10h", "MFVC VC Resource Capability"],
+          ["14h", "MFVC VC Resource Control"],
+          ["18h", "MFVC VC Resource Status"],
+          ["1Ch", "MFVC VC Arbitration Table"],
+          ["20h", "Function Arbitration Table"]
+        ]
       },
       {
         id: "dsn_extcap",
         type: "ExtCap",
         name: "Device Serial Number",
-        description: "Optional Extended Capability providing a 64-bit IEEE EUI-64 device serial number. ID = 0003h.",
-        rows: [
-          { offset: "00h", fields: [{ id: "dsn_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "dsn_lower", label: "Serial Number (Lower DW)", range: "[31:0]" }] },
-          { offset: "08h", fields: [{ id: "dsn_upper", label: "Serial Number (Upper DW)", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          dsn_hdr: {
-            name: "Device Serial Number Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0003h for Device Serial Number." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          dsn_lower: {
-            name: "Serial Number Register (Lower DW)",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "Serial Number Lower DW", description: "Lower 32 bits of the 64-bit IEEE EUI-64 serial number. SerialNum[07:00] = EUI[63:56], ..., SerialNum[31:24] = EUI[39:32]. Read-only." }
-            ]
-          },
-          dsn_upper: {
-            name: "Serial Number Register (Upper DW)",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "Serial Number Upper DW", description: "Upper 32 bits of the 64-bit IEEE EUI-64 serial number. SerialNum[32:39] = EUI[31:24], ..., SerialNum[63:56] = EUI[07:00]. Read-only." }
-            ]
-          }
-        }
-      },
-      {
-        id: "vsec_cap",
-        type: "Cap",
-        name: "Vendor-Specific Capability",
-        description: "PCI-compatible Vendor-Specific Capability. Capability ID = 09h. Provides vendor-defined information in PCI-compatible Configuration Space.",
-        rows: [
-          { offset: "00h", fields: [{ id: "vsec_capid", label: "Cap ID", range: "[7:0]" }, { id: "vsec_nextptr", label: "Next Ptr", range: "[15:8]" }, { id: "vsec_len", label: "Length", range: "[23:16]" }, { id: "vsec_info", label: "Vendor Specific Info", range: "[31:24]" }] }
-        ],
-        bitfields: {
-          vsec_capid: {
-            name: "Vendor-Specific Capability Header",
-            offset: "00h", range: "[7:0]",
-            bits: [
-              { range: "[7:0]", title: "Capability ID", description: "ID = 09h for Vendor-Specific Capability." },
-              { range: "[15:8]", title: "Next Capability Pointer", description: "Points to the next PCI Capability structure." },
-              { range: "[23:16]", title: "Capability Length", description: "Total length in bytes of this capability structure, including the header." },
-              { range: "[31:24]", title: "Vendor Specific Information", description: "Vendor-defined field. Content and meaning determined by the vendor." }
-            ]
-          }
-        }
+        description: "Provides a 64-bit device serial number.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Serial Number Low", chapter7WholeRegisterBits("[31:0]", "Serial Number Low", "Lower 32 bits of the device serial number.")],
+          ["08h", "Serial Number High", chapter7WholeRegisterBits("[31:0]", "Serial Number High", "Upper 32 bits of the device serial number.")]
+        ]
       },
       {
         id: "vsec_extcap",
         type: "ExtCap",
-        name: "Vendor-Specific Extended Capability (VSEC)",
-        description: "Optional Extended Capability providing vendor-defined information in PCIe Extended Configuration Space. ID = 000Bh.",
-        rows: [
-          { offset: "00h", fields: [{ id: "vsec_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "vsec_vendor_hdr", label: "Vendor-Specific Header", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          vsec_hdr: {
-            name: "VSEC Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 000Bh for Vendor-Specific Extended Capability." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          vsec_vendor_hdr: {
-            name: "Vendor-Specific Header",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "VSEC ID", description: "Vendor-defined ID number that indicates the nature and format of the Vendor-Specific registers that follow." },
-              { range: "[19:16]", title: "VSEC Rev", description: "Vendor-defined version number of this VSEC structure." },
-              { range: "[31:20]", title: "VSEC Length", description: "Indicates the number of bytes in the entire VSEC structure, including the Extended Capability Header, the Vendor-Specific Header, and all Vendor-Specific Registers." }
-            ]
-          }
-        }
+        name: "Vendor-Specific Extended Capability",
+        description: "Extended Capability containing a vendor-specific header followed by vendor-defined registers.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Vendor-Specific Header", [makeChapter7Bit("[15:0]", "VSEC ID", "Vendor-specific capability identifier."), makeChapter7Bit("[19:16]", "VSEC Revision", "Vendor-specific capability revision."), makeChapter7Bit("[31:20]", "VSEC Length", "Total length of the VSEC structure in bytes.")]],
+          ["08h", "Vendor-Specific Registers"]
+        ]
       },
       {
         id: "dvsec_extcap",
         type: "ExtCap",
         name: "Designated Vendor-Specific Extended Capability (DVSEC)",
-        description: "Optional Extended Capability providing designated vendor-specific information. Uses PCI-SIG Vendor ID so multiple vendors can use DVSEC without conflict. ID = 0023h.",
-        rows: [
-          { offset: "00h", fields: [{ id: "dvsec_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "dvsec_hdr1", label: "Designated VS Header 1", range: "[31:0]" }] },
-          { offset: "08h", fields: [{ id: "dvsec_hdr2", label: "Designated VS Header 2", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          dvsec_hdr: {
-            name: "DVSEC Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0023h for DVSEC." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          dvsec_hdr1: {
-            name: "Designated Vendor-Specific Header 1",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "DVSEC Vendor ID", description: "PCI-SIG assigned Vendor ID of the vendor that defined this DVSEC structure. This allows identification of the vendor regardless of the Vendor ID in the device's Type 0/1 header." },
-              { range: "[19:16]", title: "DVSEC Revision", description: "Vendor-defined version number of this DVSEC structure." },
-              { range: "[31:20]", title: "DVSEC Length", description: "Total number of bytes in the entire DVSEC structure, including Extended Capability Header, both DVSEC Headers, and all DVSEC Vendor-Specific Registers." }
-            ]
-          },
-          dvsec_hdr2: {
-            name: "Designated Vendor-Specific Header 2",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "DVSEC ID", description: "Vendor-defined ID indicating the nature and format of the DVSEC structure. Together with DVSEC Vendor ID, uniquely identifies the structure." }
-            ]
-          }
-        }
+        description: "Vendor-specific extended capability with a designated vendor ID, revision, length, and DVSEC ID.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "DVSEC Header 1", [makeChapter7Bit("[15:0]", "DVSEC Vendor ID", "Vendor ID designating the DVSEC owner."), makeChapter7Bit("[19:16]", "DVSEC Revision", "Revision of the DVSEC definition."), makeChapter7Bit("[31:20]", "DVSEC Length", "Length of the DVSEC structure in bytes.")]],
+          ["08h", "DVSEC Header 2", [makeChapter7Bit("[15:0]", "DVSEC ID", "Designated vendor-specific capability identifier."), makeChapter7Reserved("[31:16]")]],
+          ["0Ch", "DVSEC Registers"]
+        ]
       },
       {
-        id: "rcrb_extcap",
+        id: "rcrb_header_extcap",
         type: "ExtCap",
         name: "RCRB Header",
-        description: "Optional Extended Capability providing information about a Root Complex Register Block (RCRB). ID = 000Ah.",
-        rows: [
-          { offset: "00h", fields: [{ id: "rcrb_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "rcrb_vendev", label: "Vendor ID / Device ID", range: "[31:0]" }] },
-          { offset: "08h", fields: [{ id: "rcrb_cap", label: "RCRB Capabilities", range: "[31:0]" }] },
-          { offset: "0Ch", fields: [{ id: "rcrb_ctl", label: "RCRB Control", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          rcrb_hdr: {
-            name: "RCRB Header Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 000Ah for RCRB Header." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          rcrb_vendev: {
-            name: "RCRB Vendor ID and Device ID Register",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Vendor ID", description: "PCI-SIG assigned Vendor ID for this Root Complex Register Block." },
-              { range: "[31:16]", title: "Device ID", description: "Vendor-assigned Device ID for this Root Complex Register Block." }
-            ]
-          },
-          rcrb_cap: {
-            name: "RCRB Capabilities Register",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "CRS Software Visibility", description: "When Set, the Root Complex is capable of returning Configuration Request Retry Status (CRS) Completion Status to software.", values: { "0": "Not supported", "1": "Supported" } }
-            ]
-          },
-          rcrb_ctl: {
-            name: "RCRB Control Register",
-            offset: "0Ch", range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "CRS Software Visibility Enable", description: "When Set, enables the Root Complex to return CRS status to requesting software. Default value is 0b.", values: { "0": "Disabled", "1": "Enabled" } }
-            ]
-          }
-        }
+        description: "Root Complex Register Block header information.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "RCRB Vendor ID and Device ID", [makeChapter7Bit("[15:0]", "Vendor ID", "Vendor identifier for the RCRB."), makeChapter7Bit("[31:16]", "Device ID", "Device identifier for the RCRB.")]],
+          ["08h", "RCRB Capabilities"],
+          ["0Ch", "RCRB Control", [makeChapter7Flag("[0]", "RCRB Enable", "Enables RCRB function when implemented."), makeChapter7Reserved("[31:1]")]]
+        ]
       },
       {
         id: "rcld_extcap",
         type: "ExtCap",
         name: "Root Complex Link Declaration",
-        description: "Optional Extended Capability used by Root Complex components to declare the Links between Root Complex elements. ID = 0005h.",
-        rows: [
-          { offset: "00h", fields: [{ id: "rcld_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "rcld_elem_self_desc", label: "Element Self Description", range: "[31:0]" }] },
-          { offset: "08h", fields: [{ id: "rcld_rsvd", label: "Reserved", range: "[31:0]" }] },
-          { offset: "10h", fields: [{ id: "rcld_link_desc", label: "Link Description (Entry 1)", range: "[31:0]" }] },
-          { offset: "18h", fields: [{ id: "rcld_link_addr_lo", label: "Link Address Lower (Entry 1)", range: "[31:0]" }] },
-          { offset: "1Ch", fields: [{ id: "rcld_link_addr_hi", label: "Link Address Upper (Entry 1)", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          rcld_hdr: {
-            name: "Root Complex Link Declaration Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0005h for Root Complex Link Declaration." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          rcld_elem_self_desc: {
-            name: "Element Self Description Register",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[3:0]", title: "Element Type", description: "Type of this RC element.", values: { "0": "Configuration Space Element", "1": "System Egress/Sink", "2": "Internal RC Link" } },
-              { range: "[15:8]", title: "Number of Link Entries", description: "Number of Link Entries present in this capability structure. Must be >= 01h." },
-              { range: "[23:16]", title: "Component ID", description: "ID of this RC component. Starts at 01h; 00h is Reserved." },
-              { range: "[31:24]", title: "Port Number", description: "Port Number associated with this element. 00h = default Egress Port." }
-            ]
-          },
-          rcld_link_desc: {
-            name: "Link Description Register (Entry 1)",
-            offset: "10h", range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "Link Valid", description: "When Set, this entry specifies a valid Link.", values: { "0": "Invalid", "1": "Valid" } },
-              { range: "[1]", title: "Link Type", description: "Type of the Link address.", values: { "0": "Memory-mapped RCRB", "1": "Configuration Space element" } },
-              { range: "[2]", title: "Associate RCRB Header", description: "When Set, associates the declaring element with the RCRB Header. Link Type must be 0b when this bit is Set." },
-              { range: "[23:16]", title: "Target Component ID", description: "Component ID of the target RC element." },
-              { range: "[31:24]", title: "Target Port Number", description: "Port Number of the target RC element." }
-            ]
-          },
-          rcld_link_addr_lo: {
-            name: "Link Address Lower (Entry 1)",
-            offset: "18h", range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "Link Address [31:0]", description: "Lower 32 bits of the 64-bit Link Address. For Link Type 0 (RCRB): bits 11:0 are hardwired to 000h. For Link Type 1: bits encode N (bus number bits), Function Number, Device Number, Bus Number, and Config Space Base Address." }
-            ]
-          },
-          rcld_link_addr_hi: {
-            name: "Link Address Upper (Entry 1)",
-            offset: "1Ch", range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "Link Address [63:32]", description: "Upper 32 bits of the 64-bit Link Address." }
-            ]
-          }
-        }
+        description: "Declares Root Complex internal elements and links.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Element Self Description", [makeChapter7Bit("[3:0]", "Element Type", "Type of Root Complex element."), makeChapter7Bit("[11:4]", "Number of Link Entries", "Number of link entries that follow."), makeChapter7Reserved("[31:12]")]],
+          ["08h", "Link Description"],
+          ["0Ch", "Link Address"]
+        ]
       },
       {
         id: "rcilc_extcap",
         type: "ExtCap",
         name: "Root Complex Internal Link Control",
-        description: "Optional Extended Capability for Root Complex internal Link management. Provides Link capabilities, control, and status for RC internal Links. ID = 0006h.",
-        rows: [
-          { offset: "00h", fields: [{ id: "rcilc_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "rcilc_link_cap", label: "RC Link Capabilities", range: "[31:0]" }] },
-          { offset: "08h", fields: [{ id: "rcilc_link_ctl", label: "RC Link Control", range: "[15:0]" }, { id: "rcilc_link_sta", label: "RC Link Status", range: "[31:16]" }] }
-        ],
-        bitfields: {
-          rcilc_hdr: {
-            name: "Root Complex Internal Link Control Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0006h for Root Complex Internal Link Control." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          rcilc_link_cap: {
-            name: "Root Complex Link Capabilities Register",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[3:0]", title: "Max Link Speed", description: "Encoded bit position in Supported Link Speeds Vector indicating maximum Link speed." },
-              { range: "[9:4]", title: "Maximum Link Width", description: "Maximum Link width supported.", values: { "1": "x1", "2": "x2", "4": "x4", "8": "x8", "12": "x12", "16": "x16", "32": "x32" } },
-              { range: "[11:10]", title: "ASPM Support", description: "ASPM support.", values: { "0": "None", "1": "L0s", "2": "L1", "3": "L0s and L1" } },
-              { range: "[14:12]", title: "L0s Exit Latency", description: "L0s exit latency.", values: { "0": "<64ns", "1": "64-128ns", "2": "128-256ns", "3": "256-512ns", "4": "512ns-1us", "5": "1-2us", "6": "2-4us", "7": ">4us" } },
-              { range: "[17:15]", title: "L1 Exit Latency", description: "L1 exit latency.", values: { "0": "<1us", "1": "1-2us", "2": "2-4us", "3": "4-8us", "4": "8-16us", "5": "16-32us", "6": "32-64us", "7": ">64us" } },
-              { range: "[24:18]", title: "Supported Link Speeds Vector", description: "Bit vector of supported Link speeds. Bit 0=2.5GT/s, Bit 1=5.0GT/s, Bit 2=8.0GT/s, Bit 3=16.0GT/s, Bit 4=32.0GT/s." }
-            ]
-          },
-          rcilc_link_ctl: {
-            name: "Root Complex Link Control Register",
-            offset: "08h", range: "[15:0]",
-            bits: [
-              { range: "[1:0]", title: "ASPM Control", description: "ASPM L0s and L1 enable.", values: { "0": "Disabled", "1": "L0s enabled", "2": "L1 enabled", "3": "L0s and L1 enabled" } },
-              { range: "[7]", title: "Extended Synch", description: "When Set, forces transmission of extra Ordered Sets when exiting L0s and in Recovery. Default is 0b." }
-            ]
-          },
-          rcilc_link_sta: {
-            name: "Root Complex Link Status Register",
-            offset: "0Ah", range: "[15:0]",
-            bits: [
-              { range: "[3:0]", title: "Current Link Speed", description: "Encoded bit position in Supported Link Speeds Vector for the current Link speed." },
-              { range: "[9:4]", title: "Negotiated Link Width", description: "Negotiated Link width.", values: { "1": "x1", "2": "x2", "4": "x4", "8": "x8", "12": "x12", "16": "x16", "32": "x32" } }
-            ]
-          }
-        }
+        description: "Controls and reports internal Root Complex link properties.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Root Complex Link Capabilities", [makeChapter7Bit("[3:0]", "Link Speed", "Supported internal link speed encoding."), makeChapter7Bit("[9:4]", "Link Width", "Supported internal link width encoding."), makeChapter7Reserved("[31:10]")]],
+          ["08h", "Root Complex Link Control / Status", [makeChapter7Flag("[0]", "Link Disable", "Disables the internal link when supported."), makeChapter7Bit("[19:16]", "Current Link Speed", "Current internal link speed encoding."), makeChapter7Bit("[25:20]", "Negotiated Link Width", "Current internal link width encoding."), makeChapter7Reserved("[31:26]")]]
+        ]
       },
       {
-        id: "rcecea_extcap",
+        id: "rcec_assoc_extcap",
         type: "ExtCap",
         name: "Root Complex Event Collector Endpoint Association",
-        description: "Optional Extended Capability implemented in Root Complex Event Collectors (RCEC) to declare associated Root Complex integrated Endpoints (RCiEPs). ID = 0007h.",
-        rows: [
-          { offset: "00h", fields: [{ id: "rcecea_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "rcecea_bitmap", label: "Association Bitmap for RCiEPs", range: "[31:0]" }] },
-          { offset: "08h", fields: [{ id: "rcecea_bus_nums", label: "RCEC Associated Bus Numbers", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          rcecea_hdr: {
-            name: "RCECEA Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0007h for RCECEA. Version 2h indicates RCEC Associated Bus Numbers Register is present." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h (no bus numbers register) or 2h (bus numbers register present)." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          rcecea_bitmap: {
-            name: "Association Bitmap for RCiEPs",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "Association Bitmap", description: "32-bit bitmap where bit N being Set indicates that the device with Device Number N on the same bus as the RCEC is an associated RCiEP. The bit for the RCEC's own Device Number must be Set." }
-            ]
-          },
-          rcecea_bus_nums: {
-            name: "RCEC Associated Bus Numbers Register",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[15:8]", title: "RCEC Next Bus", description: "Lowest additional bus number that contains associated RCiEPs. Value of FFh indicates no additional associated bus numbers." },
-              { range: "[23:16]", title: "RCEC Last Bus", description: "Highest additional bus number that contains associated RCiEPs. Value of 00h indicates no additional associated bus numbers." }
-            ]
-          }
-        }
+        description: "Identifies RCiEPs associated with a Root Complex Event Collector.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Association Bitmap for RCiEPs"],
+          ["08h", "RCEC Associated Bus Numbers", [makeChapter7Bit("[7:0]", "Next Bus Number", "Next associated bus number."), makeChapter7Bit("[15:8]", "Last Bus Number", "Last associated bus number."), makeChapter7Reserved("[31:16]")]]
+        ]
       },
       {
-        id: "mc_extcap",
+        id: "multicast_extcap",
         type: "ExtCap",
         name: "Multicast",
-        description: "Optional Extended Capability enabling multicast of TLPs to multiple Functions. ID = 0012h. Provides MC_Base_Address, MC_Receive, MC_Block_All, MC_Block_Untranslated, and MC_Overlay_BAR registers.",
-        rows: [
-          { offset: "00h", fields: [{ id: "mc_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "mc_cap", label: "Multicast Capability", range: "[15:0]" }, { id: "mc_ctl", label: "Multicast Control", range: "[31:16]" }] },
-          { offset: "08h", fields: [{ id: "mc_base_addr_lo", label: "MC_Base_Address (Lower)", range: "[31:0]" }] },
-          { offset: "0Ch", fields: [{ id: "mc_base_addr_hi", label: "MC_Base_Address (Upper)", range: "[31:0]" }] },
-          { offset: "10h", fields: [{ id: "mc_receive_lo", label: "MC_Receive (Lower)", range: "[31:0]" }] },
-          { offset: "14h", fields: [{ id: "mc_receive_hi", label: "MC_Receive (Upper)", range: "[31:0]" }] },
-          { offset: "18h", fields: [{ id: "mc_block_all_lo", label: "MC_Block_All (Lower)", range: "[31:0]" }] },
-          { offset: "1Ch", fields: [{ id: "mc_block_all_hi", label: "MC_Block_All (Upper)", range: "[31:0]" }] },
-          { offset: "20h", fields: [{ id: "mc_block_untrans_lo", label: "MC_Block_Untranslated (Lower)", range: "[31:0]" }] },
-          { offset: "24h", fields: [{ id: "mc_block_untrans_hi", label: "MC_Block_Untranslated (Upper)", range: "[31:0]" }] },
-          { offset: "28h", fields: [{ id: "mc_overlay_bar_lo", label: "MC_Overlay_BAR (Lower)", range: "[31:0]" }] },
-          { offset: "2Ch", fields: [{ id: "mc_overlay_bar_hi", label: "MC_Overlay_BAR (Upper)", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          mc_hdr: {
-            name: "Multicast Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0012h for Multicast." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          mc_cap: {
-            name: "Multicast Capability Register",
-            offset: "04h", range: "[15:0]",
-            bits: [
-              { range: "[5:0]", title: "MC_Max_Group", description: "Maximum number of Multicast Groups supported minus 1. 00h = 1 group supported." },
-              { range: "[13:8]", title: "MC_Window_Size_Requested", description: "Log2 of the requested MC window size. RsvdP in Switch Downstream Ports and Root Ports." },
-              { range: "[15]", title: "MC_ECRC_Regeneration_Supported", description: "When Set, the component supports ECRC regeneration for multicast TLPs. Applicable to Switch Downstream Ports and Root Ports." }
-            ]
-          },
-          mc_ctl: {
-            name: "Multicast Control Register",
-            offset: "06h", range: "[15:0]",
-            bits: [
-              { range: "[5:0]", title: "MC_Num_Group", description: "Configured number of Multicast Groups minus 1. Default is 0." },
-              { range: "[15]", title: "MC_Enable", description: "When Set, enables the Multicast mechanism. Default is 0b.", values: { "0": "Disabled", "1": "Enabled" } }
-            ]
-          },
-          mc_base_addr_lo: {
-            name: "MC_Base_Address Register (Lower)",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[5:0]", title: "MC_Index_Position", description: "Indicates the LSB of the Multicast Group number within the address. Behavior is undefined if < 12 when MC_Enable is Set. Default is 0." },
-              { range: "[31:12]", title: "MC_Base_Address [31:12]", description: "Lower bits of the base address of the Multicast address range." }
-            ]
-          },
-          mc_base_addr_hi: {
-            name: "MC_Base_Address Register (Upper)",
-            offset: "0Ch", range: "[31:0]",
-            bits: [{ range: "[31:0]", title: "MC_Base_Address [63:32]", description: "Upper bits of the Multicast base address." }]
-          },
-          mc_receive_lo: {
-            name: "MC_Receive Register (Lower)",
-            offset: "10h", range: "[31:0]",
-            bits: [{ range: "[31:0]", title: "MC_Receive [31:0]", description: "Lower bits of the MC_Receive bitmap. Bit N set = receive/forward Multicast TLPs for MCG N. Default is 0." }]
-          },
-          mc_receive_hi: {
-            name: "MC_Receive Register (Upper)",
-            offset: "14h", range: "[31:0]",
-            bits: [{ range: "[31:0]", title: "MC_Receive [63:32]", description: "Upper bits of the MC_Receive bitmap." }]
-          },
-          mc_block_all_lo: {
-            name: "MC_Block_All Register (Lower)",
-            offset: "18h", range: "[31:0]",
-            bits: [{ range: "[31:0]", title: "MC_Block_All [31:0]", description: "Lower bits of the MC_Block_All bitmap. Bit N set = block sending TLPs to MCG N. Default is 0." }]
-          },
-          mc_block_all_hi: {
-            name: "MC_Block_All Register (Upper)",
-            offset: "1Ch", range: "[31:0]",
-            bits: [{ range: "[31:0]", title: "MC_Block_All [63:32]", description: "Upper bits of the MC_Block_All bitmap." }]
-          },
-          mc_block_untrans_lo: {
-            name: "MC_Block_Untranslated Register (Lower)",
-            offset: "20h", range: "[31:0]",
-            bits: [{ range: "[31:0]", title: "MC_Block_Untranslated [31:0]", description: "Lower bits of the MC_Block_Untranslated bitmap. Bit N set = block Untranslated Address TLPs to MCG N. Default is 0." }]
-          },
-          mc_block_untrans_hi: {
-            name: "MC_Block_Untranslated Register (Upper)",
-            offset: "24h", range: "[31:0]",
-            bits: [{ range: "[31:0]", title: "MC_Block_Untranslated [63:32]", description: "Upper bits of the MC_Block_Untranslated bitmap." }]
-          },
-          mc_overlay_bar_lo: {
-            name: "MC_Overlay_BAR Register (Lower)",
-            offset: "28h", range: "[31:0]",
-            bits: [
-              { range: "[5:0]", title: "MC_Overlay_Size", description: "If >= 6, specifies power-of-2 size in bytes of the overlay aperture. Values < 6 disable the overlay. Applicable to Switch Downstream Ports and Root Ports only." },
-              { range: "[31:6]", title: "MC_Overlay_BAR [31:6]", description: "Lower bits of the base address of the MC TLP overlay window. Default is 0." }
-            ]
-          },
-          mc_overlay_bar_hi: {
-            name: "MC_Overlay_BAR Register (Upper)",
-            offset: "2Ch", range: "[31:0]",
-            bits: [{ range: "[31:0]", title: "MC_Overlay_BAR [63:32]", description: "Upper bits of the MC_Overlay_BAR." }]
-          }
-        }
+        description: "Controls multicast group addressing, receive, and blocking behavior.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Multicast Capability / Control", [makeChapter7Bit("[5:0]", "Max Group", "Maximum multicast group number supported."), makeChapter7Flag("[6]", "ECRC Regeneration Supported", "Reports support for ECRC regeneration."), makeChapter7Bit("[21:16]", "Num Group", "Number of multicast groups enabled."), makeChapter7Flag("[22]", "Enable", "Enables multicast operation."), makeChapter7Reserved("[31:23]")]],
+          ["08h", "MC Base Address"],
+          ["10h", "MC Receive"],
+          ["18h", "MC Block All"],
+          ["20h", "MC Block Untranslated"],
+          ["28h", "MC Overlay BAR"]
+        ]
       },
       {
         id: "dpa_extcap",
         type: "ExtCap",
         name: "Dynamic Power Allocation (DPA)",
-        description: "Optional Extended Capability allowing software to dynamically control device power substates. ID = 0016h.",
-        rows: [
-          { offset: "00h", fields: [{ id: "dpa_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "dpa_cap", label: "DPA Capability", range: "[31:0]" }] },
-          { offset: "08h", fields: [{ id: "dpa_latency", label: "DPA Latency Indicator", range: "[31:0]" }] },
-          { offset: "0Ch", fields: [{ id: "dpa_status", label: "DPA Status", range: "[15:0]" }, { id: "dpa_ctl", label: "DPA Control", range: "[31:16]" }] },
-          { offset: "10h", fields: [{ id: "dpa_pwr_alloc", label: "DPA Power Allocation Array (Substate 0)", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          dpa_hdr: {
-            name: "DPA Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0016h for Dynamic Power Allocation." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          dpa_cap: {
-            name: "DPA Capability Register",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[4:0]", title: "Substate_Max", description: "Maximum substate number (total substates minus 1). 0 = 1 substate." },
-              { range: "[9:8]", title: "Transition Latency Unit", description: "Unit for transition latency values.", values: { "0": "1ms", "1": "10ms", "2": "100ms" } },
-              { range: "[13:12]", title: "Power Allocation Scale", description: "Scale factor for Power Allocation Array values.", values: { "0": "10.0x Watts", "1": "1.0x Watts", "2": "0.1x Watts", "3": "0.01x Watts" } },
-              { range: "[23:16]", title: "Transition Latency Value 0 (Xlcy0)", description: "Multiplied by Transition Latency Unit to determine maximum transition latency for substates using Xlcy0." },
-              { range: "[31:24]", title: "Transition Latency Value 1 (Xlcy1)", description: "Multiplied by Transition Latency Unit to determine maximum transition latency for substates using Xlcy1." }
-            ]
-          },
-          dpa_latency: {
-            name: "DPA Latency Indicator Register",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "Transition Latency Indicator", description: "Bit N = 0 means substate N uses Xlcy0; bit N = 1 means substate N uses Xlcy1. Read-only." }
-            ]
-          },
-          dpa_status: {
-            name: "DPA Status Register",
-            offset: "0Ch", range: "[15:0]",
-            bits: [
-              { range: "[4:0]", title: "Substate Status", description: "Current power substate number. Read-only. Default is 0." },
-              { range: "[8]", title: "Substate Control Enabled", description: "Set by hardware on reset/FLR. Cleared by software writing 1b. When Set, Substate Control register is active.", values: { "0": "Inactive", "1": "Active" } }
-            ]
-          },
-          dpa_ctl: {
-            name: "DPA Control Register",
-            offset: "0Eh", range: "[15:0]",
-            bits: [
-              { range: "[4:0]", title: "Substate Control", description: "Software writes target power substate. Active only when Substate Control Enabled is Set. Default is 0." }
-            ]
-          },
-          dpa_pwr_alloc: {
-            name: "DPA Power Allocation Array (Substate 0)",
-            offset: "10h", range: "[31:0]",
-            bits: [
-              { range: "[7:0]", title: "Substate 0 Power Allocation", description: "Power allocation value for substate 0. Multiplied by Power Allocation Scale to determine power in watts. Read-only." }
-            ]
-          }
-        }
+        description: "Reports and controls dynamic power allocation substate information.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "DPA Capability", [makeChapter7Bit("[4:0]", "Substate Maximum", "Maximum DPA substate supported."), makeChapter7Flag("[5]", "Transition Latency Unit", "Reports latency unit used by DPA latency indicators."), makeChapter7Reserved("[31:6]")]],
+          ["08h", "DPA Latency Indicator"],
+          ["0Ch", "DPA Status / Control", [makeChapter7Bit("[4:0]", "Substate Status", "Current DPA substate."), makeChapter7Bit("[20:16]", "Substate Control", "Requested DPA substate."), makeChapter7Flag("[21]", "DPA Enable", "Enables DPA control."), makeChapter7Reserved("[31:22]")]],
+          ["10h", "DPA Power Allocation Array"]
+        ]
       },
       {
         id: "tph_extcap",
         type: "ExtCap",
         name: "TPH Requester",
-        description: "Optional Extended Capability for TLP Processing Hints (TPH) Requester. Allows Functions to provide hints to the RC about cache hierarchy and memory access patterns. ID = 0017h.",
-        rows: [
-          { offset: "00h", fields: [{ id: "tph_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "tph_req_cap", label: "TPH Requester Capability", range: "[31:0]" }] },
-          { offset: "08h", fields: [{ id: "tph_req_ctl", label: "TPH Requester Control", range: "[31:0]" }] },
-          { offset: "0Ch", fields: [{ id: "tph_st_table", label: "TPH ST Table Entry 0", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          tph_hdr: {
-            name: "TPH Requester Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0017h for TPH Requester." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          tph_req_cap: {
-            name: "TPH Requester Capability Register",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "No ST Mode Supported", description: "Must be 1b. Indicates that No ST Mode is supported." },
-              { range: "[1]", title: "Interrupt Vector Mode Supported", description: "When Set, Interrupt Vector Mode is supported." },
-              { range: "[2]", title: "Device Specific Mode Supported", description: "When Set, Device Specific Mode is supported." },
-              { range: "[8]", title: "Extended TPH Requester Supported", description: "When Set, capable of generating TPH TLP Prefix." },
-              { range: "[10:9]", title: "ST Table Location", description: "Indicates where the Steering Tag table is located.", values: { "0": "ST Table not present", "1": "In TPH Requester capability structure", "2": "In MSI-X Table" } },
-              { range: "[26:16]", title: "ST Table Size", description: "Number of ST Table entries minus 1. Maximum 64 entries when table is in the TPH capability structure." }
-            ]
-          },
-          tph_req_ctl: {
-            name: "TPH Requester Control Register",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[2:0]", title: "ST Mode Select", description: "Selects the Steering Tag mode for TPH requests.", values: { "0": "No ST Mode", "1": "Interrupt Vector Mode", "2": "Device Specific Mode" } },
-              { range: "[9:8]", title: "TPH Requester Enable", description: "Controls whether the Function is permitted to issue TPH requests.", values: { "0": "No TPH", "1": "TPH permitted (no Extended TPH)", "3": "TPH and Extended TPH permitted" } }
-            ]
-          },
-          tph_st_table: {
-            name: "TPH ST Table Entry 0",
-            offset: "0Ch", range: "[31:0]",
-            bits: [
-              { range: "[7:0]", title: "ST Lower (Entry 0)", description: "Lower 8 bits of Steering Tag for ST Table entry 0. Default is 00h." },
-              { range: "[15:8]", title: "ST Upper (Entry 0)", description: "Upper 8 bits of Steering Tag for ST Table entry 0 (valid only if Extended TPH Requester Supported is Set). Default is 00h." }
-            ]
-          }
-        }
-      },
-      {
-        id: "lnr_extcap",
-        type: "ExtCap",
-        name: "LN Requester (LNR)",
-        description: "Optional Extended Capability for LN (Last-level cache Notification) Requester. Applicable only to Endpoints. ID = 001Ch.",
-        rows: [
-          { offset: "00h", fields: [{ id: "lnr_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "lnr_cap", label: "LNR Capability", range: "[15:0]" }, { id: "lnr_ctl", label: "LNR Control", range: "[31:16]" }] }
-        ],
-        bitfields: {
-          lnr_hdr: {
-            name: "LNR Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 001Ch for LN Requester." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          lnr_cap: {
-            name: "LNR Capability Register",
-            offset: "04h", range: "[15:0]",
-            bits: [
-              { range: "[0]", title: "LNR-64 Supported", description: "When Set, supports LN protocol for 64-byte cachelines.", values: { "0": "No", "1": "Yes" } },
-              { range: "[1]", title: "LNR-128 Supported", description: "When Set, supports LN protocol for 128-byte cachelines.", values: { "0": "No", "1": "Yes" } },
-              { range: "[12:8]", title: "LNR Registration Max", description: "Maximum concurrent cacheline registrations supported, encoded as log2 (e.g., 00101b = up to 32)." }
-            ]
-          },
-          lnr_ctl: {
-            name: "LNR Control Register",
-            offset: "06h", range: "[15:0]",
-            bits: [
-              { range: "[0]", title: "LNR Enable", description: "When Set, enables this Endpoint as an LN Requester. Default is 0b.", values: { "0": "Disabled", "1": "Enabled" } },
-              { range: "[1]", title: "LNR CLS", description: "Cacheline size selection.", values: { "0": "64-byte cachelines", "1": "128-byte cachelines" } },
-              { range: "[12:8]", title: "LNR Registration Limit", description: "Maximum concurrent LN registrations allowed, encoded as log2. Default is 11111b." }
-            ]
-          }
-        }
+        description: "Reports and controls TLP Processing Hints requester support.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "TPH Requester Capability", [makeChapter7Flag("[0]", "No ST Mode Supported", "Supports TPH without steering tags."), makeChapter7Flag("[1]", "Interrupt Vector Mode Supported", "Supports interrupt-vector steering-table mode."), makeChapter7Flag("[2]", "Device Specific Mode Supported", "Supports device-specific steering-table mode."), makeChapter7Bit("[10:8]", "ST Table Location", "Location of the steering tag table."), makeChapter7Bit("[26:16]", "ST Table Size", "Number of steering tag table entries minus one."), makeChapter7Reserved("[31:27]")]],
+          ["08h", "TPH Requester Control", [makeChapter7Bit("[1:0]", "ST Mode Select", "Selects steering tag mode."), makeChapter7Flag("[8]", "TPH Requester Enable", "Enables generation of requests with TPH."), makeChapter7Reserved("[31:9]")]],
+          ["0Ch", "TPH ST Table"]
+        ]
       },
       {
         id: "dpc_extcap",
         type: "ExtCap",
         name: "Downstream Port Containment (DPC)",
-        description: "Optional Extended Capability for DPC, applicable only to Root Ports and Switch Downstream Ports. Automatically isolates a failed component from the rest of the hierarchy. ID = 001Dh.",
-        rows: [
-          { offset: "00h", fields: [{ id: "dpc_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "dpc_cap", label: "DPC Capability", range: "[15:0]" }, { id: "dpc_ctl", label: "DPC Control", range: "[31:16]" }] },
-          { offset: "08h", fields: [{ id: "dpc_status", label: "DPC Status", range: "[15:0]" }, { id: "dpc_err_src_id", label: "DPC Error Source ID", range: "[31:16]" }] },
-          { offset: "0Ch", fields: [{ id: "dpc_rp_pio_status", label: "RP PIO Status", range: "[31:0]" }] },
-          { offset: "10h", fields: [{ id: "dpc_rp_pio_mask", label: "RP PIO Mask", range: "[31:0]" }] },
-          { offset: "14h", fields: [{ id: "dpc_rp_pio_severity", label: "RP PIO Severity", range: "[31:0]" }] },
-          { offset: "18h", fields: [{ id: "dpc_rp_pio_syserr", label: "RP PIO SysError", range: "[31:0]" }] },
-          { offset: "1Ch", fields: [{ id: "dpc_rp_pio_exception", label: "RP PIO Exception", range: "[31:0]" }] },
-          { offset: "20h", fields: [{ id: "dpc_rp_pio_hdr_log", label: "RP PIO Header Log DW0", range: "[31:0]" }] },
-          { offset: "30h", fields: [{ id: "dpc_rp_pio_imp_log", label: "RP PIO ImpSpec Log", range: "[31:0]" }] },
-          { offset: "34h", fields: [{ id: "dpc_rp_pio_tlp_pfx", label: "RP PIO TLP Prefix Log", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          dpc_hdr: {
-            name: "DPC Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 001Dh for DPC." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          dpc_cap: {
-            name: "DPC Capability Register",
-            offset: "04h", range: "[15:0]",
-            bits: [
-              { range: "[4:0]", title: "DPC Interrupt Message Number", description: "MSI/MSI-X vector number for DPC interrupt." },
-              { range: "[5]", title: "RP Extensions for DPC", description: "When Set, Root Port supports RP-specific DPC Extensions (RP PIO registers)." },
-              { range: "[6]", title: "Poisoned TLP Egress Blocking Supported", description: "When Set, supports blocking of egress poisoned TLPs." },
-              { range: "[7]", title: "DPC Software Triggering Supported", description: "When Set, supports software triggering of DPC." },
-              { range: "[11:8]", title: "RP PIO Log Size", description: "Number of DWORDs allocated for RP PIO log. Must be >= 4 if RP Extensions for DPC is Set." },
-              { range: "[12]", title: "DL_Active ERR_COR Signaling Supported", description: "When Set, supports ERR_COR signaling on DL_Active transitions." }
-            ]
-          },
-          dpc_ctl: {
-            name: "DPC Control Register",
-            offset: "06h", range: "[15:0]",
-            bits: [
-              { range: "[1:0]", title: "DPC Trigger Enable", description: "Enables DPC and selects the error condition that triggers it.", values: { "0": "Disabled", "1": "Trigger on unmasked uncorrectable/ERR_FATAL", "2": "Trigger on ERR_NONFATAL or ERR_FATAL" } },
-              { range: "[2]", title: "DPC Completion Control", description: "Selects Completion status during DPC.", values: { "0": "Completer Abort (CA)", "1": "Unsupported Request (UR)" } },
-              { range: "[3]", title: "DPC Interrupt Enable", description: "When Set, enables DPC interrupt generation. Default is 0b." },
-              { range: "[4]", title: "DPC ERR_COR Enable", description: "When Set, sends ERR_COR when DPC is triggered. Default is 0b." },
-              { range: "[5]", title: "Poisoned TLP Egress Blocking Enable", description: "When Set, blocks egress poisoned TLPs. Default is 0b." },
-              { range: "[6]", title: "DPC Software Trigger", description: "Write 1b to trigger DPC if DPC is enabled. Always reads 0b." },
-              { range: "[7]", title: "DL_Active ERR_COR Enable", description: "When Set, signals ERR_COR on Link DL_Active transition. Default is 0b." }
-            ]
-          },
-          dpc_status: {
-            name: "DPC Status Register",
-            offset: "08h", range: "[15:0]",
-            bits: [
-              { range: "[0]", title: "DPC Trigger Status", description: "Set when DPC is triggered. LTSSM forced to Disabled State while Set. Cleared by software writing 1b. Default is 0b." },
-              { range: "[2:1]", title: "DPC Trigger Reason", description: "Indicates the reason DPC was triggered.", values: { "0": "Unmasked uncorrectable error", "1": "ERR_NONFATAL", "2": "ERR_FATAL", "3": "See DPC Trigger Reason Extension" } },
-              { range: "[3]", title: "DPC Interrupt Status", description: "Set when DPC triggered with Interrupt Enable Set. Cleared by writing 1b." },
-              { range: "[4]", title: "DPC RP Busy", description: "Root Port busy with internal activity. Software must not clear Trigger Status while Set." },
-              { range: "[6:5]", title: "DPC Trigger Reason Extension", description: "Valid when Trigger Reason = 11b.", values: { "0": "RP PIO error", "1": "Software Trigger" } },
-              { range: "[12:8]", title: "RP PIO First Error Pointer", description: "Identifies the bit in RP PIO Status Register that caused the DPC trigger. Default is 11111b." }
-            ]
-          },
-          dpc_err_src_id: {
-            name: "DPC Error Source ID Register",
-            offset: "0Ah", range: "[15:0]",
-            bits: [
-              { range: "[15:0]", title: "DPC Error Source ID", description: "Contains the Requester ID of the transaction that triggered DPC when triggered by ERR_NONFATAL or ERR_FATAL." }
-            ]
-          },
-          dpc_rp_pio_status: {
-            name: "RP PIO Status Register",
-            offset: "0Ch", range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "Cfg UR Completion", description: "Configuration Request completed with UR status." },
-              { range: "[1]", title: "Cfg CA Completion", description: "Configuration Request completed with CA status." },
-              { range: "[2]", title: "Cfg Completion Timeout", description: "Configuration Request timed out." },
-              { range: "[8]", title: "I/O UR Completion", description: "I/O Request completed with UR status." },
-              { range: "[9]", title: "I/O CA Completion", description: "I/O Request completed with CA status." },
-              { range: "[10]", title: "I/O Completion Timeout", description: "I/O Request timed out." },
-              { range: "[16]", title: "Mem UR Completion", description: "Memory Request completed with UR status." },
-              { range: "[17]", title: "Mem CA Completion", description: "Memory Request completed with CA status." },
-              { range: "[18]", title: "Mem Completion Timeout", description: "Memory Request timed out." }
-            ]
-          },
-          dpc_rp_pio_mask: {
-            name: "RP PIO Mask Register",
-            offset: "10h", range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "RP PIO Mask", description: "Same bit positions as RP PIO Status Register. When a bit is Set, the corresponding RP PIO error is masked and will not trigger DPC. All bits default to 1b (all masked)." }
-            ]
-          },
-          dpc_rp_pio_severity: {
-            name: "RP PIO Severity Register",
-            offset: "14h", range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "RP PIO Severity", description: "Same bit positions as RP PIO Status Register. When Set, the corresponding error is reported as Fatal; when Clear, reported as Non-Fatal. All bits default to 0b." }
-            ]
-          },
-          dpc_rp_pio_syserr: {
-            name: "RP PIO SysError Register",
-            offset: "18h", range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "RP PIO SysError Enable", description: "Same bit positions as RP PIO Status Register. When Set, enables generation of a system error (if SERR# is enabled) for the corresponding RP PIO error. All bits default to 0b." }
-            ]
-          },
-          dpc_rp_pio_exception: {
-            name: "RP PIO Exception Register",
-            offset: "1Ch", range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "RP PIO Exception", description: "Same bit positions as RP PIO Status Register. Vendor-specific exception bits. All bits default to 0b." }
-            ]
-          },
-          dpc_rp_pio_hdr_log: {
-            name: "RP PIO Header Log Register",
-            offset: "20h", range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "RP PIO Header Log DW0", description: "First DWORD of the TLP Header from the Request that caused the RP PIO error. Same format as AER Header Log. 16 bytes total (DW0-DW3). Read-only; default is 0." }
-            ]
-          },
-          dpc_rp_pio_imp_log: {
-            name: "RP PIO ImpSpec Log Register",
-            offset: "30h", range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "RP PIO ImpSpec Log", description: "Implementation-specific information about the RP PIO error. Read-only; default is 0." }
-            ]
-          },
-          dpc_rp_pio_tlp_pfx: {
-            name: "RP PIO TLP Prefix Log Register",
-            offset: "34h", range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "RP PIO TLP Prefix Log", description: "Contains End-End TLP Prefixes from the tracked Request that caused the RP PIO error. Variable size. Read-only; default is 0." }
-            ]
-          }
-        }
+        description: "Controls containment of errors below a Downstream Port and exposes RP PIO error logging.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "DPC Capability / Control", [makeChapter7Flag("[0]", "DPC Trigger Supported", "Reports DPC trigger support."), makeChapter7Flag("[1]", "DPC Completion Timeout Supported", "Reports DPC on completion timeout support."), makeChapter7Bit("[7:4]", "RP Extensions", "Root Port extension capability encoding."), makeChapter7Flag("[16]", "DPC Trigger Enable", "Enables DPC trigger handling."), makeChapter7Flag("[17]", "DPC Completion Timeout Enable", "Enables DPC on completion timeout."), makeChapter7Flag("[18]", "DPC Interrupt Enable", "Enables DPC interrupt signaling."), makeChapter7Reserved("[31:19]")]],
+          ["08h", "DPC Status / Error Source ID", [makeChapter7Flag("[0]", "DPC Trigger Status", "A DPC trigger occurred."), makeChapter7Bit("[2:1]", "DPC Trigger Reason", "Reason for the DPC trigger."), makeChapter7Flag("[3]", "DPC Interrupt Status", "DPC interrupt is pending."), makeChapter7Bit("[31:16]", "DPC Error Source ID", "Requester ID associated with the DPC event."), makeChapter7Reserved("[15:4]")]],
+          ["0Ch", "RP PIO Status"],
+          ["10h", "RP PIO Mask"],
+          ["14h", "RP PIO Severity"],
+          ["18h", "RP PIO SysError"],
+          ["1Ch", "RP PIO Exception"],
+          ["20h", "RP PIO Header Log"],
+          ["30h", "RP PIO ImpSpec Log"],
+          ["34h", "RP PIO TLP Prefix Log"]
+        ]
       },
       {
         id: "ptm_extcap",
         type: "ExtCap",
-        name: "Precision Time Management (PTM)",
-        description: "Optional Extended Capability enabling precise time synchronization across PCIe hierarchy. Supports PTM Requester, Responder, and Root roles. ID = 001Fh.",
-        rows: [
-          { offset: "00h", fields: [{ id: "ptm_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "ptm_cap", label: "PTM Capability", range: "[31:0]" }] },
-          { offset: "08h", fields: [{ id: "ptm_ctl", label: "PTM Control", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          ptm_hdr: {
-            name: "PTM Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 001Fh for PTM." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          ptm_cap: {
-            name: "PTM Capability Register",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "PTM Requester Capable", description: "When Set, implements the PTM Requester role." },
-              { range: "[1]", title: "PTM Responder Capable", description: "When Set, implements the PTM Responder role. Must be Set if PTM Root Capable is Set." },
-              { range: "[2]", title: "PTM Root Capable", description: "When Set, capable of serving as the PTM Master Time source." },
-              { range: "[3]", title: "ePTM Capable", description: "When Set, supports Enhanced PTM. Strongly recommended." },
-              { range: "[15:8]", title: "Local Clock Granularity", description: "Granularity of the local clock in nanoseconds. 00h = no local clock (propagates upstream timing), 01h-FEh = clock period in ns, FFh = > 254 ns. RsvdP if PTM Root Capable is Clear." }
-            ]
-          },
-          ptm_ctl: {
-            name: "PTM Control Register",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "PTM Enable", description: "When Set, permits this Function to participate in the PTM mechanism. Default is 0b.", values: { "0": "Disabled", "1": "Enabled" } },
-              { range: "[1]", title: "Root Select", description: "When Set together with PTM Enable, designates this Time Source as the PTM Root. Default is 0b.", values: { "0": "Not PTM Root", "1": "PTM Root" } },
-              { range: "[15:8]", title: "Effective Granularity", description: "Programmed by software to the maximum Local Clock Granularity among the PTM Root and all intervening Time Sources. 00h = unknown, 01h-FEh = ns, FFh = > 254 ns." }
-            ]
-          }
-        }
+        name: "Precision Time Measurement (PTM)",
+        description: "Reports and controls Precision Time Measurement requester/responder/root behavior.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "PTM Capability", [makeChapter7Flag("[0]", "PTM Requester Capable", "Can issue PTM requests."), makeChapter7Flag("[1]", "PTM Responder Capable", "Can respond to PTM requests."), makeChapter7Flag("[2]", "PTM Root Capable", "Can act as a PTM root."), makeChapter7Bit("[15:8]", "Local Clock Granularity", "Local clock granularity encoding."), makeChapter7Reserved("[31:16]")]],
+          ["08h", "PTM Control", [makeChapter7Flag("[0]", "PTM Enable", "Enables PTM operation."), makeChapter7Flag("[1]", "Root Select", "Selects this Function as PTM root when supported."), makeChapter7Bit("[15:8]", "Effective Granularity", "Effective clock granularity programmed by software."), makeChapter7Reserved("[31:16]")]]
+        ]
       },
       {
         id: "rtr_extcap",
         type: "ExtCap",
         name: "Readiness Time Reporting",
-        description: "Optional Extended Capability reporting the time a Function needs to become Config-Ready after Conventional Reset, DL_Up, FLR, and D3Hot-to-D0 transitions. ID = 0022h.",
-        rows: [
-          { offset: "00h", fields: [{ id: "rtr_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "rtr_reg1", label: "Readiness Time Reporting 1", range: "[31:0]" }] },
-          { offset: "08h", fields: [{ id: "rtr_reg2", label: "Readiness Time Reporting 2", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          rtr_hdr: {
-            name: "Readiness Time Reporting Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0022h for Readiness Time Reporting." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          rtr_reg1: {
-            name: "Readiness Time Reporting 1 Register",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[11:0]", title: "Reset Time", description: "Time for the Function to become Config-Ready after Conventional Reset. Encoded as floating point: Value[8:0] x 32^Scale[11:9] nanoseconds. RsvdP if Immediate_Readiness is Set. Must be <= A1Eh." },
-              { range: "[23:12]", title: "DL_Up Time", description: "Time for the Function to become Config-Ready after the Downstream Port reports DL_Active. RsvdP if not associated with an Upstream Port. Must be <= A1Eh." },
-              { range: "[31]", title: "Valid", description: "When Set, all time values in this register are valid. When Clear, time values are not yet available.", values: { "0": "Not yet available", "1": "Valid" } }
-            ]
-          },
-          rtr_reg2: {
-            name: "Readiness Time Reporting 2 Register",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[11:0]", title: "FLR Time", description: "Time for the Function to become Config-Ready after Function Level Reset (FLR). RsvdP if FLR is not supported. Must be <= A1Eh." },
-              { range: "[23:12]", title: "D3Hot to D0 Time", description: "Time for the Function to become Config-Ready after a D3Hot-to-D0 transition. RsvdP if Immediate_Readiness_on_Return_to_D0 is Set. Must be <= 80Ah." }
-            ]
-          }
-        }
+        description: "Reports time requirements for device readiness after reset or power transitions.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Readiness Time Reporting 1"],
+          ["08h", "Readiness Time Reporting 2"]
+        ]
       },
       {
-        id: "hid_extcap",
+        id: "hierarchy_id_extcap",
         type: "ExtCap",
         name: "Hierarchy ID",
-        description: "Optional Extended Capability providing a hierarchy identifier for PCIe components. Not applicable to Bridges, RCECs, and RCRBs. ID = 0028h.",
-        rows: [
-          { offset: "00h", fields: [{ id: "hid_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "hid_status", label: "Hierarchy ID Status", range: "[31:0]" }] },
-          { offset: "08h", fields: [{ id: "hid_data", label: "Hierarchy ID Data", range: "[31:0]" }] },
-          { offset: "0Ch", fields: [{ id: "hid_guid1", label: "Hierarchy ID GUID 1 (bits 143:112)", range: "[31:0]" }] },
-          { offset: "10h", fields: [{ id: "hid_guid2", label: "Hierarchy ID GUID 2 (bits 111:80)", range: "[31:0]" }] },
-          { offset: "14h", fields: [{ id: "hid_guid3", label: "Hierarchy ID GUID 3 (bits 79:48)", range: "[31:0]" }] },
-          { offset: "18h", fields: [{ id: "hid_guid4", label: "Hierarchy ID GUID 4 (bits 47:16)", range: "[31:0]" }] },
-          { offset: "1Ch", fields: [{ id: "hid_guid5", label: "Hierarchy ID GUID 5 (bits 15:0 + pad)", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          hid_hdr: {
-            name: "Hierarchy ID Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0028h for Hierarchy ID." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          hid_status: {
-            name: "Hierarchy ID Status Register",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Message Requester ID", description: "Requester ID from the most recently received Hierarchy ID Message. RO in Upstream Ports; RsvdZ in Downstream Ports and RCiEPs." },
-              { range: "[28]", title: "Hierarchy ID Writeable", description: "Set = Data and GUID registers are R/W. Hardwired 1b in Downstream Ports; hardwired 0b for non-VF Upstream Ports." },
-              { range: "[29]", title: "Hierarchy ID VF Configurable", description: "Set when Hierarchy ID Writeable is R/W." },
-              { range: "[30]", title: "Hierarchy ID Pending", description: "Set to request transmission of a Hierarchy ID Message. Clears when satisfied or Link enters DL_Down. RsvdZ in non-Downstream Ports." },
-              { range: "[31]", title: "Hierarchy ID Valid", description: "1b in Downstream Ports. In Upstream Ports: Set when Hierarchy ID Message received; Cleared on DL_Down." }
-            ]
-          },
-          hid_data: {
-            name: "Hierarchy ID Data Register",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[7:0]", title: "System GUID Authority ID", description: "Corresponds to the Hierarchy ID Message Authority ID field." },
-              { range: "[31:16]", title: "Hierarchy ID", description: "Corresponds to the Hierarchy ID field in the Hierarchy ID Message." }
-            ]
-          },
-          hid_guid1: {
-            name: "Hierarchy ID GUID 1 Register",
-            offset: "0Ch", range: "[31:0]",
-            bits: [{ range: "[31:0]", title: "System GUID [143:112]", description: "Bits 143:112 of the 144-bit System GUID." }]
-          },
-          hid_guid2: {
-            name: "Hierarchy ID GUID 2 Register",
-            offset: "10h", range: "[31:0]",
-            bits: [{ range: "[31:0]", title: "System GUID [111:80]", description: "Bits 111:80 of the 144-bit System GUID." }]
-          },
-          hid_guid3: {
-            name: "Hierarchy ID GUID 3 Register",
-            offset: "14h", range: "[31:0]",
-            bits: [{ range: "[31:0]", title: "System GUID [79:48]", description: "Bits 79:48 of the 144-bit System GUID." }]
-          },
-          hid_guid4: {
-            name: "Hierarchy ID GUID 4 Register",
-            offset: "18h", range: "[31:0]",
-            bits: [{ range: "[31:0]", title: "System GUID [47:16]", description: "Bits 47:16 of the 144-bit System GUID." }]
-          },
-          hid_guid5: {
-            name: "Hierarchy ID GUID 5 Register",
-            offset: "1Ch", range: "[31:0]",
-            bits: [{ range: "[31:0]", title: "System GUID [15:0]", description: "Bits 15:0 of the 144-bit System GUID (padded)." }]
-          }
-        }
-      },
-      {
-        id: "vpd_cap",
-        type: "Cap",
-        name: "Vital Product Data (VPD)",
-        description: "PCI-compatible capability for Vital Product Data. Provides access to factory-programmed product information. Capability ID = 03h.",
-        rows: [
-          { offset: "00h", fields: [{ id: "vpd_capid", label: "Cap ID", range: "[7:0]" }, { id: "vpd_nextptr", label: "Next Ptr", range: "[15:8]" }, { id: "vpd_addr", label: "VPD Address", range: "[31:16]" }] },
-          { offset: "04h", fields: [{ id: "vpd_data", label: "VPD Data", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          vpd_capid: {
-            name: "VPD Capability Header",
-            offset: "00h", range: "[7:0]",
-            bits: [
-              { range: "[7:0]", title: "Capability ID", description: "ID = 03h for Vital Product Data Capability." },
-              { range: "[15:8]", title: "Next Capability Pointer", description: "Points to the next PCI Capability structure." },
-              { range: "[14:0]", title: "VPD Address", description: "DWORD-aligned byte address for the VPD read or write operation. Lowest 2 bits are always 00b." },
-              { range: "[15]", title: "F (Flag)", description: "0b = read request pending; 1b = write request pending. Hardware changes this bit to indicate completion: Set = read complete, Clear = write complete.", values: { "0": "Read request / Write complete", "1": "Write request / Read complete" } }
-            ]
-          },
-          vpd_data: {
-            name: "VPD Data Register",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "VPD Data", description: "Read: data returned from VPD at the requested address. Write: data to be written to VPD at the requested address. Must use 1111b Byte Enables." }
-            ]
-          }
-        }
+        description: "Reports hierarchy identity data and GUID registers.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Hierarchy ID Status", [makeChapter7Flag("[0]", "Hierarchy ID Valid", "Hierarchy ID data is valid."), makeChapter7Reserved("[31:1]")]],
+          ["08h", "Hierarchy ID Data"],
+          ["0Ch", "Hierarchy ID GUID 1"],
+          ["10h", "Hierarchy ID GUID 2"],
+          ["14h", "Hierarchy ID GUID 3"],
+          ["18h", "Hierarchy ID GUID 4"],
+          ["1Ch", "Hierarchy ID GUID 5"]
+        ]
       },
       {
         id: "npem_extcap",
         type: "ExtCap",
         name: "Native PCIe Enclosure Management (NPEM)",
-        description: "Optional Extended Capability for native PCIe enclosure management. Applicable to Root Ports, Switch Downstream Ports, and Endpoints. Provides LED and enclosure control. ID = 0029h.",
-        rows: [
-          { offset: "00h", fields: [{ id: "npem_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "npem_cap", label: "NPEM Capability", range: "[31:0]" }] },
-          { offset: "08h", fields: [{ id: "npem_ctl", label: "NPEM Control", range: "[31:0]" }] },
-          { offset: "0Ch", fields: [{ id: "npem_status", label: "NPEM Status", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          npem_hdr: {
-            name: "NPEM Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0029h for NPEM." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          npem_cap: {
-            name: "NPEM Capability Register",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "NPEM Capable", description: "When Set, the device supports NPEM." },
-              { range: "[1]", title: "NPEM Reset Capable", description: "When Set, supports NPEM-initiated reset." },
-              { range: "[2]", title: "NPEM OK Capable", description: "When Set, supports OK indication. Must be Set if NPEM Capable is Set." },
-              { range: "[3]", title: "NPEM Locate Capable", description: "When Set, supports Locate indication. Must be Set if NPEM Capable is Set." },
-              { range: "[4]", title: "NPEM Fail Capable", description: "When Set, supports Fail indication. Must be Set if NPEM Capable is Set." },
-              { range: "[5]", title: "NPEM Rebuild Capable", description: "When Set, supports Rebuild indication." },
-              { range: "[6]", title: "NPEM PFA Capable", description: "When Set, supports Predictive Failure Analysis indication." },
-              { range: "[7]", title: "NPEM Hot Spare Capable", description: "When Set, supports Hot Spare indication." },
-              { range: "[8]", title: "NPEM In A Critical Array Capable", description: "When Set, supports In A Critical Array indication." },
-              { range: "[9]", title: "NPEM In A Failed Array Capable", description: "When Set, supports In A Failed Array indication." },
-              { range: "[10]", title: "NPEM Invalid Device Type Capable", description: "When Set, supports Invalid Device Type indication." },
-              { range: "[11]", title: "NPEM Disabled Capable", description: "When Set, supports Disabled indication." },
-              { range: "[31:24]", title: "Enclosure-specific Capabilities", description: "Vendor/enclosure-defined capability bits." }
-            ]
-          },
-          npem_ctl: {
-            name: "NPEM Control Register",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "NPEM Enable", description: "When Set, enables NPEM. Default is 0b." },
-              { range: "[1]", title: "NPEM Initiate Reset", description: "Write 1b to initiate NPEM reset. Always reads 0b." },
-              { range: "[2]", title: "NPEM OK Control", description: "Controls OK indication." },
-              { range: "[3]", title: "NPEM Locate Control", description: "Controls Locate indication." },
-              { range: "[4]", title: "NPEM Fail Control", description: "Controls Fail indication." },
-              { range: "[5]", title: "NPEM Rebuild Control", description: "Controls Rebuild indication." },
-              { range: "[6]", title: "NPEM PFA Control", description: "Controls PFA indication." },
-              { range: "[7]", title: "NPEM Hot Spare Control", description: "Controls Hot Spare indication." },
-              { range: "[8]", title: "NPEM In A Critical Array Control", description: "Controls In A Critical Array indication." },
-              { range: "[9]", title: "NPEM In A Failed Array Control", description: "Controls In A Failed Array indication." },
-              { range: "[10]", title: "NPEM Invalid Device Type Control", description: "Controls Invalid Device Type indication." },
-              { range: "[11]", title: "NPEM Disabled Control", description: "Controls Disabled indication." },
-              { range: "[31:24]", title: "Enclosure-specific Controls", description: "Vendor/enclosure-defined control bits." }
-            ]
-          },
-          npem_status: {
-            name: "NPEM Status Register",
-            offset: "0Ch", range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "NPEM Command Completed", description: "Set when NPEM command completes. May be hardwired 1b if no command delay is needed. Software must wait for this bit before issuing the next command.", values: { "0": "Pending", "1": "Completed" } },
-              { range: "[31:24]", title: "Enclosure-specific Status", description: "Vendor/enclosure-defined status bits." }
-            ]
-          }
-        }
+        description: "Controls enclosure-management indicators and reports NPEM status.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "NPEM Capability", [makeChapter7Flag("[0]", "NPEM Supported", "Reports NPEM support."), makeChapter7Flag("[1]", "OK Control Supported", "Supports OK indicator control."), makeChapter7Flag("[2]", "Locate Control Supported", "Supports locate indicator control."), makeChapter7Flag("[3]", "Fail Control Supported", "Supports fail indicator control."), makeChapter7Reserved("[31:4]")]],
+          ["08h", "NPEM Control", [makeChapter7Flag("[0]", "NPEM Enable", "Enables NPEM control."), makeChapter7Flag("[1]", "OK Control", "Controls OK indication."), makeChapter7Flag("[2]", "Locate Control", "Controls locate indication."), makeChapter7Flag("[3]", "Fail Control", "Controls fail indication."), makeChapter7Reserved("[31:4]")]],
+          ["0Ch", "NPEM Status", [makeChapter7Flag("[0]", "Command Completed", "Last NPEM command completed."), makeChapter7Flag("[1]", "Command Failed", "Last NPEM command failed."), makeChapter7Reserved("[31:2]")]]
+        ]
       },
       {
-        id: "altprot_extcap",
+        id: "alternate_protocol_extcap",
         type: "ExtCap",
         name: "Alternate Protocol",
-        description: "Optional Extended Capability enabling Alternate Protocol Negotiation on PCIe Links. Only permitted in Downstream Port Functions and Function 0 of Upstream Port Devices. ID = 002Bh.",
-        rows: [
-          { offset: "00h", fields: [{ id: "ap_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "ap_cap", label: "Alternate Protocol Capabilities", range: "[31:0]" }] },
-          { offset: "08h", fields: [{ id: "ap_ctl", label: "Alternate Protocol Control", range: "[31:0]" }] },
-          { offset: "0Ch", fields: [{ id: "ap_data1", label: "Alternate Protocol Data 1", range: "[31:0]" }] },
-          { offset: "10h", fields: [{ id: "ap_data2", label: "Alternate Protocol Data 2", range: "[31:0]" }] },
-          { offset: "14h", fields: [{ id: "ap_sel_mask", label: "Alternate Protocol Selective Enable Mask", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          ap_hdr: {
-            name: "Alternate Protocol Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 002Bh for Alternate Protocol." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          ap_cap: {
-            name: "Alternate Protocol Capabilities Register",
-            offset: "04h", range: "[31:0]",
-            bits: [
-              { range: "[7:0]", title: "Alternate Protocol Count", description: "Number of Alternate Protocols supported. Must be >= 1." },
-              { range: "[8]", title: "Alternate Protocol Selective Enable Supported", description: "When Set, the Selective Enable Mask Register is present. Hardwired 0b in Upstream Ports." }
-            ]
-          },
-          ap_ctl: {
-            name: "Alternate Protocol Control Register",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[7:0]", title: "Alternate Protocol Index Select", description: "Selects which Alternate Protocol is visible in Data 1 and Data 2 registers. Undefined if > Alternate Protocol Count. Default is 00h." },
-              { range: "[8]", title: "Alternate Protocol Negotiation Global Enable", description: "When Set, enables Alternate Protocol Negotiation for this Link. Default is 0b." }
-            ]
-          },
-          ap_data1: {
-            name: "Alternate Protocol Data 1 Register",
-            offset: "0Ch", range: "[31:0]",
-            bits: [
-              { range: "[2:0]", title: "Alternate Protocol Usage Information", description: "Modified TS Usage Mode associated with this Alternate Protocol." },
-              { range: "[15:5]", title: "Alternate Protocol Details", description: "Protocol-specific details." },
-              { range: "[31:16]", title: "Alternate Protocol Vendor ID", description: "Vendor ID associated with this Alternate Protocol. FFFFh if index >= count or disabled." }
-            ]
-          },
-          ap_data2: {
-            name: "Alternate Protocol Data 2 Register",
-            offset: "10h", range: "[31:0]",
-            bits: [
-              { range: "[23:0]", title: "Modified TS Information 2", description: "Symbols 12-14 values from the Modified TS for this Alternate Protocol. Bits 7:0 = Symbol 12, bits 15:8 = Symbol 13, bits 23:16 = Symbol 14." }
-            ]
-          },
-          ap_sel_mask: {
-            name: "Alternate Protocol Selective Enable Mask Register",
-            offset: "14h", range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "PCI Express Enable", description: "PCI Express is always index 00h. Default is 1b; may be hardwired to 1b." },
-              { range: "[31:1]", title: "Other Protocols Enable", description: "Enables specific Alternate Protocols for negotiation. Implementation-specific defaults." }
-            ]
-          }
-        }
-      },
-      {
-        id: "af_cap",
-        type: "Cap",
-        name: "Advanced Features (AF)",
-        description: "PCI-compatible capability for Conventional PCI Advanced Features. Only permitted in Conventional PCI Functions integrated into a Root Complex. Capability ID = 13h.",
-        rows: [
-          { offset: "00h", fields: [{ id: "af_capid", label: "Cap ID", range: "[7:0]" }, { id: "af_nextptr", label: "Next Ptr", range: "[15:8]" }, { id: "af_len", label: "Length", range: "[23:16]" }, { id: "af_caps", label: "AF Capabilities", range: "[31:24]" }] },
-          { offset: "04h", fields: [{ id: "af_ctl", label: "AF Control", range: "[7:0]" }, { id: "af_status", label: "AF Status", range: "[15:8]" }, { id: "af_rsvd", label: "Reserved", range: "[31:16]" }] }
-        ],
-        bitfields: {
-          af_capid: {
-            name: "Advanced Features Capability Header",
-            offset: "00h", range: "[7:0]",
-            bits: [
-              { range: "[7:0]", title: "Capability ID", description: "ID = 13h for Advanced Features Capability." },
-              { range: "[15:8]", title: "Next Capability Pointer", description: "Points to the next PCI Capability structure." },
-              { range: "[23:16]", title: "Length", description: "Total length in bytes of this capability structure. Must be 06h." },
-              { range: "[24]", title: "TP_CAP", description: "When Set, the Function supports the Transactions Pending bit. Must be Set if FLR_CAP is Set." },
-              { range: "[25]", title: "FLR_CAP", description: "When Set, the Function supports Function Level Reset (FLR)." }
-            ]
-          },
-          af_ctl: {
-            name: "AF Control Register",
-            offset: "04h", range: "[7:0]",
-            bits: [
-              { range: "[0]", title: "INITIATE_FLR", description: "Write 1b to initiate a Function Level Reset. Always reads 0b." }
-            ]
-          },
-          af_status: {
-            name: "AF Status Register",
-            offset: "05h", range: "[7:0]",
-            bits: [
-              { range: "[0]", title: "Transactions Pending (TP)", description: "When Set, the Function has one or more outstanding non-posted transactions. When Clear, all transactions are complete.", values: { "0": "No transactions pending", "1": "Transactions pending" } }
-            ]
-          }
-        }
+        description: "Reports and selects alternate protocol operation for a link.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Alternate Protocol Capabilities", [makeChapter7Flag("[0]", "Alternate Protocol Supported", "Reports support for alternate protocol mode."), makeChapter7Bit("[7:1]", "Protocol Count", "Number of alternate protocols supported."), makeChapter7Reserved("[31:8]")]],
+          ["08h", "Alternate Protocol Control", [makeChapter7Flag("[0]", "Alternate Protocol Enable", "Enables selected alternate protocol operation."), makeChapter7Bit("[7:1]", "Protocol Select", "Selects the alternate protocol."), makeChapter7Reserved("[31:8]")]],
+          ["0Ch", "Alternate Protocol Data 1"],
+          ["10h", "Alternate Protocol Data 2"],
+          ["14h", "Alternate Protocol Selective Enable Mask"]
+        ]
       },
       {
         id: "sfi_extcap",
         type: "ExtCap",
-        name: "SFI (Slot and Function Independence)",
-        description: "Optional Extended Capability providing Slot and Function Independence features for Root Ports and Switch Downstream Ports. Supports presence detect masking, DLL state masking, and downstream port filtering. ID = 002Ch.",
-        rows: [
-          { offset: "00h", fields: [{ id: "sfi_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "sfi_cap", label: "SFI Capability", range: "[15:0]" }, { id: "sfi_ctl", label: "SFI Control", range: "[31:16]" }] },
-          { offset: "08h", fields: [{ id: "sfi_status", label: "SFI Status", range: "[31:0]" }] },
-          { offset: "0Ch", fields: [{ id: "sfi_cam_addr", label: "SFI CAM Address", range: "[31:0]" }] },
-          { offset: "10h", fields: [{ id: "sfi_cam_data", label: "SFI CAM Data", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          sfi_hdr: {
-            name: "SFI Extended Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 002Ch for SFI." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h." }
-            ]
-          },
-          sfi_cap: {
-            name: "SFI Capability Register",
-            offset: "04h", range: "[15:0]",
-            bits: [
-              { range: "[0]", title: "SFI OOB PD Supported", description: "When Set, supports out-of-band presence detect state reporting. Must be 0b if there is no slot." }
-            ]
-          },
-          sfi_ctl: {
-            name: "SFI Control Register",
-            offset: "06h", range: "[15:0]",
-            bits: [
-              { range: "[0]", title: "SFI PD State Mask", description: "When Set, masks Presence Detect State to 0b. A mask change triggers a Presence Detect Changed event. Default is 0b." },
-              { range: "[1]", title: "SFI DLL State Mask", description: "When Set, masks Data Link Layer Link Active to 0b. A mask change triggers a DLL State Changed event. Default is 0b." },
-              { range: "[2]", title: "SFI OOB PD Changed Enable", description: "When Set, enables ERR_COR Message for OOB PD Changed events. Default is 0b." },
-              { range: "[3]", title: "SFI DLL State Changed Enable", description: "When Set, enables ERR_COR Message for DLL State Changed events. Default is 0b." },
-              { range: "[5:4]", title: "SFI DPF Control", description: "Downstream Port Filtering control.", values: { "0": "Disabled", "1": "Filter all Requests", "2": "Filter Config Requests only" } },
-              { range: "[6]", title: "SFI HPS Suppress", description: "When Set, forces Hot-Plug Surprise bit Clear, disabling HPS functionality. Default is 0b." },
-              { range: "[7]", title: "SFI DRS Mask", description: "When Set, masks the DRS Message Received bit to 0b. Clearing while actual state is Set triggers DRS signaling. Default is 0b." },
-              { range: "[8]", title: "SFI DRS Signaling Enable", description: "When Set, enables ERR_COR Message for SFI DRS Received events. Default is 0b." },
-              { range: "[9]", title: "SFI DRS Trigger", description: "Write 1b to trigger DRS behavior if SFI DRS Mask is Clear. Always reads 0b." }
-            ]
-          },
-          sfi_status: {
-            name: "SFI Status Register",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "SFI PD State", description: "Actual presence detect state. Always reflects true state regardless of mask. Read-only." },
-              { range: "[1]", title: "SFI OOB PD State", description: "Out-of-band presence detect state. Implemented if SFI OOB PD Supported is Set. Read-only." },
-              { range: "[2]", title: "SFI OOB PD Changed", description: "Set when SFI OOB PD State changes. Cleared by writing 1b." },
-              { range: "[3]", title: "SFI DLL State", description: "Actual DLL state regardless of mask. Read-only." },
-              { range: "[4]", title: "SFI DLL State Changed", description: "Set when SFI DLL State changes. Cleared by writing 1b." },
-              { range: "[5]", title: "SFI DRS Received", description: "Actual DRS Message Received state. Clearing also clears the DRS Message Received bit. Cleared by writing 1b." }
-            ]
-          },
-          sfi_cam_addr: {
-            name: "SFI CAM Address Register",
-            offset: "0Ch", range: "[31:0]",
-            bits: [
-              { range: "[27:0]", title: "SFI CAM Address", description: "Target Bus, Device, Function, Extended Register Number, and Register Number for Config Requests generated via the SFI CAM Data Register. Format per Table 7-1." }
-            ]
-          },
-          sfi_cam_data: {
-            name: "SFI CAM Data Register",
-            offset: "10h", range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "SFI CAM Data", description: "Reads generate a Config Read Request on the Link below the Port targeting the address in SFI CAM Address. Writes generate a Config Write Request. The hardware completes the access and returns/stores data here." }
-            ]
-          }
-        }
+        name: "SFI",
+        description: "SFI capability, control, status, and CAM access registers.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "SFI Capability / Control", [makeChapter7Flag("[0]", "SFI Supported", "Reports SFI support."), makeChapter7Bit("[7:1]", "CAM Size", "Size encoding for the SFI CAM."), makeChapter7Flag("[16]", "SFI Enable", "Enables SFI operation."), makeChapter7Bit("[23:17]", "SFI Mode", "Selects SFI operating mode."), makeChapter7Reserved("[31:24]")]],
+          ["08h", "SFI Status", [makeChapter7Flag("[0]", "SFI Ready", "SFI logic is ready."), makeChapter7Flag("[1]", "CAM Access Busy", "CAM access is in progress."), makeChapter7Reserved("[31:2]")]],
+          ["0Ch", "SFI CAM Address"],
+          ["10h", "SFI CAM Data"]
+        ]
       },
       {
-        id: "ssid_cap",
-        type: "Cap",
-        name: "Subsystem ID and Subsystem Vendor ID Capability",
-        description: "PCI-compatible capability providing Subsystem Vendor ID and Subsystem ID for Type 1 Configuration Space Headers (Bridges). Capability ID = 0Dh.",
-        rows: [
-          { offset: "00h", fields: [{ id: "ssid_capid", label: "Cap ID", range: "[7:0]" }, { id: "ssid_nextptr", label: "Next Ptr", range: "[15:8]" }, { id: "ssid_rsvd", label: "Reserved", range: "[31:16]" }] },
-          { offset: "04h", fields: [{ id: "ssid_ssvid", label: "Subsystem Vendor ID", range: "[15:0]" }, { id: "ssid_ssid", label: "Subsystem ID", range: "[31:16]" }] }
-        ],
-        bitfields: {
-          ssid_capid: {
-            name: "Subsystem ID Capability Header",
-            offset: "00h", range: "[7:0]",
-            bits: [
-              { range: "[7:0]", title: "Capability ID", description: "ID = 0Dh for Subsystem ID and Subsystem Vendor ID Capability." },
-              { range: "[15:8]", title: "Next Capability Pointer", description: "Points to the next PCI Capability structure." }
-            ]
-          },
-          ssid_ssvid: {
-            name: "Subsystem Vendor ID Register",
-            offset: "04h", range: "[15:0]",
-            bits: [
-              { range: "[15:0]", title: "Subsystem Vendor ID (SSVID)", description: "PCI-SIG assigned Vendor ID of the subsystem manufacturer. HwInit." }
-            ]
-          },
-          ssid_ssid: {
-            name: "Subsystem ID Register",
-            offset: "06h", range: "[15:0]",
-            bits: [
-              { range: "[15:0]", title: "Subsystem ID (SSID)", description: "Vendor-assigned ID of the subsystem. HwInit." }
-            ]
-          }
-        }
-      },
-      /* =========================
-       * 7.8.1 Power Budgeting
-       * ========================= */
-      {
-        id: "pwr_budget_extcap",
+        id: "doe_extcap",
         type: "ExtCap",
-        name: "Power Budgeting",
-        description: "Optional Extended Capability allowing the system to allocate power to hot-plug devices. Devices report power consumption on various rails, PM states, and operating conditions. ID = 0004h.",
-        rows: [
-          { offset: "00h", fields: [{ id: "pb_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }] },
-          { offset: "04h", fields: [{ id: "pb_data_sel", label: "Data Select", range: "[7:0]" }, { id: "pb_rsvd", label: "Reserved", range: "[31:8]" }] },
-          { offset: "08h", fields: [{ id: "pb_data", label: "Power Budgeting Data", range: "[31:0]" }] },
-          { offset: "0Ch", fields: [{ id: "pb_cap", label: "Power Budget Capability", range: "[31:0]" }] }
-        ],
-        bitfields: {
-          pb_hdr: {
-            name: "Enhanced Capability Header",
-            offset: "00h", range: "[31:0]",
-            bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0004h for Power Budgeting." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next PCI Express Capability structure or 000h if no other items exist." }
-            ]
-          },
-          pb_data_sel: {
-            name: "Power Budgeting Data Select",
-            offset: "04h", range: "[7:0]",
-            bits: [
-              { range: "[7:0]", title: "Data Select", description: "8-bit read-write register that indexes the Power Budgeting Data reported through the Power Budgeting Data Register. Values start at zero for the first DWORD. Default value is undefined." }
-            ]
-          },
-          pb_data: {
-            name: "Power Budgeting Data",
-            offset: "08h", range: "[31:0]",
-            bits: [
-              { range: "[7:0]", title: "Base Power", description: "Specifies in watts the base power value in the given operating condition. Must be multiplied by Data Scale to get actual power consumption. For Base Power > EFh when Data Scale = 00b: F0h=<=250W Slot Power Limit, F1h=<=275W, F2h=<=300W." },
-              { range: "[9:8]", title: "Data Scale", description: "Scale to apply to Base Power value.", values: { "0": "1.0x", "1": "0.1x", "2": "0.01x", "3": "0.001x" } },
-              { range: "[12:10]", title: "PM Sub State", description: "Power management sub state of the operating condition.", values: { "0": "Default Sub State", "1": "Device Specific Sub State" } },
-              { range: "[14:13]", title: "PM State", description: "Power management state of the operating condition.", values: { "0": "D0", "1": "D1", "2": "D2", "3": "D3 (11b+Aux/PME Aux Type = D3Cold; otherwise D3Hot)" } },
-              { range: "[17:15]", title: "Type", description: "Type of the operating condition.", values: { "0": "PME Aux", "1": "Auxiliary", "2": "Idle", "3": "Sustained", "4": "Sustained - Emergency Power Reduction", "5": "Maximum - Emergency Power Reduction", "7": "Maximum" } },
-              { range: "[20:18]", title: "Power Rail", description: "Thermal load or power rail of the operating condition.", values: { "0": "Power (12V)", "1": "Power (3.3V)", "2": "Power (1.5V or 1.8V)", "3": "Thermal" } }
-            ]
-          },
-          pb_cap: {
-            name: "Power Budgeting Capability",
-            offset: "0Ch", range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "System Allocated", description: "When Set, indicates that the power budget for the device is included within the system power budget. Reported Power Budgeting Data must be ignored by software for power budgeting decisions if this bit is Set.", values: { "0": "Not system allocated", "1": "System allocated" } }
-            ]
-          }
-        }
+        name: "Data Object Exchange (DOE)",
+        description: "Mailbox interface for exchanging typed data objects.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "DOE Capabilities", [makeChapter7Flag("[0]", "DOE Interrupt Supported", "Reports support for DOE interrupt generation."), makeChapter7Reserved("[31:1]")]],
+          ["08h", "DOE Control", [makeChapter7Flag("[0]", "DOE Abort", "Aborts the current DOE transfer."), makeChapter7Flag("[1]", "DOE Interrupt Enable", "Enables DOE interrupt signaling."), makeChapter7Flag("[2]", "DOE Go", "Starts DOE object transfer."), makeChapter7Reserved("[31:3]")]],
+          ["0Ch", "DOE Status", [makeChapter7Flag("[0]", "DOE Busy", "DOE mailbox is busy."), makeChapter7Flag("[1]", "DOE Interrupt Status", "DOE interrupt is pending."), makeChapter7Flag("[2]", "DOE Error", "DOE transfer error occurred."), makeChapter7Flag("[31]", "Data Object Ready", "A DOE read data object is ready."), makeChapter7Reserved("[30:3]")]],
+          ["10h", "DOE Write Data Mailbox"],
+          ["14h", "DOE Read Data Mailbox"]
+        ]
+      },
+      {
+        id: "shadow_functions_extcap",
+        type: "ExtCap",
+        name: "Shadow Functions",
+        description: "Reports and controls shadow function instances.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Shadow Functions Capability", [makeChapter7Bit("[7:0]", "Instance Count", "Number of shadow function instances supported."), makeChapter7Reserved("[31:8]")]],
+          ["08h", "Shadow Functions Control", [makeChapter7Flag("[0]", "Shadow Functions Enable", "Enables shadow function operation."), makeChapter7Reserved("[31:1]")]],
+          ["0Ch", "Shadow Functions Instance Register Entry"]
+        ]
+      },
+      {
+        id: "ide_extcap",
+        type: "ExtCap",
+        name: "Integrity and Data Encryption (IDE)",
+        description: "Reports and controls Link IDE and Selective IDE streams and associations.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "IDE Capability", [makeChapter7Flag("[0]", "Link IDE Stream Supported", "Reports Link IDE stream support."), makeChapter7Flag("[1]", "Selective IDE Stream Supported", "Reports Selective IDE stream support."), makeChapter7Bit("[7:2]", "Selective Stream Count", "Number of Selective IDE streams supported."), makeChapter7Reserved("[31:8]")]],
+          ["08h", "IDE Control", [makeChapter7Flag("[0]", "IDE Enable", "Enables IDE operation."), makeChapter7Reserved("[31:1]")]],
+          ["0Ch", "Link IDE Stream Control"],
+          ["10h", "Link IDE Stream Status"],
+          ["14h", "Selective IDE Stream Capability"],
+          ["18h", "Selective IDE Stream Control"],
+          ["1Ch", "Selective IDE Stream Status"],
+          ["20h", "IDE RID Association 1"],
+          ["24h", "IDE RID Association 2"],
+          ["28h", "IDE Address Association 1"],
+          ["2Ch", "IDE Address Association 2"],
+          ["30h", "IDE Address Association 3"]
+        ]
+      },
+      {
+        id: "null_extcap",
+        type: "ExtCap",
+        name: "Null Extended Capability",
+        description: "Extended capability placeholder with no function-specific register payload.",
+        registers: [["00h", "Enhanced Capability Header", chapter7HeaderBits(true)]]
+      },
+      {
+        id: "svc_extcap",
+        type: "ExtCap",
+        name: "Streamlined Virtual Channel (SVC)",
+        description: "Streamlined virtual-channel capability and resource controls.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "SVC Port Capability Register 1"],
+          ["08h", "SVC Port Capability Register 2"],
+          ["0Ch", "SVC Port Control", [makeChapter7Flag("[0]", "SVC Enable", "Enables SVC operation."), makeChapter7Reserved("[31:1]")]],
+          ["10h", "SVC Port Status", [makeChapter7Flag("[0]", "SVC Enabled", "SVC operation is enabled."), makeChapter7Reserved("[31:1]")]],
+          ["14h", "SVC Resource Capability"],
+          ["18h", "SVC Resource Control"],
+          ["1Ch", "SVC Resource Status"]
+        ]
+      },
+      {
+        id: "mrbl_extcap",
+        type: "ExtCap",
+        name: "MMIO Register Block Locator (MRBL)",
+        description: "Locates MMIO register blocks associated with a Function.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "MRBL Capabilities", [makeChapter7Bit("[7:0]", "Locator Count", "Number of locator registers implemented."), makeChapter7Reserved("[31:8]")]],
+          ["08h", "MRBL Locator", [makeChapter7Bit("[2:0]", "BIR", "BAR Indicator Register containing the MMIO register block."), makeChapter7Bit("[31:3]", "Block Offset", "Offset to the MMIO register block within the selected BAR.")]]
+        ]
       }
     ];
-
+    
+    addChapter7Structures(chapter7MissingStructures);
+    
     /* ===== State ===== */
     let currentStructureId = structures[0]?.id;
     let currentFieldKey = null;
-
+    
     /* ===== DOM References ===== */
     const structListBody = document.getElementById("structure-list-body");
     const structTitle = document.getElementById("struct-title");
     const bitfieldContainer = document.getElementById("bitfield-container");
     const bitfieldPlaceholder = document.getElementById("bitfield-placeholder");
-
+    
     const fieldTitle = document.getElementById("field-title");
     const fieldSubtitle = document.getElementById("field-subtitle");
     const bitBarContainer = document.getElementById("bit-bar-container");
@@ -4344,7 +2978,7 @@
     const bitBar = document.getElementById("bit-bar");
     const bitList = document.getElementById("bit-list");
     const bitsPlaceholder = document.getElementById("bits-placeholder");
-
+    
     /* ===== Resizable Logic ===== */
     // ... (Keep existing resizable logic) ...
     const splitterH = document.getElementById("splitter-h");
@@ -4353,7 +2987,7 @@
     const bottomPane = document.getElementById("bottom-pane");
     const leftPane = document.querySelector(".bottom-left");
     const rightPane = document.getElementById("bottom-right-pane");
-
+    
     // Horizontal Splitter
     let isDraggingH = false;
     splitterH.addEventListener("mousedown", (e) => {
@@ -4362,7 +2996,7 @@
       document.body.style.cursor = "row-resize";
       e.preventDefault();
     });
-
+    
     // Vertical Splitter
     let isDraggingV = false;
     splitterV.addEventListener("mousedown", (e) => {
@@ -4371,7 +3005,7 @@
       document.body.style.cursor = "col-resize";
       e.preventDefault();
     });
-
+    
     document.addEventListener("mousemove", (e) => {
       if (isDraggingH) {
         const toolbarHeight = document.querySelector(".toolbar").offsetHeight;
@@ -4387,7 +3021,7 @@
         }
       }
     });
-
+    
     document.addEventListener("mouseup", () => {
       if (isDraggingH) {
         isDraggingH = false;
@@ -4400,118 +3034,118 @@
         document.body.style.cursor = "";
       }
     });
-
+    
     /* ===== Render functions ===== */
-
+    
     function renderStructureList() {
       structListBody.innerHTML = "";
       structures.forEach(struct => {
         const tr = document.createElement("tr");
         tr.className = "struct-row";
         tr.dataset.id = struct.id;
-        if (struct.id === currentStructureId) tr.classList.add("selected");
-
+        if (struct.id === currentStructureId) tr.classList.add("table-active");
+    
         const tdId = document.createElement("td");
         const tdType = document.createElement("td");
         const tdName = document.createElement("td");
         const tdDesc = document.createElement("td");
-
+    
         tdId.textContent = struct.id;
         tdType.textContent = struct.type || "";
         tdName.textContent = struct.name;
         tdDesc.textContent = struct.description || "";
-
+    
         tr.appendChild(tdId);
         tr.appendChild(tdType);
         tr.appendChild(tdName);
         tr.appendChild(tdDesc);
-
+    
         tr.addEventListener("click", () => {
           currentStructureId = struct.id;
           currentFieldKey = pickDefaultFieldKey(struct);
           updateAll();
         });
-
+    
         structListBody.appendChild(tr);
       });
     }
-
+    
     function pickDefaultFieldKey(struct) {
       if (!struct || !struct.bitfields) return null;
       const keys = Object.keys(struct.bitfields);
       return keys.length ? keys[0] : null;
     }
-
+    
     function renderBitfieldMap(struct) {
       bitfieldContainer.innerHTML = "";
       structTitle.textContent = struct.name || "Structure";
-
+    
       const hasRows = Array.isArray(struct.rows) && struct.rows.length > 0;
       bitfieldPlaceholder.style.display = hasRows ? "none" : "block";
       if (!hasRows) return;
-
+    
       struct.rows.forEach(row => {
         const rowDiv = document.createElement("div");
         rowDiv.className = "struct-row-flex";
-
+    
         // 1. Content Area (Fields)
         const contentDiv = document.createElement("div");
         contentDiv.className = "struct-content-flex";
-
+    
         // We need to reverse the fields because in PCI, higher bits (left) come first in visual representation if we want [31:0]
         // But usually the spec lists fields from low to high or high to low.
-        // Let's assume the `fields` array is ordered from Low Bit to High Bit?
-        // Or High to Low?
+        // Let's assume the `fields` array is ordered from Low Bit to High Bit? 
+        // Or High to Low? 
         // Standard practice: Vendor ID [15:0] (Offset 00h), Device ID [31:16] (Offset 02h/part of 00h row)
-        // If the row is 00h, and fields are [VendorID, DeviceID],
+        // If the row is 00h, and fields are [VendorID, DeviceID], 
         // VendorID is bits 0-15, DeviceID is bits 16-31.
         // Visually, 31 is on the LEFT, 0 is on the RIGHT.
         // So we should render Device ID then Vendor ID.
-        // Let's check our data.
+        // Let's check our data. 
         // type0: fields: [{id: "vendorid", range: "[15:0]"}, {id: "deviceid", range: "[31:16]"}]
         // We want Device ID (Left) -> Vendor ID (Right).
         // So we should reverse the fields array for rendering if it's sorted by low bit.
         // Let's assume input order is Low->High (Vendor, then Device).
         // So we reverse it.
-
+    
         const fieldsToRender = [...(row.fields || [])].reverse();
-
+    
         fieldsToRender.forEach(field => {
           const fieldDiv = document.createElement("div");
           fieldDiv.className = "struct-field-flex";
           fieldDiv.dataset.fieldKey = field.id;
           fieldDiv.textContent = field.label;
-
+    
           // Calculate width
           const bits = parseRangeWidth(field.range);
           const widthPercent = (bits / 32) * 100;
           fieldDiv.style.width = `${widthPercent}%`;
-
+    
           if (field.id === currentFieldKey) {
             fieldDiv.classList.add("selected");
           }
-
+    
           fieldDiv.addEventListener("click", () => {
             currentFieldKey = field.id;
             updateBitfieldSelection(struct);
             renderBitDetails(struct);
           });
-
+    
           contentDiv.appendChild(fieldDiv);
         });
-
+    
         rowDiv.appendChild(contentDiv);
-
+    
         // 2. Offset (Right)
         const offsetDiv = document.createElement("div");
         offsetDiv.className = "struct-offset-flex";
         offsetDiv.textContent = row.offset;
         rowDiv.appendChild(offsetDiv);
-
+    
         bitfieldContainer.appendChild(rowDiv);
       });
     }
-
+    
     function parseRangeWidth(rangeStr) {
       // rangeStr example: "[31:0]" or "[15:0]" or "[7]"
       if (!rangeStr) return 32;
@@ -4521,7 +3155,7 @@
       const low = match[2] ? parseInt(match[2], 10) : high;
       return (high - low) + 1;
     }
-
+    
     function updateBitfieldSelection(struct) {
       const cells = bitfieldContainer.querySelectorAll(".struct-field-flex");
       cells.forEach(cell => {
@@ -4532,32 +3166,32 @@
         }
       });
     }
-
+    
     function renderBitDetails(struct) {
       bitList.innerHTML = "";
       bitsPlaceholder.style.display = "none";
       bitBarContainer.style.display = "none";
       fieldSubtitle.textContent = "";
-
+    
       if (!currentFieldKey || !struct.bitfields || !struct.bitfields[currentFieldKey]) {
         fieldTitle.textContent = "Select a register";
         bitsPlaceholder.style.display = "block";
         return;
       }
-
+    
       const field = struct.bitfields[currentFieldKey];
       fieldTitle.textContent = field.name || currentFieldKey;
       fieldSubtitle.textContent = `(${field.name || currentFieldKey})`; // Mimic "Status (Status)"
-
+    
       // 1. Render Bit Bar
       bitBarContainer.style.display = "block";
       renderBitBar(field);
-
+    
       // 2. Render Description List
       (field.bits || []).forEach(bit => {
         const li = document.createElement("li");
         li.className = "bit-list-item";
-
+    
         const titleDiv = document.createElement("div");
         titleDiv.className = "bit-list-title";
         // Format: "3 - Interrupt Status (RO)"
@@ -4565,14 +3199,14 @@
         // Parse range to see if single bit or range
         const rangeText = bit.range.replace(/[\[\]]/g, "");
         titleDiv.textContent = `${rangeText} - ${bit.title}`;
-
+    
         const descDiv = document.createElement("div");
         descDiv.className = "bit-list-desc";
         descDiv.textContent = bit.description;
-
+    
         li.appendChild(titleDiv);
         li.appendChild(descDiv);
-
+    
         if (bit.values) {
           const valuesTable = document.createElement("table");
           valuesTable.className = "bit-values-table";
@@ -4590,41 +3224,41 @@
           }
           li.appendChild(valuesTable);
         }
-
+    
         bitList.appendChild(li);
       });
     }
-
+    
     function renderBitBar(field) {
       bitNumbers.innerHTML = "";
       bitBar.innerHTML = "";
-
+    
       // Determine total bits for this register (e.g. 16 or 32)
       const totalBits = parseRangeWidth(field.range);
       const { high, low } = parseRange(field.range);
-
+    
       // Create numbers row
       const numSpanHigh = document.createElement("span");
       numSpanHigh.textContent = high;
       const numSpanLow = document.createElement("span");
       numSpanLow.textContent = low;
-
+    
       bitNumbers.appendChild(numSpanHigh);
       bitNumbers.appendChild(numSpanLow);
-
+    
       // Create bit boxes
       for (let b = high; b >= low; b--) {
         const box = document.createElement("div");
         box.className = "bit-box";
-
+    
         // Check if this bit is defined in field.bits
         const bitDef = (field.bits || []).find(def => {
           const r = parseRange(def.range);
           return b <= r.high && b >= r.low;
         });
-
+    
         if (bitDef) {
-          // If defined, check if it is Reserved.
+          // If defined, check if it is Reserved. 
           // If NOT Reserved, add .active (white). Reserved stays default (gray).
           const isReserved = /reserved|rsvd/i.test(bitDef.title);
           if (!isReserved) {
@@ -4634,12 +3268,12 @@
         } else {
           box.title = `Bit ${b}`;
         }
-
+    
         bitBar.appendChild(box);
       }
     }
-
-
+    
+    
     function parseRange(rangeStr) {
       const match = rangeStr.match(/\[(\d+)(?::(\d+))?\]/);
       if (!match) return { high: 0, low: 0 };
@@ -4647,7 +3281,7 @@
       const low = match[2] ? parseInt(match[2], 10) : high;
       return { high, low };
     }
-
+    
     function updateAll() {
       renderStructureList();
       const struct = structures.find(s => s.id === currentStructureId);
@@ -4656,7 +3290,7 @@
         renderBitDetails(struct);
       }
     }
-
+    
     // Init
     renderStructureList();
     updateAll();
@@ -4664,4 +3298,3 @@
 </body>
 
 </html>
-```
