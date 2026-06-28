@@ -611,7 +611,7 @@
           bar3: { name: "BAR3", offset: "1Ch", range: "[31:0]", bits: [{ range: "[31:0]", title: "Base Address", description: "Base address." }] },
           bar4: { name: "BAR4", offset: "20h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Base Address", description: "Base address." }] },
           bar5: { name: "BAR5", offset: "24h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Base Address", description: "Base address." }] },
-          cardbus: { name: "CardBus CIS Pointer", offset: "28h", range: "[31:0]", bits: [{ range: "[31:0]", title: "CardBus CIS Pointer", description: "Points to the CardBus CIS." }] },
+          cardbus: { name: "CardBus CIS Pointer", offset: "28h", range: "[31:0]", bits: [{ range: "[31:0]", title: "CardBus CIS Pointer", description: "Not used by PCI Express; hardwired to zero." }] },
           subvendor: { name: "Subsystem Vendor ID", offset: "2Ch", range: "[15:0]", bits: [{ range: "[15:0]", title: "Subsystem Vendor ID", description: "Vendor ID of the add-in card." }] },
           subsysid: { name: "Subsystem ID", offset: "2Eh", range: "[15:0]", bits: [{ range: "[15:0]", title: "Subsystem ID", description: "Device ID of the add-in card." }] },
           rombar: { name: "Expansion ROM Base Address", offset: "30h", range: "[31:0]", bits: [{ range: "[0]", title: "Address Decode Enable", description: "Enables expansion ROM decoding." }, { range: "[31:11]", title: "Base Address", description: "Base address." }] },
@@ -620,8 +620,8 @@
           reserved2: { name: "Reserved", offset: "38h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Reserved", description: "Reserved." }] },
           intline: { name: "Interrupt Line", offset: "3Ch", range: "[7:0]", bits: [{ range: "[7:0]", title: "Interrupt Line", description: "System interrupt routing information." }] },
           intpin: { name: "Interrupt Pin", offset: "3Dh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Interrupt Pin", description: "Identifies the legacy interrupt pin used (1=INTA, etc.)." }] },
-          mingnt: { name: "Min_Gnt", offset: "3Eh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Min_Gnt", description: "Length of burst period required." }] },
-          maxlat: { name: "Max_Lat", offset: "3Fh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Max_Lat", description: "How often the device needs access to the bus." }] }
+          mingnt: { name: "Min_Gnt", offset: "3Eh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Min_Gnt", description: "Not used by PCI Express; hardwired to zero." }] },
+          maxlat: { name: "Max_Lat", offset: "3Fh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Max_Lat", description: "Not used by PCI Express; hardwired to zero." }] }
         }
       },
     
@@ -798,7 +798,7 @@
           primary_bus: { name: "Primary Bus", offset: "18h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Primary Bus Number", description: "Bus number on the upstream side of the bridge." }] },
           secondary_bus: { name: "Secondary Bus", offset: "19h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Secondary Bus Number", description: "Bus number on the downstream side of the bridge." }] },
           subordinate_bus: { name: "Subordinate Bus", offset: "1Ah", range: "[7:0]", bits: [{ range: "[7:0]", title: "Subordinate Bus Number", description: "Highest bus number downstream of the bridge." }] },
-          sec_latency: { name: "Secondary Latency Timer", offset: "1Bh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Secondary Latency Timer", description: "Not used in PCIe, hardwired to 0." }] },
+          sec_latency: { name: "Secondary Latency Timer", offset: "1Bh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Secondary Latency Timer", description: "Not used by PCI Express; hardwired to zero." }] },
           io_base: { name: "I/O Base", offset: "1Ch", range: "[7:0]", bits: [{ range: "[3:0]", title: "Addressing Capability", description: "01h=32-bit I/O." }, { range: "[7:4]", title: "I/O Base Address", description: "Upper 4 bits of the I/O base address." }] },
           io_limit: { name: "I/O Limit", offset: "1Dh", range: "[7:0]", bits: [{ range: "[3:0]", title: "Addressing Capability", description: "01h=32-bit I/O." }, { range: "[7:4]", title: "I/O Limit Address", description: "Upper 4 bits of the I/O limit address." }] },
           sec_status: {
@@ -842,13 +842,13 @@
               { range: "[2]", title: "ISA Enable", description: "Modifies the response to I/O accesses.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[3]", title: "VGA Enable", description: "Controls the routing of VGA addresses.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[4]", title: "VGA 16-bit Decode", description: "Controls the decoding of VGA I/O addresses.", values: { "0": "10-bit", "1": "16-bit" } },
-              { range: "[5]", title: "Master Abort Mode", description: "Controls the bridge’s behavior when a Master Abort occurs.", values: { "0": "Report", "1": "Ignore" } },
+              { range: "[5]", title: "Master Abort Mode", description: "PCI-only behavior; read-only and hardwired to zero for PCI Express." },
               { range: "[6]", title: "Secondary Bus Reset", description: "Forces a reset on the secondary bus.", values: { "0": "Clear", "1": "Set" } },
               { range: "[7]", title: "Fast Back-to-Back Enable", description: "RO for PCIe. Hardwired to 0." },
-              { range: "[8]", title: "Primary Discard Timer", description: "Controls the primary discard timer." },
-              { range: "[9]", title: "Secondary Discard Timer", description: "Controls the secondary discard timer." },
-              { range: "[10]", title: "Discard Timer Status", description: "Status of the discard timer." },
-              { range: "[11]", title: "Discard Timer SERR# Enable", description: "Controls SERR# generation for discard timer." },
+              { range: "[8]", title: "Primary Discard Timer", description: "PCI-only behavior; read-only and hardwired to zero for PCI Express." },
+              { range: "[9]", title: "Secondary Discard Timer", description: "PCI-only behavior; read-only and hardwired to zero for PCI Express." },
+              { range: "[10]", title: "Discard Timer Status", description: "PCI-only status; read-only and hardwired to zero for PCI Express." },
+              { range: "[11]", title: "Discard Timer SERR# Enable", description: "PCI-only behavior; read-only and hardwired to zero for PCI Express." },
               { range: "[15:12]", title: "Reserved", description: "Reserved." }
             ]
           }
@@ -876,7 +876,7 @@
             offset: "04h",
             fields: [
               { id: "pmcsr", label: "PM Control / Status", range: "[15:0]" },
-              { id: "pm_bridge_ext", label: "Bridge Extensions", range: "[23:16]" },
+              { id: "pm_bridge_ext", label: "Reserved / Undefined", range: "[23:16]" },
               { id: "pm_data", label: "Data", range: "[31:24]" }
             ]
           }
@@ -890,8 +890,8 @@
             range: "[15:0]",
             bits: [
               { range: "[2:0]", title: "Version", description: "PM Spec Version (011b = 1.2).", values: { "2": "1.1", "3": "1.2" } },
-              { range: "[3]", title: "PME Clock", description: "Indicates if PME# generation requires a PCI clock.", values: { "0": "No", "1": "Yes" } },
-              { range: "[4]", title: "Reserved", description: "Reserved." },
+              { range: "[3]", title: "PME Clock", description: "Read-only and hardwired to zero for PCI Express." },
+              { range: "[4]", title: "Immediate Readiness on Return to D0", description: "Indicates that the Function is ready immediately after returning to D0." },
               { range: "[5]", title: "DSI", description: "Device Specific Initialization.", values: { "0": "No", "1": "Yes" } },
               { range: "[8:6]", title: "Aux_Current", description: "Auxiliary Current Requirements." },
               { range: "[9]", title: "D1 Support", description: "Supports D1 Power Management State.", values: { "0": "No", "1": "Yes" } },
@@ -905,17 +905,17 @@
             range: "[15:0]",
             bits: [
               { range: "[1:0]", title: "Power State", description: "Current power state (00=D0, 01=D1, 10=D2, 11=D3).", values: { "0": "D0", "1": "D1", "2": "D2", "3": "D3hot" } },
-              { range: "[2]", title: "Reserved", description: "Reserved." },
-              { range: "[3]", title: "No Soft Reset", description: "Device transitions from D3hot to D0 without internal reset.", values: { "0": "Reset", "1": "No Reset" } },
-              { range: "[7:4]", title: "Reserved", description: "Reserved." },
-              { range: "[8]", title: "PME Enable", description: "Enables PME# generation.", values: { "0": "Disable", "1": "Enable" } },
-              { range: "[12:9]", title: "Data Select", description: "Selects which data is reported in the Data register." },
-              { range: "[14:13]", title: "Data Scale", description: "Scaling factor for the Data register.", values: { "0": "Unknown", "1": "0.1x", "2": "0.01x", "3": "0.001x" } },
-              { range: "[15]", title: "PME Status", description: "Indicates if a PME event occurred.", values: { "0": "Not Asserted", "1": "Asserted" } }
+              { range: "[2]", title: "RsvdP", description: "Reserved and preserved by software." },
+              { range: "[3]", title: "No Soft Reset", description: "Device transitions from D3hot to D0 without internal reset; Set in Flit Mode and a VF matches its PF.", values: { "0": "Reset", "1": "No Reset" } },
+              { range: "[7:4]", title: "RsvdP", description: "Reserved and preserved by software." },
+              { range: "[8]", title: "PME Enable", description: "Read/write (or RWS where applicable) enable for PME generation.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[12:9]", title: "Data Select", description: "Selects which data is reported in the Data register; VFs read zero." },
+              { range: "[14:13]", title: "Data Scale", description: "Scaling factor for the Data register; VFs read zero.", values: { "0": "Unknown", "1": "0.1x", "2": "0.01x", "3": "0.001x" } },
+              { range: "[15]", title: "PME Status", description: "Write-one-to-clear indication that a PME event occurred.", values: { "0": "Not Asserted", "1": "Asserted" } }
             ]
           },
-          pm_bridge_ext: { name: "PM Bridge Extensions", offset: "06h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Bridge Extensions", description: "Bus Power/Clock Control Enable, B2/B3 support." }] },
-          pm_data: { name: "Data", offset: "07h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Data", description: "Power consumption or heat dissipation data." }] }
+          pm_bridge_ext: { name: "Reserved / Undefined", offset: "06h", range: "[7:0]", bits: [{ range: "[5:0]", title: "RsvdP", description: "Reserved and preserved by software." }, { range: "[7:6]", title: "Undefined", description: "Read-only undefined bits; software must ignore the values read." }] },
+          pm_data: { name: "Data", offset: "07h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Data", description: "Optional read-only power or heat-dissipation data; VFs read zero." }] }
         }
       },
     
@@ -946,7 +946,7 @@
             offset: "08h",
             fields: [
               { id: "devctl", label: "Device Control", range: "[15:0]" },
-              { id: "devsta", label: "Device Status", range: "[15:0]" }
+              { id: "devsta", label: "Device Status", range: "[31:16]" }
             ]
           },
           {
@@ -959,7 +959,7 @@
             offset: "10h",
             fields: [
               { id: "linkctl", label: "Link Control", range: "[15:0]" },
-              { id: "linksta", label: "Link Status", range: "[15:0]" }
+              { id: "linksta", label: "Link Status", range: "[31:16]" }
             ]
           },
           {
@@ -972,14 +972,14 @@
             offset: "18h",
             fields: [
               { id: "slotctl", label: "Slot Control", range: "[15:0]" },
-              { id: "slotsta", label: "Slot Status", range: "[15:0]" }
+              { id: "slotsta", label: "Slot Status", range: "[31:16]" }
             ]
           },
           {
             offset: "1Ch",
             fields: [
               { id: "rootctl", label: "Root Control", range: "[15:0]" },
-              { id: "rootcap", label: "Root Capabilities", range: "[15:0]" }
+              { id: "rootcap", label: "Root Capabilities", range: "[31:16]" }
             ]
           },
           {
@@ -998,7 +998,7 @@
             offset: "28h",
             fields: [
               { id: "devctl2", label: "Device Control 2", range: "[15:0]" },
-              { id: "devsta2", label: "Device Status 2", range: "[15:0]" }
+              { id: "devsta2", label: "Device Status 2", range: "[31:16]" }
             ]
           },
           {
@@ -1011,7 +1011,7 @@
             offset: "30h",
             fields: [
               { id: "linkctl2", label: "Link Control 2", range: "[15:0]" },
-              { id: "linksta2", label: "Link Status 2", range: "[15:0]" }
+              { id: "linksta2", label: "Link Status 2", range: "[31:16]" }
             ]
           },
           {
@@ -1024,7 +1024,7 @@
             offset: "38h",
             fields: [
               { id: "slotctl2", label: "Slot Control 2", range: "[15:0]" },
-              { id: "slotsta2", label: "Slot Status 2", range: "[15:0]" }
+              { id: "slotsta2", label: "Slot Status 2", range: "[31:16]" }
             ]
           }
         ],
@@ -1036,7 +1036,7 @@
             offset: "02h",
             range: "[15:0]",
             bits: [
-              { range: "[3:0]", title: "Version", description: "PCI Express Capability Version." },
+              { range: "[3:0]", title: "Version", description: "PCI Express Capability Version; this structure uses Version 2h." },
               { range: "[7:4]", title: "Device/Port Type", description: "Indicates the type of PCI Express function." },
               { range: "[8]", title: "Slot Implemented", description: "Set when the Link is connected to a slot." },
               { range: "[13:9]", title: "Interrupt Message Number", description: "MSI/MSI-X vector used for interrupt messages." },
@@ -1050,7 +1050,7 @@
             range: "[31:0]",
             bits: [
               { range: "[2:0]", title: "Max Payload Size Supported", description: "Max payload size the device can support.", values: { "0": "128", "1": "256", "2": "512", "3": "1024", "4": "2048", "5": "4096" } },
-              { range: "[4:3]", title: "Phantom Functions Supported", description: "Support for phantom functions.", values: { "0": "None", "1": "1", "2": "2", "3": "3" } },
+              { range: "[4:3]", title: "Phantom Functions Supported", description: "Reports how many low-order Function Number bits may be used for Phantom Functions.", values: { "0": "No Function Number bits", "1": "Bit 0", "2": "Bits 1:0", "3": "Bits 2:0" } },
               { range: "[5]", title: "Extended Tag Field Supported", description: "Support for 8-bit Tag field.", values: { "0": "5-bit", "1": "8-bit" } },
               { range: "[8:6]", title: "Endpoint L0s Acceptable Latency", description: "Acceptable total latency for L0s.", values: { "0": "<64ns", "1": "<128ns", "2": "<256ns", "3": "<512ns", "4": "<1us", "5": "<2us", "6": "<4us", "7": "No Limit" } },
               { range: "[11:9]", title: "Endpoint L1 Acceptable Latency", description: "Acceptable total latency for L1.", values: { "0": "<1us", "1": "<2us", "2": "<4us", "3": "<8us", "4": "<16us", "5": "<32us", "6": "<64us", "7": "No Limit" } },
@@ -1063,7 +1063,7 @@
               { range: "[28]", title: "Function Level Reset Capability", description: "Indicates Function Level Reset support." },
               { range: "[29]", title: "Mixed_MPS_Supported", description: "Indicates support for different MPS settings for different targets." },
               { range: "[30]", title: "TEE-IO Supported", description: "Indicates support for TEE Device Interface Security Protocol functionality." },
-              { range: "[31]", title: "Reserved", description: "Reserved." }
+              { range: "[31]", title: "RsvdP", description: "Reserved and preserved by software." }
             ]
           },
           devctl: {
@@ -1082,7 +1082,7 @@
               { range: "[10]", title: "Aux Power PM Enable", description: "Enables Aux Power PM.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[11]", title: "Enable No Snoop", description: "Enables No Snoop.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[14:12]", title: "Max Read Request Size", description: "Sets the maximum Read Request size.", values: { "0": "128", "1": "256", "2": "512", "3": "1024", "4": "2048", "5": "4096" } },
-              { range: "[15]", title: "Function Level Reset", description: "Initiates Function Level Reset.", values: { "0": "No Action", "1": "Initiate FLR" } }
+              { range: "[15]", title: "Bridge Configuration Retry Enable / Initiate Function Level Reset", description: "Meaning depends on Function type: enables Configuration Request Retry behavior for a bridge or initiates Function Level Reset.", values: { "0": "No Action / Disabled", "1": "Initiate FLR / Enabled" } }
             ]
           },
           devsta: {
@@ -1095,7 +1095,9 @@
               { range: "[2]", title: "Fatal Error Detected", description: "Indicates a Fatal Error was detected.", values: { "0": "Not Detected", "1": "Detected" } },
               { range: "[3]", title: "Unsupported Request Detected", description: "Indicates a UR was detected.", values: { "0": "Not Detected", "1": "Detected" } },
               { range: "[4]", title: "Aux Power Detected", description: "Indicates Aux Power is present.", values: { "0": "No", "1": "Yes" } },
-              { range: "[5]", title: "Transactions Pending", description: "Indicates transactions are pending.", values: { "0": "No", "1": "Yes" } }
+              { range: "[5]", title: "Transactions Pending", description: "Indicates transactions are pending.", values: { "0": "No", "1": "Yes" } },
+              { range: "[6]", title: "Emergency Power Reduction Detected", description: "Indicates that the Function detected an Emergency Power Reduction request." },
+              { range: "[15:7]", title: "RsvdZ", description: "Reserved; reads zero." }
             ]
           },
           linkcap: {
@@ -1103,8 +1105,8 @@
             offset: "0Ch",
             range: "[31:0]",
             bits: [
-              { range: "[3:0]", title: "Max Link Speed", description: "Maximum supported Link speed.", values: { "1": "2.5 GT/s", "2": "5.0 GT/s", "3": "8.0 GT/s", "4": "16.0 GT/s" } },
-              { range: "[9:4]", title: "Max Link Width", description: "Maximum supported Link width.", values: { "0": "x1", "1": "x2", "2": "x4", "4": "x8", "8": "x12", "12": "x16", "32": "x32" } },
+              { range: "[3:0]", title: "Max Link Speed", description: "Maximum supported Link speed; encodings 1 through 7 correspond to Supported Link Speeds Vector bits 0 through 6." },
+              { range: "[9:4]", title: "Max Link Width", description: "Maximum supported Link width.", values: { "1": "x1", "2": "x2", "4": "x4", "8": "x8", "16": "x16" } },
               { range: "[11:10]", title: "ASPM Support", description: "Level of ASPM support.", values: { "0": "No Support", "1": "L0s", "2": "L1", "3": "L0s and L1" } },
               { range: "[14:12]", title: "L0s Exit Latency", description: "L0s exit latency.", values: { "0": "<64ns", "1": "<128ns", "2": "<256ns", "3": "<512ns", "4": "<1us", "5": "<2us", "6": "<4us", "7": "No Limit" } },
               { range: "[17:15]", title: "L1 Exit Latency", description: "L1 exit latency.", values: { "0": "<1us", "1": "<2us", "2": "<4us", "3": "<8us", "4": "<16us", "5": "<32us", "6": "<64us", "7": "No Limit" } },
@@ -1112,7 +1114,8 @@
               { range: "[19]", title: "Surprise Down Error Reporting", description: "Supports Surprise Down reporting.", values: { "0": "No", "1": "Yes" } },
               { range: "[20]", title: "Data Link Layer Active Reporting", description: "Supports DLL Active reporting.", values: { "0": "No", "1": "Yes" } },
               { range: "[21]", title: "Link Bandwidth Notification", description: "Supports Link Bandwidth Notification.", values: { "0": "No", "1": "Yes" } },
-              { range: "[23:22]", title: "ASPM Optionality Compliance", description: "ASPM Optionality Compliance." },
+              { range: "[22]", title: "ASPM Optionality Compliance", description: "Indicates compliance with the ASPM optionality requirements." },
+              { range: "[23]", title: "RsvdP", description: "Reserved and preserved by software." },
               { range: "[31:24]", title: "Port Number", description: "Port Number." }
             ]
           },
@@ -1122,6 +1125,7 @@
             range: "[15:0]",
             bits: [
               { range: "[1:0]", title: "ASPM Control", description: "Active State Power Management Control. This field controls the level of ASPM enabled on the given PCI Express Link.", values: { "0": "Disabled", "1": "L0s Entry Enabled", "2": "L1 Entry Enabled", "3": "L0s and L1 Entry Enabled" } },
+              { range: "[2]", title: "PTM Propagation Delay Adaptation Interpretation B", description: "Selects Interpretation B for PTM propagation-delay adaptation." },
               { range: "[3]", title: "Read Completion Boundary", description: "Selects RCB.", values: { "0": "64 bytes", "1": "128 bytes" } },
               { range: "[4]", title: "Link Disable", description: "Disables the Link.", values: { "0": "Enable", "1": "Disable" } },
               { range: "[5]", title: "Retrain Link", description: "Initiates Link retraining.", values: { "0": "No Action", "1": "Initiate Retrain" } },
@@ -1130,7 +1134,10 @@
               { range: "[8]", title: "Enable Clock Power Management", description: "Enables Clock PM.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[9]", title: "Hardware Autonomous Width Disable", description: "Disables HW autonomous width change.", values: { "0": "Enable", "1": "Disable" } },
               { range: "[10]", title: "Link Bandwidth Management Interrupt Enable", description: "Enables LBWM interrupt.", values: { "0": "Disable", "1": "Enable" } },
-              { range: "[11]", title: "Link Autonomous Bandwidth Interrupt Enable", description: "Enables LABW interrupt.", values: { "0": "Disable", "1": "Enable" } }
+              { range: "[11]", title: "Link Autonomous Bandwidth Interrupt Enable", description: "Enables LABW interrupt.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[12]", title: "SRIS Clocking", description: "Selects SRIS clocking operation when supported." },
+              { range: "[13]", title: "Flit Mode Disable", description: "Disables Flit Mode negotiation when permitted." },
+              { range: "[15:14]", title: "DRS Signaling Control", description: "Controls Device Readiness Status signaling." }
             ]
           },
           linksta: {
@@ -1138,8 +1145,9 @@
             offset: "12h",
             range: "[15:0]",
             bits: [
-              { range: "[3:0]", title: "Current Link Speed", description: "Current negotiated Link speed.", values: { "1": "2.5 GT/s", "2": "5.0 GT/s", "3": "8.0 GT/s", "4": "16.0 GT/s" } },
-              { range: "[9:4]", title: "Negotiated Link Width", description: "Current negotiated Link width.", values: { "0": "x1", "1": "x2", "2": "x4", "4": "x8", "8": "x12", "12": "x16", "32": "x32" } },
+              { range: "[3:0]", title: "Current Link Speed", description: "Current negotiated Link speed; encodings 1 through 7 correspond to Supported Link Speeds Vector bits 0 through 6." },
+              { range: "[9:4]", title: "Negotiated Link Width", description: "Current negotiated Link width.", values: { "1": "x1", "2": "x2", "4": "x4", "8": "x8", "16": "x16" } },
+              { range: "[10]", title: "Undefined", description: "Software must ignore the value read." },
               { range: "[11]", title: "Link Training", description: "Indicates Link training is in progress.", values: { "0": "Not Training", "1": "Training" } },
               { range: "[12]", title: "Slot Clock Configuration", description: "Indicates Slot Clock configuration.", values: { "0": "Independent", "1": "Common" } },
               { range: "[13]", title: "Data Link Layer Active", description: "Indicates DL Layer is active.", values: { "0": "Inactive", "1": "Active" } },
@@ -1161,7 +1169,8 @@
               { range: "[6]", title: "Hot-Plug Capable", description: "Slot is Hot-Plug Capable.", values: { "0": "No", "1": "Yes" } },
               { range: "[14:7]", title: "Slot Power Limit Value", description: "Slot Power Limit Value." },
               { range: "[16:15]", title: "Slot Power Limit Scale", description: "Slot Power Limit Scale.", values: { "0": "1.0x", "1": "0.1x", "2": "0.01x", "3": "0.001x" } },
-              { range: "[18:17]", title: "Reserved", description: "Reserved." },
+              { range: "[17]", title: "Electromechanical Interlock Present", description: "An electromechanical interlock is implemented for the slot." },
+              { range: "[18]", title: "No Command Completed Support", description: "The slot does not support Command Completed reporting." },
               { range: "[31:19]", title: "Physical Slot Number", description: "Physical Slot Number." }
             ]
           },
@@ -1180,7 +1189,10 @@
               { range: "[9:8]", title: "Power Indicator Control", description: "Controls Power Indicator.", values: { "0": "Reserved", "1": "On", "2": "Blink", "3": "Off" } },
               { range: "[10]", title: "Power Controller Control", description: "Controls Power Controller.", values: { "0": "Power On", "1": "Power Off" } },
               { range: "[11]", title: "Electromechanical Interlock Control", description: "Controls Electromechanical Interlock.", values: { "0": "Unlock", "1": "Lock" } },
-              { range: "[12]", title: "Data Link Layer State Changed Enable", description: "Enables DLL State Changed interrupt.", values: { "0": "Disable", "1": "Enable" } }
+              { range: "[12]", title: "Data Link Layer State Changed Enable", description: "Enables DLL State Changed interrupt.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[13]", title: "Auto Slot Power Limit Disable", description: "Disables automatic Slot Power Limit programming." },
+              { range: "[14]", title: "In-Band PD Disable", description: "Disables in-band Presence Detect reporting." },
+              { range: "[15]", title: "RsvdP", description: "Reserved and preserved by software." }
             ]
           },
           slotsta: {
@@ -1196,7 +1208,8 @@
               { range: "[5]", title: "MRL Sensor State", description: "Current MRL Sensor state.", values: { "0": "Closed", "1": "Open" } },
               { range: "[6]", title: "Presence Detect State", description: "Current Presence Detect state.", values: { "0": "Empty", "1": "Card Present" } },
               { range: "[7]", title: "Electromechanical Interlock Status", description: "Current Electromechanical Interlock status.", values: { "0": "Unlocked", "1": "Locked" } },
-              { range: "[8]", title: "Data Link Layer State Changed", description: "DLL State changed.", values: { "0": "No Change", "1": "Changed" } }
+              { range: "[8]", title: "Data Link Layer State Changed", description: "DLL State changed.", values: { "0": "No Change", "1": "Changed" } },
+              { range: "[15:9]", title: "RsvdZ", description: "Reserved; reads zero." }
             ]
           },
           rootctl: {
@@ -1208,7 +1221,9 @@
               { range: "[1]", title: "System Error on Non-Fatal Error Enable", description: "Enables System Error on Non-Fatal Error.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[2]", title: "System Error on Fatal Error Enable", description: "Enables System Error on Fatal Error.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[3]", title: "PME Interrupt Enable", description: "Enables PME Interrupt.", values: { "0": "Disable", "1": "Enable" } },
-              { range: "[4]", title: "CRS Software Visibility Enable", description: "Enables CRS Software Visibility.", values: { "0": "Disable", "1": "Enable" } }
+              { range: "[4]", title: "Configuration RRS Software Visibility Enable", description: "Enables Configuration Request Retry Status software visibility.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[5]", title: "No NFM Subtree Below Root Port", description: "Indicates that no Native Function Management subtree exists below this Root Port." },
+              { range: "[15:6]", title: "RsvdP", description: "Reserved and preserved by software." }
             ]
           },
           rootcap: {
@@ -1216,7 +1231,8 @@
             offset: "1Eh",
             range: "[15:0]",
             bits: [
-              { range: "[0]", title: "CRS Software Visibility", description: "Supports CRS Software Visibility.", values: { "0": "No", "1": "Yes" } }
+              { range: "[0]", title: "Configuration RRS Software Visibility", description: "Supports Configuration Request Retry Status software visibility.", values: { "0": "No", "1": "Yes" } },
+              { range: "[15:1]", title: "RsvdP", description: "Reserved and preserved by software." }
             ]
           },
           rootsta: {
@@ -1226,7 +1242,8 @@
             bits: [
               { range: "[15:0]", title: "PME Requester ID", description: "PME Requester ID." },
               { range: "[16]", title: "PME Status", description: "PME Status.", values: { "0": "Not Asserted", "1": "Asserted" } },
-              { range: "[17]", title: "PME Pending", description: "PME Pending.", values: { "0": "Not Pending", "1": "Pending" } }
+              { range: "[17]", title: "PME Pending", description: "PME Pending.", values: { "0": "Not Pending", "1": "Pending" } },
+              { range: "[31:18]", title: "RsvdZ", description: "Reserved; reads zero." }
             ]
           },
           devcap2: {
@@ -1247,13 +1264,13 @@
               { range: "[15:14]", title: "Undefined", description: "Formerly used for Lightweight Notification; software must not depend on this field." },
               { range: "[16]", title: "10-Bit Tag Completer Supported", description: "The Function supports completing Requests that use 10-bit Tags." },
               { range: "[17]", title: "10-Bit Tag Requester Supported", description: "The Function supports generating 10-bit Tags for non-UIO Requests." },
-              { range: "[19:18]", title: "OBFF Supported", description: "OBFF support.", values: { "0": "None", "1": "Message A", "2": "Message B", "3": "WAKE#" } },
+              { range: "[19:18]", title: "OBFF Supported", description: "OBFF support.", values: { "0": "None", "1": "Message signaling only", "2": "WAKE# signaling only", "3": "Message and WAKE# signaling" } },
               { range: "[20]", title: "Extended Fmt Field Supported", description: "Supports Extended Fmt Field.", values: { "0": "No", "1": "Yes" } },
               { range: "[21]", title: "End-End TLP Prefix Supported", description: "Supports End-End TLP Prefix.", values: { "0": "No", "1": "Yes" } },
               { range: "[23:22]", title: "Max End-End TLP Prefixes", description: "Maximum End-End TLP Prefix count in Non-Flit Mode or maximum OHC-E size in Flit Mode." },
               { range: "[25:24]", title: "Emergency Power Reduction Supported", description: "Reports whether Emergency Power Reduction is unsupported, device-specific, or form-factor/device-specific." },
               { range: "[26]", title: "Emergency Power Reduction Initialization Required", description: "The Function requires software initialization after leaving Emergency Power Reduction State." },
-              { range: "[27]", title: "Reserved", description: "Reserved." },
+              { range: "[27]", title: "RsvdP", description: "Reserved and preserved by software." },
               { range: "[28]", title: "DMWr Completer Supported", description: "The Function can serve as a DMWr Completer." },
               { range: "[30:29]", title: "DMWr Lengths Supported", description: "Encodes the largest DMWr TLP length the Function can receive." },
               { range: "[31]", title: "FRS Supported", description: "The Function supports Function Readiness Status messaging." }
@@ -1283,7 +1300,7 @@
             offset: "2Ah",
             range: "[15:0]",
             bits: [
-              { range: "[15:0]", title: "Reserved", description: "Reserved." }
+              { range: "[15:0]", title: "RsvdZ", description: "Reserved; reads zero." }
             ]
           },
           linkcap2: {
@@ -1291,7 +1308,7 @@
             offset: "2Ch",
             range: "[31:0]",
             bits: [
-              { range: "[0]", title: "Reserved", description: "Reserved." },
+              { range: "[0]", title: "RsvdP", description: "Reserved and preserved by software." },
               { range: "[7:1]", title: "Supported Link Speeds Vector", description: "Supported Link Speeds." },
               { range: "[8]", title: "Crosslink Supported", description: "Supports Crosslink.", values: { "0": "No", "1": "Yes" } },
               { range: "[15:9]", title: "Lower SKP OS Generation Supported Speeds Vector", description: "Speeds at which SRIS operation supports software-controlled lower-rate SKP Ordered Set generation." },
@@ -1299,7 +1316,7 @@
               { range: "[23]", title: "Retimer Presence Detect Supported", description: "Supports detection and reporting of Retimer presence." },
               { range: "[24]", title: "Two Retimers Presence Detect Supported", description: "Supports detection and reporting of two Retimers." },
               { range: "[25]", title: "Optical Retimer Presence Detect Supported", description: "Supports detection and reporting of an Optical Retimer Solution." },
-              { range: "[30:26]", title: "Reserved", description: "Reserved." },
+              { range: "[30:26]", title: "RsvdP", description: "Reserved and preserved by software." },
               { range: "[31]", title: "DRS Supported", description: "Supports Device Readiness Status messaging." }
             ]
           },
@@ -1345,7 +1362,7 @@
             bits: [
               { range: "[0]", title: "In-Band PD Disable Supported", description: "The slot supports disabling reporting of the in-band presence-detect state." },
               { range: "[2:1]", title: "SCap2 OOB PD Supported", description: "Reports whether out-of-band presence detect is supported when SFI is unavailable or hidden." },
-              { range: "[31:3]", title: "Reserved", description: "Reserved." }
+              { range: "[31:3]", title: "RsvdP", description: "Reserved and preserved by software." }
             ]
           },
           slotctl2: {
@@ -1353,7 +1370,7 @@
             offset: "38h",
             range: "[15:0]",
             bits: [
-              { range: "[15:0]", title: "Reserved", description: "Reserved." }
+              { range: "[15:0]", title: "RsvdP", description: "Reserved and preserved by software." }
             ]
           },
           slotsta2: {
@@ -1361,7 +1378,7 @@
             offset: "3Ah",
             range: "[15:0]",
             bits: [
-              { range: "[15:0]", title: "Reserved", description: "Reserved." }
+              { range: "[15:0]", title: "RsvdZ", description: "Reserved; reads zero." }
             ]
           }
         }
@@ -1374,7 +1391,7 @@
         id: "msi_cap",
         type: "Cap",
         name: "MSI Capability",
-        description: "Message Signaled Interrupts capability.",
+        description: "Four mutually exclusive layouts: 32-bit/no PVM = Header 00h, Address 04h, Data/EMD 08h; 64-bit/no PVM adds Upper Address 08h and moves Data/EMD to 0Ch; 32-bit/PVM adds Mask 0Ch and Pending 10h; 64-bit/PVM adds Mask 10h and Pending 14h. Without PVM, unsupported EMD is outside the capability and undefined; with PVM, unsupported EMD is RsvdP.",
         rows: [
           {
             offset: "00h",
@@ -1393,26 +1410,25 @@
           {
             offset: "08h",
             fields: [
-              { id: "msi_addr_hi", label: "Message Upper Address", range: "[31:0]" }
+              { id: "msi_addr_hi", label: "Upper Address (64-bit) OR Data/EMD (32-bit)", range: "[31:0]" }
             ]
           },
           {
             offset: "0Ch",
             fields: [
-              { id: "msi_data", label: "Message Data", range: "[15:0]" },
-              { id: "msi_ext_data", label: "Extended Message Data", range: "[31:16]" }
+              { id: "msi_data", label: "Data/EMD (64-bit) OR Mask (32-bit + PVM)", range: "[31:0]" }
             ]
           },
           {
             offset: "10h",
             fields: [
-              { id: "msi_mask", label: "Mask Bits", range: "[31:0]" }
+              { id: "msi_mask", label: "Mask (64-bit + PVM) OR Pending (32-bit + PVM)", range: "[31:0]" }
             ]
           },
           {
             offset: "14h",
             fields: [
-              { id: "msi_pending", label: "Pending Bits", range: "[31:0]" }
+              { id: "msi_pending", label: "Pending Bits (64-bit + PVM only)", range: "[31:0]" }
             ]
           }
         ],
@@ -1425,21 +1441,20 @@
             range: "[15:0]",
             bits: [
               { range: "[0]", title: "MSI Enable", description: "Enables MSI.", values: { "0": "Disable", "1": "Enable" } },
-              { range: "[3:1]", title: "Multiple Message Capable", description: "Number of vectors requested.", values: { "0": "1", "1": "2", "2": "4", "3": "8", "4": "16", "5": "32" } },
-              { range: "[6:4]", title: "Multiple Message Enable", description: "Number of vectors allocated.", values: { "0": "1", "1": "2", "2": "4", "3": "8", "4": "16", "5": "32" } },
-              { range: "[7]", title: "64-bit Address Capable", description: "Indicates support for 64-bit addressing.", values: { "0": "32-bit", "1": "64-bit" } },
+              { range: "[3:1]", title: "Multiple Message Capable", description: "Read-only number of vectors requested; encodings 110b and 111b are reserved.", values: { "0": "1", "1": "2", "2": "4", "3": "8", "4": "16", "5": "32" } },
+              { range: "[6:4]", title: "Multiple Message Enable", description: "Read/write number of vectors allocated; encodings 110b and 111b are reserved.", values: { "0": "1", "1": "2", "2": "4", "3": "8", "4": "16", "5": "32" } },
+              { range: "[7]", title: "64-bit Address Capable", description: "Read-only; required for PCI Express Endpoints that implement MSI and required in Flit Mode.", values: { "0": "32-bit", "1": "64-bit" } },
               { range: "[8]", title: "Per-vector Masking Capable", description: "Indicates support for masking.", values: { "0": "No", "1": "Yes" } },
               { range: "[9]", title: "Extended Message Data Capable", description: "The Function can provide the upper 16 bits of MSI message data." },
-              { range: "[10]", title: "Extended Message Data Enable", description: "Enables use of Extended Message Data as the upper 16 bits of the MSI write." },
-              { range: "[15:11]", title: "Reserved", description: "Reserved." }
+              { range: "[10]", title: "Extended Message Data Enable", description: "Enables use of Extended Message Data as the upper 16 bits of the MSI write; read-only when EMD is unsupported." },
+              { range: "[15:11]", title: "RsvdP", description: "Reserved and preserved by software." }
             ]
           },
-          msi_addr: { name: "Message Address", offset: "04h", range: "[31:0]", bits: [{ range: "[31:2]", title: "Message Address", description: "System-specified message address." }, { range: "[1:0]", title: "Reserved", description: "Reserved." }] },
-          msi_addr_hi: { name: "Message Upper Address", offset: "08h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Message Upper Address", description: "Upper 32 bits of message address." }] },
-          msi_data: { name: "Message Data", offset: "0Ch", range: "[15:0]", bits: [{ range: "[15:0]", title: "Message Data", description: "Pattern to write to message address." }] },
-          msi_ext_data: { name: "Extended Message Data", offset: "0Eh", range: "[15:0]", bits: [{ range: "[15:0]", title: "Extended Message Data", description: "Optional upper 16 bits of the MSI message data when enabled; reserved if not supported in a PVM layout." }] },
-          msi_mask: { name: "Mask Bits", offset: "10h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Mask Bits", description: "Per-vector mask bits." }] },
-          msi_pending: { name: "Pending Bits", offset: "14h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Pending Bits", description: "Per-vector pending bits." }] }
+          msi_addr: { name: "Message Address", offset: "04h (all four layouts)", range: "[31:0]", bits: [{ range: "[31:2]", title: "Message Address", description: "Read/write system-specified message address." }, { range: "[1:0]", title: "Reserved", description: "RsvdP; always returns zero and writes have no effect." }] },
+          msi_addr_hi: { name: "Offset 08h by layout", offset: "08h", range: "[31:0]", bits: [{ range: "[31:0]", title: "64-bit: Message Upper Address; 32-bit: Message Data / EMD", description: "64-bit layouts implement Message Upper Address. In 32-bit layouts bits 15:0 are Message Data; bits 31:16 are EMD when EMD Capable is Set, otherwise undefined without PVM and RsvdP with PVM." }] },
+          msi_data: { name: "Offset 0Ch by layout", offset: "0Ch", range: "[31:0]", bits: [{ range: "[31:0]", title: "64-bit: Message Data / EMD; 32-bit + PVM: Mask Bits", description: "For 64-bit layouts bits 15:0 are Message Data and bits 31:16 are EMD when capable; unsupported EMD is undefined without PVM and RsvdP with PVM. For the 32-bit/PVM layout this DWORD is Mask Bits." }] },
+          msi_mask: { name: "Offset 10h by layout", offset: "10h", range: "[31:0]", bits: [{ range: "[31:0]", title: "64-bit + PVM: Mask Bits; 32-bit + PVM: Pending Bits", description: "Present only in a PVM layout; each implemented vector has one Mask or read-only Pending bit at the layout-defined offset." }] },
+          msi_pending: { name: "Pending Bits", offset: "14h (64-bit + PVM only)", range: "[31:0]", bits: [{ range: "[31:0]", title: "Pending Bits", description: "Read-only Pending Bits for the 64-bit/PVM layout; unimplemented vector bits are Reserved." }] }
         }
       },
     
@@ -1468,6 +1483,30 @@
             fields: [
               { id: "msix_pba", label: "PBA BIR/Offset", range: "[31:0]" }
             ]
+          },
+          {
+            offset: "Table + 00h",
+            fields: [{ id: "msix_table_addr_lo", label: "Message Address Lower", range: "[31:0]" }]
+          },
+          {
+            offset: "Table + 04h",
+            fields: [{ id: "msix_table_addr_hi", label: "Message Address Upper", range: "[31:0]" }]
+          },
+          {
+            offset: "Table + 08h",
+            fields: [{ id: "msix_table_data", label: "Message Data", range: "[31:0]" }]
+          },
+          {
+            offset: "Table + 0Ch",
+            fields: [{ id: "msix_vector_ctrl", label: "Vector Control", range: "[31:0]" }]
+          },
+          {
+            offset: "PBA + 8*(k div 64)",
+            fields: [{ id: "msix_pending_bits", label: "Pending Bit Array QWORD bits 31:0", range: "[31:0]" }]
+          },
+          {
+            offset: "PBA + 8*(k div 64) + 4",
+            fields: [{ id: "msix_pending_bits_hi", label: "Pending Bit Array QWORD bits 63:32", range: "[31:0]" }]
           }
         ],
         bitfields: {
@@ -1479,13 +1518,19 @@
             range: "[15:0]",
             bits: [
               { range: "[10:0]", title: "Table Size", description: "N-1 encoded table size." },
-              { range: "[13:11]", title: "Reserved", description: "Reserved." },
+              { range: "[13:11]", title: "RsvdP", description: "Reserved, preserved by software, and reads zero." },
               { range: "[14]", title: "Function Mask", description: "Global mask for MSI-X interrupts.", values: { "0": "Unmasked", "1": "Masked" } },
               { range: "[15]", title: "MSI-X Enable", description: "Enables MSI-X.", values: { "0": "Disable", "1": "Enable" } }
             ]
           },
-          msix_table: { name: "Table Offset / BIR", offset: "04h", range: "[31:0]", bits: [{ range: "[2:0]", title: "BIR", description: "BAR Indicator Register." }, { range: "[31:3]", title: "Table Offset", description: "Offset into the BAR." }] },
-          msix_pba: { name: "PBA Offset / BIR", offset: "08h", range: "[31:0]", bits: [{ range: "[2:0]", title: "BIR", description: "BAR Indicator Register." }, { range: "[31:3]", title: "PBA Offset", description: "Offset into the BAR." }] }
+          msix_table: { name: "Table Offset / BIR", offset: "04h", range: "[31:0]", bits: [{ range: "[2:0]", title: "Table BIR", description: "Read-only BAR/EA selector 0 through 5; 6 and 7 are reserved, and Type 1 Functions also reserve 2 through 5." }, { range: "[31:3]", title: "Table Offset", description: "Read-only QWORD-aligned offset. MSI-X Table/PBA may share a naturally aligned 4-KB range but must not overlap; non-MSI-X space must not share that range. For SR-IOV Devices, use the PF SR-IOV System Page Size instead of fixed 4 KB." }] },
+          msix_pba: { name: "PBA Offset / BIR", offset: "08h", range: "[31:0]", bits: [{ range: "[2:0]", title: "PBA BIR", description: "Read-only BAR/EA selector 0 through 5; 6 and 7 are reserved, and Type 1 Functions also reserve 2 through 5." }, { range: "[31:3]", title: "PBA Offset", description: "Read-only QWORD-aligned offset. MSI-X Table/PBA may share a naturally aligned 4-KB range but must not overlap; non-MSI-X space must not share that range. For SR-IOV Devices, use the PF SR-IOV System Page Size instead of fixed 4 KB." }] },
+          msix_table_addr_lo: { name: "MSI-X Table Message Address Lower", offset: "Table base + k*16 + 00h", range: "[31:0]", bits: [{ range: "[1:0]", title: "Reserved", description: "Reserved; reads zero and software writes zero." }, { range: "[31:2]", title: "Message Address Lower", description: "Read/write lower message-address bits." }] },
+          msix_table_addr_hi: { name: "MSI-X Table Message Address Upper", offset: "Table base + k*16 + 04h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Message Address Upper", description: "Read/write upper message-address bits." }] },
+          msix_table_data: { name: "MSI-X Table Message Data", offset: "Table base + k*16 + 08h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Message Data", description: "Read/write MSI-X message data." }] },
+          msix_vector_ctrl: { name: "MSI-X Table Vector Control", offset: "Table base + k*16 + 0Ch", range: "[31:0]", bits: [{ range: "[0]", title: "Mask Bit", description: "Read/write per-vector mask; defaults to one." }, { range: "[15:1]", title: "Reserved", description: "RW or RsvdP; software preserves these bits." }, { range: "[23:16]", title: "ST Lower", description: "Must be RW when a TPH Requester capability is present and ST Table Location = 10b; otherwise RW or RsvdP and software preserves it." }, { range: "[31:24]", title: "ST Upper", description: "Must be RW when a TPH Requester capability is present, ST Table Location = 10b, and Extended TPH Requester Supported is Set; otherwise RW or RsvdP and software preserves it." }] },
+          msix_pending_bits: { name: "MSI-X Pending Bit Array QWORD, lower DWORD", offset: "PBA base + (k div 64)*8", range: "[31:0]", bits: [{ range: "[31:0]", title: "Pending Bits 31:0", description: "Lower half of one 64-bit PBA entry. Each associated bit reports one pending vector; unused trailing bits are Reserved. RO or RW, but software only reads." }] },
+          msix_pending_bits_hi: { name: "MSI-X Pending Bit Array QWORD, upper DWORD", offset: "PBA base + (k div 64)*8 + 4", range: "[31:0]", bits: [{ range: "[31:0]", title: "Pending Bits 63:32", description: "Upper half paired with the preceding DWORD to form the defined 64-bit PBA entry. RO or RW, but software only reads." }] }
         }
       },
     
@@ -1614,7 +1659,7 @@
             range: "[31:0]",
             bits: [
               { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0001h for AER." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 2h." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 3h with Flit Mode support; Version 2h or 3h with End-End TLP Prefix support; otherwise Version 1h, 2h, or 3h as defined by the implemented feature set." },
               { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
             ]
           },
@@ -1755,7 +1800,7 @@
             range: "[31:0]",
             bits: [
               { range: "[15:0]", title: "Extended Capability ID", description: "ID = 001Eh for L1 PM Substates." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 2h because the optional L1 PM Substates Status register is present; otherwise Version 1h." },
               { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
             ]
           },
@@ -1812,7 +1857,7 @@
         id: "sec_pcie_extcap",
         type: "ExtCap",
         name: "Secondary PCI Express",
-        description: "Extended capability for Secondary PCI Express features (Link Control 3, Lane Error Status, Equalization).",
+        description: "Secondary PCI Express controls with one Lane Equalization Control DWORD per two lanes, repeated for every Lane below Maximum Link Width.",
         rows: [
           {
             offset: "00h",
@@ -1833,7 +1878,7 @@
             ]
           },
           {
-            offset: "0Ch",
+            offset: "0Ch + 4*(n div 2), lanes n and n+1; 0 <= n < Maximum Link Width",
             fields: [
               { id: "lane_eq_ctl", label: "Lane Equalization Control (Lane 0)", range: "[31:0]" } // Showing Lane 0 as example
             ]
@@ -1869,8 +1914,8 @@
             ]
           },
           lane_eq_ctl: {
-            name: "Lane Equalization Control (Lane 0)",
-            offset: "0Ch",
+            name: "Lane Equalization Control (repeated per two lanes)",
+            offset: "0Ch + 4*(n div 2), lanes n and n+1; 0 <= n < Maximum Link Width",
             range: "[15:0]", // Usually 16 bits per lane pair, but here we simplify or show 32 bits if it's 2 lanes per register? 
             // Spec says: Lane 0 is bits 15:0 of offset 0Ch. Lane 1 is bits 31:16 of offset 0Ch.
             // Let's define it as 16 bits for Lane 0 for simplicity in this view, or show full 32 bits with 2 lanes.
@@ -1968,7 +2013,7 @@
         id: "pl_16g_extcap",
         type: "ExtCap",
         name: "Physical Layer 16.0 GT/s",
-        description: "Extended capability for 16.0 GT/s Physical Layer features.",
+        description: "16.0 GT/s Physical Layer features with one byte per lane packed four lanes per DWORD, repeated through Maximum Link Width.",
         rows: [
           {
             offset: "00h",
@@ -2019,7 +2064,7 @@
             ]
           },
           {
-            offset: "20h-3Ch",
+            offset: "20h + 4*(n div 4), lanes n..n+3; 0 <= n < Maximum Link Width",
             fields: [
               { id: "pl_16g_eq_ctl", label: "16.0 GT/s Lane Equalization Control", range: "[31:0]" }
             ]
@@ -2070,7 +2115,7 @@
           pl_16g_reserved: { name: "Physical Layer 16.0 GT/s Reserved", offset: "1Ch", range: "[31:0]", bits: [{ range: "[31:0]", title: "Reserved", description: "Reserved; preserve on writes." }] },
           pl_16g_eq_ctl: {
             name: "16.0 GT/s Lane Equalization Control",
-            offset: "20h-3Ch",
+            offset: "20h + 4*(n div 4), lanes n..n+3; 0 <= n < Maximum Link Width",
             range: "[31:0]",
             bits: [
               { range: "[3:0]", title: "Downstream Port 16.0 GT/s Transmitter Preset", description: "Transmitter preset used when operating as a Downstream Port." },
@@ -2083,7 +2128,7 @@
         id: "pl_32g_extcap",
         type: "ExtCap",
         name: "Physical Layer 32.0 GT/s",
-        description: "Extended capability for 32.0 GT/s Physical Layer features.",
+        description: "32.0 GT/s Physical Layer features with one byte per lane packed four lanes per DWORD, repeated through Maximum Link Width.",
         rows: [
           {
             offset: "00h",
@@ -2134,7 +2179,7 @@
             ]
           },
           {
-            offset: "20h-3Ch",
+            offset: "20h + 4*(n div 4), lanes n..n+3; 0 <= n < Maximum Link Width",
             fields: [
               { id: "pl_32g_eq_ctl", label: "32.0 GT/s Lane Equalization Control", range: "[31:0]" }
             ]
@@ -2199,7 +2244,7 @@
           pl_32g_tx_ts2: { name: "Transmitted Modified TS Data 2", offset: "1Ch", range: "[31:0]", bits: [{ range: "[23:0]", title: "Transmitted Modified TS Information 2", description: "Modified TS Information 2 field transmitted in Symbols 12 through 14." }, { range: "[25:24]", title: "Alternate Protocol Negotiation Status", description: "Reports the status of alternate-protocol negotiation." }] },
           pl_32g_eq_ctl: {
             name: "32.0 GT/s Lane Equalization Control",
-            offset: "20h-3Ch",
+            offset: "20h + 4*(n div 4), lanes n..n+3; 0 <= n < Maximum Link Width",
             range: "[31:0]",
             bits: [
               { range: "[3:0]", title: "Downstream Port 32.0 GT/s Transmitter Preset", description: "Transmitter preset used for 32.0 GT/s equalization while operating as a Downstream Port." },
@@ -2212,7 +2257,7 @@
         id: "lmr_extcap",
         type: "ExtCap",
         name: "Lane Margining at the Receiver",
-        description: "Extended capability for Lane Margining at the Receiver.",
+        description: "Lane Margining Port registers followed by one Lane Control/Status DWORD for each lane below Maximum Link Width.",
         rows: [
           {
             offset: "00h",
@@ -2228,7 +2273,7 @@
             ]
           },
           {
-            offset: "08h",
+            offset: "08h + 4*n; 0 <= n < Maximum Link Width",
             fields: [
               { id: "lmr_lane_ctl", label: "Margining Lane Control", range: "[15:0]" },
               { id: "lmr_lane_status", label: "Margining Lane Status", range: "[31:16]" }
@@ -2265,7 +2310,7 @@
           },
           lmr_lane_ctl: {
             name: "Margining Lane Control",
-            offset: "08h",
+            offset: "08h + 4*n; 0 <= n < Maximum Link Width",
             range: "[15:0]",
             bits: [
               { range: "[2:0]", title: "Receiver Number", description: "Selects the Receiver number targeted by the margining command." },
@@ -2276,7 +2321,7 @@
           },
           lmr_lane_status: {
             name: "Margining Lane Status",
-            offset: "0Ah",
+            offset: "0Ah + 4*n; 0 <= n < Maximum Link Width",
             range: "[15:0]",
             bits: [
               { range: "[2:0]", title: "Receiver Number Status", description: "Reports the Receiver number associated with the current margining result." },
@@ -2401,7 +2446,7 @@
             range: "[31:0]",
             bits: [
               { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0018h for LTR." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
+              { range: "[19:16]", title: "Capability Version", description: "Version = 2h because the optional LTR Capabilities register is present; otherwise Version 1h." },
               { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
             ]
           },
@@ -2437,9 +2482,9 @@
       },
       {
         id: "ea_extcap",
-        type: "ExtCap",
+        type: "Cap",
         name: "Enhanced Allocation (EA)",
-        description: "Extended capability for Enhanced Allocation.",
+        description: "PCI-compatible Enhanced Allocation Capability (ID 14h).",
         rows: [
           {
             offset: "00h",
@@ -2519,8 +2564,12 @@
       return item;
     }
     
-    function makeChapter7Reserved(range) {
-      return makeChapter7Bit(range, "Reserved", "Reserved. Software must preserve this field unless the register definition says otherwise.");
+    function makeChapter7Reserved(range, behavior = "Needs Manual Verification") {
+      return makeChapter7Bit(range, behavior, behavior === "RsvdP"
+        ? "Reserved and preserved by software."
+        : behavior === "RsvdZ"
+          ? "Reserved; reads zero and software writes zero."
+          : "Needs Manual Verification: the source-table Reserved/RsvdP/RsvdZ access behavior is not encoded here.");
     }
     
     function makeChapter7Flag(range, title, description) {
@@ -2743,6 +2792,27 @@
       ];
     }
     
+    const chapter7ExtCapabilityHeaders = {
+      power_budget_extcap: ["0004h", "1h"], device3_extcap: ["002Fh", "1h"],
+      pl_64g_extcap: ["0031h", "1h"], flit_logging_extcap: ["0032h", "1h"],
+      resizable_bar_extcap: ["0015h", "1h"], vf_resizable_bar_extcap: ["0024h", "1h"],
+      ari_extcap: ["000Eh", "1h"], pasid_extcap: ["001Bh", "1h"], frs_extcap: ["0021h", "1h"],
+      flit_perf_extcap: ["0033h", "1h"], flit_error_inj_extcap: ["0034h", "1h"], nop_flit_extcap: ["0037h", "1h"],
+      vc_extcap: ["0002h or 0009h", "1h"], mfvc_extcap: ["0008h", "1h"], dsn_extcap: ["0003h", "1h"],
+      vsec_extcap: ["000Bh", "1h"], dvsec_extcap: ["0023h", "1h"], rcrb_header_extcap: ["000Ah", "1h"],
+      rcld_extcap: ["0005h", "1h"], rcilc_extcap: ["0006h", "1h"], rcec_assoc_extcap: ["0007h", "2h (08h Bus Numbers register present); otherwise 1h"],
+      multicast_extcap: ["0012h", "1h"], dpa_extcap: ["0016h", "1h"], tph_extcap: ["0017h", "1h"],
+      dpc_extcap: ["001Dh", "1h"], ptm_extcap: ["001Fh", "1h"], rtr_extcap: ["0022h", "1h"],
+      hierarchy_id_extcap: ["0028h", "1h"], npem_extcap: ["0029h", "1h"], alternate_protocol_extcap: ["002Bh", "1h"],
+      sfi_extcap: ["002Ch", "1h"], doe_extcap: ["002Eh", "2h"], shadow_functions_extcap: ["002Dh", "1h"],
+      ide_extcap: ["0030h", "1h"], null_extcap: ["0000h", "any value"], svc_extcap: ["0035h", "1h"], mrbl_extcap: ["0036h", "1h"]
+    };
+
+    const chapter7CapabilityIds = {
+      vpd_cap: "03h", vendor_cap: "09h", af_cap: "13h",
+      subsystem_cap: "0Dh", null_cap: "00h", fpb_extcap: "15h"
+    };
+
     function makeChapter7Structure(def) {
       const bitfields = {};
       const rows = def.registers.map(register => {
@@ -2751,6 +2821,14 @@
         const range = register[3] || "[31:0]";
         const fieldId = chapter7FieldId(def.id, label);
         const bits = register[2] || chapter7WholeRegisterBits(range, label, `${label} register from Chapter 7.`);
+        const header = chapter7ExtCapabilityHeaders[def.id];
+        if (offset === "00h" && header) {
+          bits[0] = makeChapter7Bit("[15:0]", "PCI Express Extended Capability ID", `ID = ${header[0]} for ${def.name}.`);
+          bits[1] = makeChapter7Bit("[19:16]", "Capability Version", `Version = ${header[1]}.`);
+        }
+        if (offset === "00h" && chapter7CapabilityIds[def.id]) {
+          bits[0] = makeChapter7Bit("[7:0]", "Capability ID", `ID = ${chapter7CapabilityIds[def.id]} for ${def.name}.`);
+        }
     
         bitfields[fieldId] = {
           name: label,
@@ -2799,9 +2877,9 @@
           ["00h", "Vendor-Specific Capability Header", [
             ...chapter7HeaderBits(false).slice(0, 2),
             makeChapter7Bit("[23:16]", "Capability Length", "Total length of the vendor-specific capability structure in bytes."),
-            makeChapter7Bit("[31:24]", "Vendor-Specific Data", "First byte of vendor-defined data.")
+            makeChapter7Bit("[31:24]", "Vendor-Specific Data", "Needs Manual Verification: this byte is vendor-defined; the Base Specification does not define its payload semantics.")
           ]],
-          ["04h", "Vendor-Specific Registers", chapter7WholeRegisterBits("[31:0]", "Vendor-Specific Registers", "Vendor-defined capability payload.")]
+          ["04h", "Vendor-Specific Registers", chapter7WholeRegisterBits("[31:0]", "Vendor-Specific Registers", "Needs Manual Verification: the payload is vendor-defined and outside the standardized header definition.")]
         ]
       },
       {
@@ -2863,13 +2941,13 @@
         id: "pl_64g_extcap",
         type: "ExtCap",
         name: "Physical Layer 64.0 GT/s",
-        description: "Controls and reports 64.0 GT/s link equalization and physical-layer state.",
+        description: "Controls and reports 64.0 GT/s state with one byte per lane packed four lanes per DWORD, repeated through Maximum Link Width.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "64.0 GT/s Capabilities", [makeChapter7Reserved("[31:0]")]],
           ["08h", "64.0 GT/s Control", [makeChapter7Reserved("[31:0]")]],
           ["0Ch", "64.0 GT/s Status", [makeChapter7Flag("[0]", "Equalization 64.0 GT/s Complete", "The 64.0 GT/s Transmitter Equalization procedure completed."), makeChapter7Flag("[1]", "Equalization 64.0 GT/s Phase 1 Successful", "Phase 1 of 64.0 GT/s equalization completed successfully."), makeChapter7Flag("[2]", "Equalization 64.0 GT/s Phase 2 Successful", "Phase 2 of 64.0 GT/s equalization completed successfully."), makeChapter7Flag("[3]", "Equalization 64.0 GT/s Phase 3 Successful", "Phase 3 of 64.0 GT/s equalization completed successfully."), makeChapter7Flag("[4]", "Link Equalization Request 64.0 GT/s", "Hardware requests that 64.0 GT/s Link equalization be performed."), makeChapter7Flag("[5]", "Transmitter Precoding On", "The Receiver requested this transmitter to enable Precoding."), makeChapter7Flag("[6]", "Transmitter Precode Request", "This Port requests its Link partner to use transmitter Precoding."), makeChapter7Flag("[7]", "No Equalization Needed Received", "A training sequence indicated that no equalization is needed."), makeChapter7Reserved("[31:8]")]],
-          ["10h", "64.0 GT/s Lane Equalization Control", [makeChapter7Bit("[3:0]", "Lane 0 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset used by Lane 0 when operating as a Downstream Port."), makeChapter7Bit("[7:4]", "Lane 0 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset sent or captured for Lane 0 when operating as an Upstream Port."), makeChapter7Bit("[11:8]", "Lane 1 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset used by Lane 1 when operating as a Downstream Port."), makeChapter7Bit("[15:12]", "Lane 1 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset sent or captured for Lane 1 when operating as an Upstream Port."), makeChapter7Bit("[19:16]", "Lane 2 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset used by Lane 2 when operating as a Downstream Port."), makeChapter7Bit("[23:20]", "Lane 2 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset sent or captured for Lane 2 when operating as an Upstream Port."), makeChapter7Bit("[27:24]", "Lane 3 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset used by Lane 3 when operating as a Downstream Port."), makeChapter7Bit("[31:28]", "Lane 3 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset sent or captured for Lane 3 when operating as an Upstream Port.")]]
+          ["10h + 4*(n div 4), lanes n..n+3; 0 <= n < Maximum Link Width", "64.0 GT/s Lane Equalization Control (repeated)", [makeChapter7Bit("[3:0]", "Lane n Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n."), makeChapter7Bit("[7:4]", "Lane n Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n."), makeChapter7Bit("[11:8]", "Lane n+1 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n+1."), makeChapter7Bit("[15:12]", "Lane n+1 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n+1."), makeChapter7Bit("[19:16]", "Lane n+2 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n+2."), makeChapter7Bit("[23:20]", "Lane n+2 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n+2."), makeChapter7Bit("[27:24]", "Lane n+3 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n+3."), makeChapter7Bit("[31:28]", "Lane n+3 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n+3.")]]
         ]
       },
       {
@@ -2905,16 +2983,8 @@
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "Resizable BAR Capability Register 0", chapter7ResizableBarCapabilityBits()],
           ["08h", "Resizable BAR Control Register 0", chapter7ResizableBarControlBits("BAR", true)],
-          ["0Ch", "Resizable BAR Capability Register 1", chapter7ResizableBarCapabilityBits()],
-          ["10h", "Resizable BAR Control Register 1", chapter7ResizableBarControlBits()],
-          ["14h", "Resizable BAR Capability Register 2", chapter7ResizableBarCapabilityBits()],
-          ["18h", "Resizable BAR Control Register 2", chapter7ResizableBarControlBits()],
-          ["1Ch", "Resizable BAR Capability Register 3", chapter7ResizableBarCapabilityBits()],
-          ["20h", "Resizable BAR Control Register 3", chapter7ResizableBarControlBits()],
-          ["24h", "Resizable BAR Capability Register 4", chapter7ResizableBarCapabilityBits()],
-          ["28h", "Resizable BAR Control Register 4", chapter7ResizableBarControlBits()],
-          ["2Ch", "Resizable BAR Capability Register 5", chapter7ResizableBarCapabilityBits()],
-          ["30h", "Resizable BAR Control Register 5", chapter7ResizableBarControlBits()]
+          ["04h + 8*n; 1 <= n < Number of Resizable BARs", "Resizable BAR Capability Register n (conditional)", chapter7ResizableBarCapabilityBits()],
+          ["08h + 8*n; 1 <= n < Number of Resizable BARs", "Resizable BAR Control Register n (conditional)", chapter7ResizableBarControlBits()]
         ]
       },
       {
@@ -2926,16 +2996,8 @@
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "VF Resizable BAR Capability Register 0", chapter7ResizableBarCapabilityBits("VF BAR")],
           ["08h", "VF Resizable BAR Control Register 0", chapter7ResizableBarControlBits("VF BAR", true)],
-          ["0Ch", "VF Resizable BAR Capability Register 1", chapter7ResizableBarCapabilityBits("VF BAR")],
-          ["10h", "VF Resizable BAR Control Register 1", chapter7ResizableBarControlBits("VF BAR")],
-          ["14h", "VF Resizable BAR Capability Register 2", chapter7ResizableBarCapabilityBits("VF BAR")],
-          ["18h", "VF Resizable BAR Control Register 2", chapter7ResizableBarControlBits("VF BAR")],
-          ["1Ch", "VF Resizable BAR Capability Register 3", chapter7ResizableBarCapabilityBits("VF BAR")],
-          ["20h", "VF Resizable BAR Control Register 3", chapter7ResizableBarControlBits("VF BAR")],
-          ["24h", "VF Resizable BAR Capability Register 4", chapter7ResizableBarCapabilityBits("VF BAR")],
-          ["28h", "VF Resizable BAR Control Register 4", chapter7ResizableBarControlBits("VF BAR")],
-          ["2Ch", "VF Resizable BAR Capability Register 5", chapter7ResizableBarCapabilityBits("VF BAR")],
-          ["30h", "VF Resizable BAR Control Register 5", chapter7ResizableBarControlBits("VF BAR")]
+          ["04h + 8*n; 1 <= n < Number of VF Resizable BARs", "VF Resizable BAR Capability Register n (conditional)", chapter7ResizableBarCapabilityBits("VF BAR")],
+          ["08h + 8*n; 1 <= n < Number of VF Resizable BARs", "VF Resizable BAR Control Register n (conditional)", chapter7ResizableBarControlBits("VF BAR")]
         ]
       },
       {
@@ -2975,9 +3037,9 @@
       },
       {
         id: "fpb_extcap",
-        type: "ExtCap",
+        type: "Cap",
         name: "Flattening Portal Bridge (FPB)",
-        description: "Controls FPB routing vectors and vector access windows.",
+        description: "PCI-compatible Flattening Portal Bridge Capability (ID 15h) controlling FPB routing vectors and vector access windows.",
         registers: [
           ["00h", "FPB Capability Header", chapter7HeaderBits(false)],
           ["04h", "FPB Capabilities", [makeChapter7Flag("[0]", "FPB RID Decode Mechanism Supported", "Indicates support for the FPB RID Vector mechanism."), makeChapter7Flag("[1]", "FPB MEM Low Decode Mechanism Supported", "Indicates support for the FPB MEM Low Vector mechanism."), makeChapter7Flag("[2]", "FPB MEM High Decode Mechanism Supported", "Indicates support for the FPB MEM High Vector mechanism."), makeChapter7Bit("[7:3]", "FPB Num Sec Dev", "Number of Device Numbers on the secondary side minus one, for Switch Upstream Ports."), makeChapter7Bit("[10:8]", "FPB RID Vector Size Supported", "Encoded implemented RID Vector size and permitted granularities."), makeChapter7Reserved("[15:11]"), makeChapter7Bit("[18:16]", "FPB MEM Low Vector Size Supported", "Encoded implemented MEM Low Vector size."), makeChapter7Reserved("[23:19]"), makeChapter7Bit("[26:24]", "FPB MEM High Vector Size Supported", "Encoded implemented MEM High Vector size."), makeChapter7Reserved("[31:27]")]],
@@ -2994,7 +3056,7 @@
         id: "flit_perf_extcap",
         type: "ExtCap",
         name: "Flit Performance Measurement",
-        description: "Measures flit-mode performance and LTSSM timing/status information.",
+        description: "Measures flit-mode performance. LTSSM Status register n is present at 0Ch + 4*n only when 1 <= n <= LTSSM Tracking Register Count; the five displayed rows are the maximum layout and are individually conditional.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "Flit Performance Measurement Capability", [makeChapter7Bit("[9:0]", "Flit Performance Interrupt Vector", "MSI or MSI-X vector used by this measurement mechanism."), makeChapter7Bit("[12:10]", "LTSSM Tracking Register Count", "Number of simultaneous LTSSM transition events that can be tracked, from zero through five."), makeChapter7Reserved("[31:13]")]],
@@ -3041,36 +3103,36 @@
         id: "vc_extcap",
         type: "ExtCap",
         name: "Virtual Channel (VC)",
-        description: "Reports and controls Virtual Channel resources and arbitration tables.",
+        description: "Reports and controls repeated Virtual Channel resources and optional arbitration tables.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "Port VC Capability Register 1", chapter7VcPortCapability1Bits()],
           ["08h", "Port VC Capability Register 2", chapter7VcPortCapability2Bits()],
           ["0Ch", "Port VC Control", chapter7VcPortControlBits(), "[15:0]"],
           ["0Eh", "Port VC Status", [makeChapter7Flag("[0]", "VC Arbitration Table Status", "Indicates that programmed table contents have not yet been completely loaded into VC arbitration logic."), makeChapter7Reserved("[15:1]")], "[15:0]"],
-          ["10h", "VC Resource Capability", chapter7VcResourceCapabilityBits()],
-          ["14h", "VC Resource Control", chapter7VcResourceControlBits()],
-          ["18h", "VC Resource Status", chapter7VcResourceStatusBits(), "[15:0]"],
-          ["1Ch", "VC Arbitration Table", chapter7WholeRegisterBits("[31:0]", "VC Arbitration Table Entries", "Programmable packed entries representing one VC arbitration period.")],
-          ["20h", "Port Arbitration Table", chapter7WholeRegisterBits("[31:0]", "Port Arbitration Table Entries", "Programmable packed Port Number entries representing one Port arbitration period.")]
+          ["10h + 0Ch*n; 0 <= n <= Extended VC Count", "VC Resource Capability n (repeated)", chapter7VcResourceCapabilityBits()],
+          ["14h + 0Ch*n; 0 <= n <= Extended VC Count", "VC Resource Control n (repeated)", chapter7VcResourceControlBits()],
+          ["18h + 0Ch*n; 0 <= n <= Extended VC Count", "VC Resource Status n (repeated)", chapter7VcResourceStatusBits(), "[15:0]"],
+          ["16 * VC Arbitration Table Offset; absent when offset = 0", "VC Arbitration Table (optional)", chapter7WholeRegisterBits("[31:0]", "VC Arbitration Table Entries", "Programmable packed entries; location comes from Port VC Capability Register 2, not from the resource-block extent.")],
+          ["16 * Port Arbitration Table Offset for resource n; absent when offset = 0", "Port Arbitration Table n (optional)", chapter7WholeRegisterBits("[31:0]", "Port Arbitration Table Entries", "Programmable packed Port Number entries; each resource capability supplies its table location.")]
         ]
       },
       {
         id: "mfvc_extcap",
         type: "ExtCap",
         name: "Multi-Function Virtual Channel (MFVC)",
-        description: "Virtual Channel controls for multi-function devices.",
+        description: "Virtual Channel controls with repeated MFVC resources and optional arbitration tables.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "MFVC Port VC Capability Register 1", chapter7VcPortCapability1Bits("Function")],
           ["08h", "MFVC Port VC Capability Register 2", chapter7VcPortCapability2Bits("MFVC ")],
           ["0Ch", "MFVC Port VC Control", chapter7VcPortControlBits("MFVC "), "[15:0]"],
           ["0Eh", "MFVC Port VC Status", [makeChapter7Flag("[0]", "VC Arbitration Table Status", "Indicates that programmed MFVC table contents have not yet been completely loaded."), makeChapter7Reserved("[15:1]")], "[15:0]"],
-          ["10h", "MFVC VC Resource Capability", chapter7VcResourceCapabilityBits(true)],
-          ["14h", "MFVC VC Resource Control", chapter7VcResourceControlBits(true)],
-          ["18h", "MFVC VC Resource Status", chapter7VcResourceStatusBits(true), "[15:0]"],
-          ["1Ch", "MFVC VC Arbitration Table", chapter7WholeRegisterBits("[31:0]", "MFVC VC Arbitration Table Entries", "Programmable packed entries representing one MFVC VC arbitration period.")],
-          ["20h", "Function Arbitration Table", chapter7WholeRegisterBits("[31:0]", "Function Arbitration Table Entries", "Programmable packed Function Number or Function Group entries representing one Function arbitration period.")]
+          ["10h + 0Ch*n; 0 <= n <= Extended VC Count", "MFVC VC Resource Capability n (repeated)", chapter7VcResourceCapabilityBits(true)],
+          ["14h + 0Ch*n; 0 <= n <= Extended VC Count", "MFVC VC Resource Control n (repeated)", chapter7VcResourceControlBits(true)],
+          ["18h + 0Ch*n; 0 <= n <= Extended VC Count", "MFVC VC Resource Status n (repeated)", chapter7VcResourceStatusBits(true), "[15:0]"],
+          ["16 * MFVC VC Arbitration Table Offset; absent when offset = 0", "MFVC VC Arbitration Table (optional)", chapter7WholeRegisterBits("[31:0]", "MFVC VC Arbitration Table Entries", "Programmable packed entries; location comes from MFVC Port VC Capability Register 2.")],
+          ["16 * Function Arbitration Table Offset for resource n; absent when offset = 0", "Function Arbitration Table n (optional)", chapter7WholeRegisterBits("[31:0]", "Function Arbitration Table Entries", "Programmable packed Function Number or Function Group entries; each resource capability supplies its table location.")]
         ]
       },
       {
@@ -3088,23 +3150,23 @@
         id: "vsec_extcap",
         type: "ExtCap",
         name: "Vendor-Specific Extended Capability",
-        description: "Extended Capability containing a vendor-specific header followed by vendor-defined registers.",
+        description: "Extended Capability containing a vendor-specific header followed by vendor-defined registers; payload details need manual verification against the vendor definition.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "Vendor-Specific Header", [makeChapter7Bit("[15:0]", "VSEC ID", "Vendor-specific capability identifier."), makeChapter7Bit("[19:16]", "VSEC Revision", "Vendor-specific capability revision."), makeChapter7Bit("[31:20]", "VSEC Length", "Total length of the VSEC structure in bytes.")]],
-          ["08h", "Vendor-Specific Registers", [makeChapter7Bit("[31:0]", "Vendor-Specific Data", "Vendor-defined payload; interpretation is specified by the vendor identified by the device.")]]
+          ["08h", "Vendor-Specific Registers", [makeChapter7Bit("[31:0]", "Vendor-Specific Data", "Needs Manual Verification: payload interpretation is vendor-defined and is not specified by the PCIe Base Specification.")]]
         ]
       },
       {
         id: "dvsec_extcap",
         type: "ExtCap",
         name: "Designated Vendor-Specific Extended Capability (DVSEC)",
-        description: "Vendor-specific extended capability with a designated vendor ID, revision, length, and DVSEC ID.",
+        description: "Vendor-specific extended capability with a designated vendor ID, revision, length, and DVSEC ID; payload details need manual verification outside the Base Specification.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "DVSEC Header 1", [makeChapter7Bit("[15:0]", "DVSEC Vendor ID", "Vendor ID designating the DVSEC owner."), makeChapter7Bit("[19:16]", "DVSEC Revision", "Revision of the DVSEC definition."), makeChapter7Bit("[31:20]", "DVSEC Length", "Length of the DVSEC structure in bytes.")]],
           ["08h", "DVSEC Header 2", [makeChapter7Bit("[15:0]", "DVSEC ID", "Designated vendor-specific capability identifier."), makeChapter7Reserved("[31:16]")]],
-          ["0Ch", "DVSEC Registers", [makeChapter7Bit("[31:0]", "DVSEC-Specific Data", "Payload defined by the designated vendor and DVSEC ID.")]]
+          ["0Ch", "DVSEC Registers", [makeChapter7Bit("[31:0]", "DVSEC-Specific Data", "Needs Manual Verification: payload is defined outside the PCIe Base Specification by the designated vendor and DVSEC ID.")]]
         ]
       },
       {
@@ -3123,7 +3185,7 @@
         id: "rcld_extcap",
         type: "ExtCap",
         name: "Root Complex Link Declaration",
-        description: "Declares Root Complex internal elements and links.",
+        description: "Declares Root Complex internal elements followed by one repeated Link Entry for each declared link.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "Element Self Description", [makeChapter7Bit("[3:0]", "Element Type", "Configuration Space element, system egress/internal sink, or internal Root Complex Link."), makeChapter7Reserved("[7:4]"), makeChapter7Bit("[15:8]", "Number of Link Entries", "Number of Link Entries following this register."), makeChapter7Bit("[23:16]", "Component ID", "Identifies the Root Complex Component containing this element."), makeChapter7Bit("[31:24]", "Port Number", "Port Number of this element within its Root Complex Component.")]],
@@ -3182,7 +3244,7 @@
         id: "dpa_extcap",
         type: "ExtCap",
         name: "Dynamic Power Allocation (DPA)",
-        description: "Reports and controls dynamic power allocation substate information.",
+        description: "Reports and controls repeated dynamic-power allocation records for implemented substates.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "DPA Capability", [makeChapter7Bit("[4:0]", "Substate_Max", "Maximum substate number; total supported substates equal this value plus one."), makeChapter7Reserved("[7:5]"), makeChapter7Bit("[9:8]", "Transition Latency Unit", "Scale applied to Transition Latency Value 0 and 1: 1 ms, 10 ms, or 100 ms."), makeChapter7Reserved("[11:10]"), makeChapter7Bit("[13:12]", "Power Allocation Scale", "Scale applied to each Substate Power Allocation value."), makeChapter7Reserved("[15:14]"), makeChapter7Bit("[23:16]", "Transition Latency Value 0", "First maximum transition latency value."), makeChapter7Bit("[31:24]", "Transition Latency Value 1", "Second maximum transition latency value.")]],
@@ -3196,7 +3258,7 @@
         id: "tph_extcap",
         type: "ExtCap",
         name: "TPH Requester",
-        description: "Reports and controls TLP Processing Hints requester support.",
+        description: "Reports and controls TPH Requester support followed by the capability-sized Steering Tag table.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "TPH Requester Capability", [makeChapter7Flag("[0]", "No ST Mode Supported", "Supports TPH without steering tags."), makeChapter7Flag("[1]", "Interrupt Vector Mode Supported", "Supports interrupt-vector steering-table mode."), makeChapter7Flag("[2]", "Device Specific Mode Supported", "Supports device-specific steering-table mode."), makeChapter7Bit("[10:8]", "ST Table Location", "Location of the steering tag table."), makeChapter7Bit("[26:16]", "ST Table Size", "Number of steering tag table entries minus one."), makeChapter7Reserved("[31:27]")]],
@@ -3208,7 +3270,7 @@
         id: "dpc_extcap",
         type: "ExtCap",
         name: "Downstream Port Containment (DPC)",
-        description: "Controls containment of errors below a Downstream Port and exposes RP PIO error logging.",
+        description: "Controls containment and exposes conditional RP PIO registers followed by variable-length logs.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "DPC Capability", [makeChapter7Bit("[4:0]", "DPC Interrupt Message Number", "MSI/MSI-X vector used for DPC interrupts."), makeChapter7Flag("[5]", "RP Extensions for DPC", "Indicates support for Root Port-specific DPC extensions and RP PIO logging."), makeChapter7Flag("[6]", "Poisoned TLP Egress Blocking Supported", "Supports blocking transmission of poisoned TLPs."), makeChapter7Flag("[7]", "DPC Software Triggering Supported", "Supports software-triggered DPC."), makeChapter7Bit("[11:8]", "RP PIO Log Size [3:0]", "Low four bits of the number of DWORDs allocated for RP PIO logs."), makeChapter7Flag("[12]", "DL_Active ERR_COR Signaling Supported", "Supports ERR_COR signaling when the Link enters DL_Active."), makeChapter7Bit("[13]", "RP PIO Log Size [4]", "High bit of RP PIO Log Size for Flit Mode."), makeChapter7Reserved("[15:14]")], "[15:0]"],
@@ -3321,7 +3383,7 @@
         id: "shadow_functions_extcap",
         type: "ExtCap",
         name: "Shadow Functions",
-        description: "Reports and controls shadow function instances.",
+        description: "Reports and controls repeated Shadow Function instance entries.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "Shadow Functions Capability", [makeChapter7Bit("[7:0]", "Instance Count", "Number of shadow function instances supported."), makeChapter7Reserved("[31:8]")]],
@@ -3333,12 +3395,12 @@
         id: "ide_extcap",
         type: "ExtCap",
         name: "Integrity and Data Encryption (IDE)",
-        description: "Reports and controls Link IDE and Selective IDE streams and associations.",
+        description: "Reports and controls count-driven Link IDE blocks followed by Selective IDE blocks and their RID/address associations; displayed offsets after 08h show one variable-layout example.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "IDE Capability", [makeChapter7Flag("[0]", "Link IDE Stream Supported", "Indicates that Link IDE Stream register blocks are implemented."), makeChapter7Flag("[1]", "Selective IDE Streams Supported", "Indicates that Selective IDE Stream register blocks are implemented."), makeChapter7Flag("[2]", "Flow-Through IDE Stream Supported", "Supports passing Selective IDE Streams through Switch or Root Ports."), makeChapter7Flag("[3]", "Partial Header Encryption Supported", "Supports partial header encryption for IDE Streams."), makeChapter7Flag("[4]", "Aggregation Supported", "Supports aggregation of Requests and Completions in IDE Streams."), makeChapter7Flag("[5]", "PCRC Supported", "Supports generation and checking of PCRC."), makeChapter7Flag("[6]", "IDE_KM Protocol Supported", "Supports the IDE_KM responder protocol."), makeChapter7Flag("[7]", "Selective IDE for Configuration Requests Supported", "Supports associating Configuration Requests with Selective IDE Streams."), makeChapter7Bit("[12:8]", "Supported Algorithms", "Bit/encoding field identifying supported IDE security algorithms."), makeChapter7Bit("[15:13]", "Number of TCs Supported for Link IDE", "Encoded number of Traffic Classes supported for Link IDE Streams."), makeChapter7Bit("[23:16]", "Number of Selective IDE Streams Supported", "Number of Selective IDE Streams minus one."), makeChapter7Flag("[24]", "TEE-Limited Stream Supported", "Supports the TEE-Limited Stream control mechanism."), makeChapter7Flag("[25]", "XT Supported", "Supports sending and receiving IDE TLPs with XT content."), makeChapter7Reserved("[31:26]")]],
           ["08h", "IDE Control", [makeChapter7Reserved("[1:0]"), makeChapter7Flag("[2]", "Flow-Through IDE Stream Enabled", "Enables flow-through operation for Selective IDE Streams on Switch and Root Ports."), makeChapter7Reserved("[31:3]")]],
-          ["0Ch", "Link IDE Stream Control", [makeChapter7Flag("[0]", "Link IDE Stream Enable", "Enables this Link IDE Stream; clearing immediately transitions the Stream to Insecure."), makeChapter7Flag("[1]", "XT Enable", "Enables generation and processing of the XT bit for this Stream."), makeChapter7Bit("[3:2]", "Tx Aggregation Mode NPR", "Selects aggregation level for transmitted Non-Posted Requests."), makeChapter7Bit("[5:4]", "Tx Aggregation Mode PR", "Selects aggregation level for transmitted Posted Requests."), makeChapter7Bit("[7:6]", "Tx Aggregation Mode CPL", "Selects aggregation level for transmitted Completions."), makeChapter7Flag("[8]", "PCRC Enable", "Enables PCRC generation and checking for TLPs carrying P content."), makeChapter7Reserved("[9]"), makeChapter7Bit("[13:10]", "Partial Header Encryption Mode", "Selects which address/header fields are encrypted."), makeChapter7Bit("[18:14]", "Selected Algorithm", "Selects the IDE security algorithm."), makeChapter7Bit("[21:19]", "TC", "Traffic Class associated with this Link IDE register block."), makeChapter7Reserved("[23:22]"), makeChapter7Bit("[31:24]", "Stream_ID", "Stream identifier programmed identically in both Partner Ports.")]],
+          ["variable after 08h", "Link IDE Stream Control (repeated)", [makeChapter7Flag("[0]", "Link IDE Stream Enable", "Enables this Link IDE Stream; clearing immediately transitions the Stream to Insecure."), makeChapter7Flag("[1]", "XT Enable", "Enables generation and processing of the XT bit for this Stream."), makeChapter7Bit("[3:2]", "Tx Aggregation Mode NPR", "Selects aggregation level for transmitted Non-Posted Requests."), makeChapter7Bit("[5:4]", "Tx Aggregation Mode PR", "Selects aggregation level for transmitted Posted Requests."), makeChapter7Bit("[7:6]", "Tx Aggregation Mode CPL", "Selects aggregation level for transmitted Completions."), makeChapter7Flag("[8]", "PCRC Enable", "Enables PCRC generation and checking for TLPs carrying P content."), makeChapter7Reserved("[9]"), makeChapter7Bit("[13:10]", "Partial Header Encryption Mode", "Selects which address/header fields are encrypted."), makeChapter7Bit("[18:14]", "Selected Algorithm", "Selects the IDE security algorithm."), makeChapter7Bit("[21:19]", "TC", "Traffic Class associated with this Link IDE register block."), makeChapter7Reserved("[23:22]"), makeChapter7Bit("[31:24]", "Stream_ID", "Stream identifier programmed identically in both Partner Ports.")]],
           ["10h", "Link IDE Stream Status", [makeChapter7Bit("[3:0]", "Link IDE Stream State", "Reports Insecure, Secure, or an unknown reserved Stream state."), makeChapter7Reserved("[30:4]"), makeChapter7Flag("[31]", "Received IDE Fail Message", "Indicates receipt of one or more IDE Fail Messages for this Stream.")]],
           ["14h", "Selective IDE Stream Capability", [makeChapter7Bit("[3:0]", "Number of Address Association Register Blocks", "Number of Selective IDE Address Association blocks implemented for this Stream."), makeChapter7Reserved("[31:4]")]],
           ["18h", "Selective IDE Stream Control", [makeChapter7Flag("[0]", "Selective IDE Stream Enable", "Enables this Selective IDE Stream; clearing immediately transitions it to Insecure."), makeChapter7Flag("[1]", "XT Enable", "Enables XT content for this Stream."), makeChapter7Bit("[3:2]", "Tx Aggregation Mode NPR", "Selects Non-Posted Request aggregation."), makeChapter7Bit("[5:4]", "Tx Aggregation Mode PR", "Selects Posted Request aggregation."), makeChapter7Bit("[7:6]", "Tx Aggregation Mode CPL", "Selects Completion aggregation."), makeChapter7Flag("[8]", "PCRC Enable", "Enables PCRC generation and checking."), makeChapter7Flag("[9]", "Selective IDE for Configuration Requests Enable", "Associates matching Configuration Requests with this Stream."), makeChapter7Bit("[13:10]", "Partial Header Encryption Mode", "Selects partial-header encryption coverage."), makeChapter7Bit("[18:14]", "Selected Algorithm", "Selects the IDE security algorithm."), makeChapter7Bit("[21:19]", "TC", "Traffic Class associated with this Selective IDE Stream."), makeChapter7Flag("[22]", "Default Stream", "Makes this the default Selective IDE Stream for the selected TC."), makeChapter7Flag("[23]", "TEE-Limited Stream", "Restricts associated Requests to the TEE-Limited Stream criteria."), makeChapter7Bit("[31:24]", "Stream_ID", "Stream identifier programmed in both Partner Ports.")]],
@@ -3361,7 +3423,7 @@
         id: "svc_extcap",
         type: "ExtCap",
         name: "Streamlined Virtual Channel (SVC)",
-        description: "Streamlined virtual-channel capability and resource controls.",
+        description: "Streamlined Virtual Channel capability with repeated resources and optional tables.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "SVC Port Capability Register 1", [makeChapter7Bit("[2:0]", "SVC Extended VC Count", "Number of Virtual Channels supported in addition to VC0."), makeChapter7Reserved("[31:3]")]],
@@ -3380,18 +3442,108 @@
         description: "Locates MMIO register blocks associated with a Function.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "MRBL Capabilities", [makeChapter7Bit("[7:0]", "Locator Count", "Number of locator registers implemented."), makeChapter7Reserved("[31:8]")]],
-          ["08h", "MRBL Locator", [makeChapter7Bit("[2:0]", "BIR", "BAR Indicator Register containing the MMIO register block."), makeChapter7Bit("[31:3]", "Block Offset", "Offset to the MMIO register block within the selected BAR.")]]
+          ["04h", "MRBL Capabilities", [makeChapter7Bit("[11:0]", "Structure Length", "Hardware-initialized length in bytes: 08h + n*08h for n Locator registers."), makeChapter7Bit("[31:12]", "RsvdP", "Reserved and preserved by software.")]],
+          ["08h + 8*(n-1)", "MRBL Locator Low (repeated)", [makeChapter7Bit("[2:0]", "BIR", "Hardware-initialized BAR/EA selector 0 through 5; 6 and 7 are reserved."), makeChapter7Bit("[7:3]", "RsvdP", "Reserved and preserved by software."), makeChapter7Bit("[15:8]", "Block ID", "00h is invalid, 01h identifies MCAP, 02h-FEh are reserved, and FFh identifies MDVS."), makeChapter7Bit("[31:16]", "Block Offset Low", "Low 16 bits of the MMIO register-block offset.")]],
+          ["0Ch + 8*(n-1)", "MRBL Locator High (repeated)", [makeChapter7Bit("[31:0]", "Block Offset High", "High 32 bits of the MMIO register-block offset.")]]
         ]
       }
     ];
     
+    const chapter7ById = Object.fromEntries(chapter7MissingStructures.map(item => [item.id, item]));
+    const chapter7Register = (id, name) => chapter7ById[id].registers.find(register => register[1] === name);
+
+    for (let n = 1; n <= 5; n++) {
+      const register = chapter7Register("flit_perf_extcap", `LTSSM Performance Measurement Status ${n}`);
+      register[0] = `${(12 + 4 * n).toString(16).toUpperCase().padStart(2, "0")}h; present only when LTSSM Tracking Register Count >= ${n}`;
+      register[1] += " (conditional)";
+    }
+
+    [["Link Description", "10h"], ["Link Entry Reserved", "14h"], ["Link Address Low", "18h"], ["Link Address High", "1Ch"]].forEach(([name, base]) => {
+      const register = chapter7Register("rcld_extcap", name);
+      register[0] = `${base} + 10h*n; 0 <= n < Number of Link Entries`;
+      register[1] += " n (repeated)";
+    });
+
+    Object.assign(chapter7Register("dpa_extcap", "DPA Power Allocation Array"), {
+      0: "10h + n; 0 <= n <= Substate_Max (four byte entries packed per DWORD)",
+      1: "Substate Power Allocation Register n (repeated)",
+      2: [makeChapter7Bit("[7:0]", "Substate Power Allocation n", "Exactly Substate_Max + 1 byte entries are implemented; each value is scaled by Power Allocation Scale.")],
+      3: "[7:0]"
+    });
+
+    chapter7Register("tph_extcap", "TPH Requester Capability")[2] = [
+      makeChapter7Flag("[0]", "No ST Mode Supported", "Supports No ST Mode; this bit must be Set."),
+      makeChapter7Flag("[1]", "Interrupt Vector Mode Supported", "Supports Interrupt Vector Mode."),
+      makeChapter7Flag("[2]", "Device Specific Mode Supported", "Supports Device Specific Mode."),
+      makeChapter7Reserved("[7:3]"), makeChapter7Flag("[8]", "Extended TPH Requester Supported", "Supports additional TPH information in the TPH TLP Prefix."),
+      makeChapter7Bit("[10:9]", "ST Table Location", "00b absent; 01b in this capability; 10b in the MSI-X Table; 11b Reserved."),
+      makeChapter7Reserved("[15:11]"), makeChapter7Bit("[26:16]", "ST Table Size", "N-1 encoded entry count; undefined when an ST Table is not implemented."), makeChapter7Reserved("[31:27]")
+    ];
+    chapter7Register("tph_extcap", "TPH Requester Control")[2] = [
+      makeChapter7Bit("[2:0]", "ST Mode Select", "000b No ST; 001b Interrupt Vector; 010b Device Specific; other encodings Reserved."),
+      makeChapter7Reserved("[7:3]"), makeChapter7Bit("[9:8]", "TPH Requester Enable", "00b disabled; 01b TPH; 10b Reserved; 11b TPH and Extended TPH."), makeChapter7Reserved("[31:10]")
+    ];
+    Object.assign(chapter7Register("tph_extcap", "TPH ST Table"), {
+      0: "0Ch + 2*n; 0 <= n <= ST Table Size; only when ST Table Location = 01b",
+      1: "TPH ST Table Entry n (repeated)",
+      2: [makeChapter7Bit("[7:0]", "ST Lower", "Lower eight Steering Tag bits."), makeChapter7Bit("[15:8]", "ST Upper", "Upper eight Steering Tag bits when Extended TPH Requester Supported is Set; otherwise RsvdP.")],
+      3: "[15:0]"
+    });
+
+    Object.assign(chapter7Register("shadow_functions_extcap", "Shadow Functions Instance Register Entry"), {
+      0: "0Ch + 4*n; 0 <= n <= Number of Shadow Functions",
+      1: "Shadow Functions Instance Register Entry n (repeated)"
+    });
+    chapter7Register("shadow_functions_extcap", "Shadow Functions Capability")[2][0].description = "One less than the implemented Shadow Function count; defines entries 0 through this value.";
+
+    ["RP PIO Status", "RP PIO Mask", "RP PIO Severity", "RP PIO SysError", "RP PIO Exception"].forEach(name => {
+      chapter7Register("dpc_extcap", name)[1] += " (only for a Root Port with RP Extensions for DPC Set)";
+    });
+    Object.assign(chapter7Register("dpc_extcap", "RP PIO Header Log"), {
+      0: "20h + 4*n; 0 <= n < 4",
+      1: "RP PIO Header Log DWORD n+1 (repeated; RP Extensions only)",
+      2: [makeChapter7Bit("[31:0]", "RP PIO Header Log DWORD n+1", "The fixed Request TLP Header Log contains DWORDs 1 through 4 at 20h through 2Ch.")]
+    });
+    Object.assign(chapter7Register("dpc_extcap", "RP PIO ImpSpec Log"), {
+      0: "30h; optional; RP Extensions only; included in RP PIO Log Size when implemented",
+      1: "RP PIO Implementation-Specific Log (optional)"
+    });
+    Object.assign(chapter7Register("dpc_extcap", "RP PIO TLP Prefix Log"), {
+      0: "34h + 4*n; Non-Flit Mode, extent bounded by RP PIO Log Size",
+      1: "RP PIO TLP Prefix Log DWORD n (optional/repeated)",
+      2: [makeChapter7Bit("[31:0]", "RP PIO TLP Prefix Log DWORD n", "Non-Flit Mode optional variable log; the total Header/ImpSpec/Prefix allocation is the RP PIO Log Size in DWORDs.")]
+    });
+    chapter7ById.dpc_extcap.registers.push([
+      "34h + 4*n; 0 <= n < 10; Flit Mode, implementation extent bounded by RP PIO Log Size",
+      "RP PIO Flit Header Log DWORD 5+n (repeated)",
+      [makeChapter7Bit("[31:0]", "RP PIO Flit Header Log DWORD 5+n", "In Flit Mode the Header Log continues with DWORDs 5 through 14; implemented extent follows RP PIO Log Size requirements.")]
+    ]);
+
+    chapter7ById.ide_extcap.description = "Count-driven layout. Let L be Number of TCs Supported for Link IDE + 1 when Link IDE Stream Supported is Set, otherwise 0. Link blocks are 8 bytes. Selective block j starts at B[j], where B[0] = 0Ch + 8*L and B[j+1] = B[j] + 20h + 0Ch*A[j]; A[j] is that stream's Number of Address Association Register Blocks.";
+    Object.assign(chapter7Register("ide_extcap", "Link IDE Stream Control (repeated)"), { 0: "0Ch + 8*i; 0 <= i < L", 1: "Link IDE Stream Control i (repeated)" });
+    Object.assign(chapter7Register("ide_extcap", "Link IDE Stream Status"), { 0: "10h + 8*i; 0 <= i < L", 1: "Link IDE Stream Status i (repeated)" });
+    [["Selective IDE Stream Capability", "B[j]"], ["Selective IDE Stream Control", "B[j] + 04h"], ["Selective IDE Stream Status", "B[j] + 08h"], ["IDE RID Association 1", "B[j] + 0Ch"], ["IDE RID Association 2", "B[j] + 10h"]].forEach(([name, offset]) => {
+      const register = chapter7Register("ide_extcap", name);
+      register[0] = `${offset}; 0 <= j <= Number of Selective IDE Streams Supported`;
+      register[1] += " j (repeated)";
+    });
+    [["IDE Address Association 1", "B[j] + 14h + 0Ch*k"], ["IDE Address Association 2", "B[j] + 18h + 0Ch*k"], ["IDE Address Association 3", "B[j] + 1Ch + 0Ch*k"]].forEach(([name, offset]) => {
+      const register = chapter7Register("ide_extcap", name);
+      register[0] = `${offset}; 0 <= k < A[j]`;
+      register[1] += " k for stream j (repeated)";
+    });
+
+    [["SVC Resource Capability", "14h"], ["SVC Resource Control", "18h"], ["SVC Resource Status", "1Ch"]].forEach(([name, base]) => {
+      const register = chapter7Register("svc_extcap", name);
+      register[0] = `${base} + 0Ch*n; 0 <= n <= SVC Extended VC Count`;
+      register[1] += " n (repeated)";
+    });
+
     structures.push(...chapter7MissingStructures.map(makeChapter7Structure));
 
     /*
-     * Make every displayed register bit-complete. Chapter 7 tables explicitly
-     * define reserved/undefined gaps; keeping them visible prevents omitted
-     * bit positions from looking like undocumented implementation space.
+     * Keep omitted positions visible without inferring Reserved semantics.
+     * Exact RsvdP/RsvdZ/access behavior must come from a source-backed entry.
      */
     function addUnspecifiedBitRanges(structure) {
       Object.values(structure.bitfields || {}).forEach(field => {
@@ -3422,7 +3574,11 @@
           const low = index;
           while (index + 1 < width && !occupied[index + 1]) index++;
           const high = index;
-          field.bits.push(makeChapter7Reserved(high === low ? `[${low}]` : `[${high}:${low}]`));
+          field.bits.push(makeChapter7Bit(
+            high === low ? `[${low}]` : `[${high}:${low}]`,
+            "Needs Manual Verification",
+            "This gap was not defined by the extraction handoff; verify its access and reserved semantics against the source table."
+          ));
           index++;
         }
 
@@ -3693,7 +3849,7 @@
         if (bitDef) {
           // If defined, check if it is Reserved. 
           // If NOT Reserved, add .active (white). Reserved stays default (gray).
-          box.classList.toggle("active", !/reserved|rsvd/i.test(bitDef.title));
+          box.classList.toggle("active", !/reserved|rsvd|manual verification/i.test(bitDef.title));
           box.title = `Bit ${b}: ${bitDef.title}`;
         } else {
           box.title = `Bit ${b}`;
