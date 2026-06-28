@@ -583,6 +583,8 @@
           },
         ],
         bitfields: {
+          vendorid: { name: "Vendor ID", offset: "00h", range: "[15:0]", bits: [{ range: "[15:0]", title: "Vendor ID", description: "PCI-SIG assigned vendor identifier." }] },
+          deviceid: { name: "Device ID", offset: "02h", range: "[15:0]", bits: [{ range: "[15:0]", title: "Device ID", description: "Vendor-assigned device identifier." }] },
           command: {
             name: "Command",
             offset: "04h",
@@ -638,6 +640,8 @@
           subsysid: { name: "Subsystem ID", offset: "2Eh", range: "[15:0]", bits: [{ range: "[15:0]", title: "Subsystem ID", description: "Device ID of the add-in card." }] },
           rombar: { name: "Expansion ROM Base Address", offset: "30h", range: "[31:0]", bits: [{ range: "[0]", title: "Address Decode Enable", description: "Enables expansion ROM decoding." }, { range: "[31:11]", title: "Base Address", description: "Base address." }] },
           capptr: { name: "Capabilities Pointer", offset: "34h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Capabilities Pointer", description: "Points to the first capability in the list." }] },
+          reserved: { name: "Reserved", offset: "35h", range: "[23:0]", bits: [{ range: "[23:0]", title: "Reserved", description: "Reserved." }] },
+          reserved2: { name: "Reserved", offset: "38h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Reserved", description: "Reserved." }] },
           intline: { name: "Interrupt Line", offset: "3Ch", range: "[7:0]", bits: [{ range: "[7:0]", title: "Interrupt Line", description: "System interrupt routing information." }] },
           intpin: { name: "Interrupt Pin", offset: "3Dh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Interrupt Pin", description: "Identifies the legacy interrupt pin used (1=INTA, etc.)." }] },
           mingnt: { name: "Min_Gnt", offset: "3Eh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Min_Gnt", description: "Length of burst period required." }] },
@@ -766,6 +770,8 @@
           },
         ],
         bitfields: {
+          vendorid: { name: "Vendor ID", offset: "00h", range: "[15:0]", bits: [{ range: "[15:0]", title: "Vendor ID", description: "PCI-SIG assigned vendor identifier." }] },
+          deviceid: { name: "Device ID", offset: "02h", range: "[15:0]", bits: [{ range: "[15:0]", title: "Device ID", description: "Vendor-assigned device identifier." }] },
           command: {
             name: "Command",
             offset: "04h",
@@ -805,7 +811,7 @@
             ]
           },
           revid: { name: "Revision ID", offset: "08h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Revision ID", description: "Device specific revision identifier." }] },
-          classcode: { name: "Class Code", offset: "09h", range: "[31:8]", bits: [{ range: "[31:8]", title: "Class Code", description: "Identifies the general function of the device." }] },
+          classcode: { name: "Class Code", offset: "09h", range: "[23:0]", bits: [{ range: "[23:0]", title: "Class Code", description: "Identifies the general function of the device." }] },
           cacheline: { name: "Cache Line Size", offset: "0Ch", range: "[7:0]", bits: [{ range: "[7:0]", title: "Cache Line Size", description: "Specifies the system cacheline size in 32-bit units." }] },
           latency: { name: "Latency Timer", offset: "0Dh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Latency Timer", description: "Not used in PCIe, hardwired to 0." }] },
     
@@ -819,7 +825,24 @@
           sec_latency: { name: "Secondary Latency Timer", offset: "1Bh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Secondary Latency Timer", description: "Not used in PCIe, hardwired to 0." }] },
           io_base: { name: "I/O Base", offset: "1Ch", range: "[7:0]", bits: [{ range: "[3:0]", title: "Addressing Capability", description: "01h=32-bit I/O." }, { range: "[7:4]", title: "I/O Base Address", description: "Upper 4 bits of the I/O base address." }] },
           io_limit: { name: "I/O Limit", offset: "1Dh", range: "[7:0]", bits: [{ range: "[3:0]", title: "Addressing Capability", description: "01h=32-bit I/O." }, { range: "[7:4]", title: "I/O Limit Address", description: "Upper 4 bits of the I/O limit address." }] },
-          sec_status: { name: "Secondary Status", offset: "1Eh", range: "[15:0]", bits: [{ range: "[15:0]", title: "Secondary Status", description: "Status of the secondary interface." }] },
+          sec_status: {
+            name: "Secondary Status",
+            offset: "1Eh",
+            range: "[15:0]",
+            bits: [
+              { range: "[4:0]", title: "Reserved", description: "Reserved." },
+              { range: "[5]", title: "66 MHz Capable", description: "Legacy PCI field; hardwired to zero for PCI Express." },
+              { range: "[6]", title: "Reserved", description: "Reserved." },
+              { range: "[7]", title: "Fast Back-to-Back Capable", description: "Legacy PCI field; hardwired to zero for PCI Express." },
+              { range: "[8]", title: "Master Data Parity Error", description: "A parity error was detected while the bridge was bus master on the secondary interface." },
+              { range: "[10:9]", title: "DEVSEL Timing", description: "Legacy PCI field; hardwired to zero for PCI Express." },
+              { range: "[11]", title: "Signaled Target Abort", description: "The secondary interface signaled a Target Abort." },
+              { range: "[12]", title: "Received Target Abort", description: "The secondary interface received a Target Abort." },
+              { range: "[13]", title: "Received Master Abort", description: "The secondary interface received a Master Abort." },
+              { range: "[14]", title: "Received System Error", description: "The bridge detected SERR# asserted on the secondary interface." },
+              { range: "[15]", title: "Detected Parity Error", description: "The bridge detected a parity error on the secondary interface." }
+            ]
+          },
           mem_base: { name: "Memory Base", offset: "20h", range: "[15:0]", bits: [{ range: "[3:0]", title: "Reserved", description: "Reserved." }, { range: "[15:4]", title: "Memory Base Address", description: "Upper 12 bits of the memory base address." }] },
           mem_limit: { name: "Memory Limit", offset: "22h", range: "[15:0]", bits: [{ range: "[3:0]", title: "Reserved", description: "Reserved." }, { range: "[15:4]", title: "Memory Limit Address", description: "Upper 12 bits of the memory limit address." }] },
           pref_mem_base: { name: "Prefetchable Memory Base", offset: "24h", range: "[15:0]", bits: [{ range: "[3:0]", title: "Addressing Capability", description: "0=32-bit, 1=64-bit." }, { range: "[15:4]", title: "Prefetchable Memory Base Address", description: "Upper 12 bits of the prefetchable memory base address." }] },
@@ -829,6 +852,7 @@
           io_base_upper: { name: "I/O Base Upper 16 Bits", offset: "30h", range: "[15:0]", bits: [{ range: "[15:0]", title: "I/O Base Upper", description: "Upper 16 bits of the I/O base address." }] },
           io_limit_upper: { name: "I/O Limit Upper 16 Bits", offset: "32h", range: "[15:0]", bits: [{ range: "[15:0]", title: "I/O Limit Upper", description: "Upper 16 bits of the I/O limit address." }] },
           capptr: { name: "Capabilities Pointer", offset: "34h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Capabilities Pointer", description: "Points to the first capability in the list." }] },
+          reserved: { name: "Reserved", offset: "35h", range: "[23:0]", bits: [{ range: "[23:0]", title: "Reserved", description: "Reserved." }] },
           rombar: { name: "Expansion ROM Base Address", offset: "38h", range: "[31:0]", bits: [{ range: "[0]", title: "Address Decode Enable", description: "Enables expansion ROM decoding." }, { range: "[31:11]", title: "Base Address", description: "Base address." }] },
           intline: { name: "Interrupt Line", offset: "3Ch", range: "[7:0]", bits: [{ range: "[7:0]", title: "Interrupt Line", description: "System interrupt routing information." }] },
           intpin: { name: "Interrupt Pin", offset: "3Dh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Interrupt Pin", description: "Identifies the legacy interrupt pin used (1=INTA, etc.)." }] },
@@ -1040,7 +1064,8 @@
               { range: "[7:4]", title: "Device/Port Type", description: "Indicates the type of PCI Express function." },
               { range: "[8]", title: "Slot Implemented", description: "Set when the Link is connected to a slot." },
               { range: "[13:9]", title: "Interrupt Message Number", description: "MSI/MSI-X vector used for interrupt messages." },
-              { range: "[15:14]", title: "Reserved", description: "Reserved." }
+              { range: "[14]", title: "Undefined", description: "Software must ignore the value read from this bit." },
+              { range: "[15]", title: "Flit Mode Supported", description: "Indicates that the Function supports Flit Mode." }
             ]
           },
           devcap: {
@@ -1053,9 +1078,16 @@
               { range: "[5]", title: "Extended Tag Field Supported", description: "Support for 8-bit Tag field.", values: { "0": "5-bit", "1": "8-bit" } },
               { range: "[8:6]", title: "Endpoint L0s Acceptable Latency", description: "Acceptable total latency for L0s.", values: { "0": "<64ns", "1": "<128ns", "2": "<256ns", "3": "<512ns", "4": "<1us", "5": "<2us", "6": "<4us", "7": "No Limit" } },
               { range: "[11:9]", title: "Endpoint L1 Acceptable Latency", description: "Acceptable total latency for L1.", values: { "0": "<1us", "1": "<2us", "2": "<4us", "3": "<8us", "4": "<16us", "5": "<32us", "6": "<64us", "7": "No Limit" } },
+              { range: "[14:12]", title: "Undefined", description: "Software must ignore these bits." },
               { range: "[15]", title: "Role-Based Error Reporting", description: "Implements role-based error reporting.", values: { "0": "No", "1": "Yes" } },
+              { range: "[16]", title: "ERR_COR Subclass Capable", description: "Supports the ERR_COR Subclass field in ERR_COR Messages." },
+              { range: "[17]", title: "Rx_MPS_Fixed", description: "Indicates that Rx_MPS_Limit is fixed to Max_Payload_Size Supported." },
+              { range: "[25:18]", title: "Captured Slot Power Limit Value", description: "Captured slot power limit value for Upstream Ports." },
               { range: "[27:26]", title: "Captured Slot Power Limit Scale", description: "Scale for Slot Power Limit.", values: { "0": "1.0x", "1": "0.1x", "2": "0.01x", "3": "0.001x" } },
-              { range: "[31:28]", title: "Captured Slot Power Limit Value", description: "Value for Slot Power Limit." }
+              { range: "[28]", title: "Function Level Reset Capability", description: "Indicates Function Level Reset support." },
+              { range: "[29]", title: "Mixed_MPS_Supported", description: "Indicates support for different MPS settings for different targets." },
+              { range: "[30]", title: "TEE-IO Supported", description: "Indicates support for TEE Device Interface Security Protocol functionality." },
+              { range: "[31]", title: "Reserved", description: "Reserved." }
             ]
           },
           devctl: {
@@ -1235,11 +1267,20 @@
               { range: "[9]", title: "128-bit CAS Completer Supported", description: "Supports 128-bit CAS Completer.", values: { "0": "No", "1": "Yes" } },
               { range: "[10]", title: "No RO-enabled PR-PR Passing", description: "No RO-enabled PR-PR Passing.", values: { "0": "No", "1": "Yes" } },
               { range: "[11]", title: "LTR Mechanism Supported", description: "Supports LTR Mechanism.", values: { "0": "No", "1": "Yes" } },
-              { range: "[13:12]", title: "TPH Completer Supported", description: "TPH Completer support.", values: { "0": "No", "1": "Yes" } },
+              { range: "[13:12]", title: "TPH Completer Supported", description: "Reports TPH and Extended TPH Completer support." },
+              { range: "[15:14]", title: "Undefined", description: "Formerly used for Lightweight Notification; software must not depend on this field." },
+              { range: "[16]", title: "10-Bit Tag Completer Supported", description: "The Function supports completing Requests that use 10-bit Tags." },
+              { range: "[17]", title: "10-Bit Tag Requester Supported", description: "The Function supports generating 10-bit Tags for non-UIO Requests." },
               { range: "[19:18]", title: "OBFF Supported", description: "OBFF support.", values: { "0": "None", "1": "Message A", "2": "Message B", "3": "WAKE#" } },
               { range: "[20]", title: "Extended Fmt Field Supported", description: "Supports Extended Fmt Field.", values: { "0": "No", "1": "Yes" } },
               { range: "[21]", title: "End-End TLP Prefix Supported", description: "Supports End-End TLP Prefix.", values: { "0": "No", "1": "Yes" } },
-              { range: "[23:22]", title: "Max End-End TLP Prefixes", description: "Max End-End TLP Prefixes." }
+              { range: "[23:22]", title: "Max End-End TLP Prefixes", description: "Maximum End-End TLP Prefix count in Non-Flit Mode or maximum OHC-E size in Flit Mode." },
+              { range: "[25:24]", title: "Emergency Power Reduction Supported", description: "Reports whether Emergency Power Reduction is unsupported, device-specific, or form-factor/device-specific." },
+              { range: "[26]", title: "Emergency Power Reduction Initialization Required", description: "The Function requires software initialization after leaving Emergency Power Reduction State." },
+              { range: "[27]", title: "Reserved", description: "Reserved." },
+              { range: "[28]", title: "DMWr Completer Supported", description: "The Function can serve as a DMWr Completer." },
+              { range: "[30:29]", title: "DMWr Lengths Supported", description: "Encodes the largest DMWr TLP length the Function can receive." },
+              { range: "[31]", title: "FRS Supported", description: "The Function supports Function Readiness Status messaging." }
             ]
           },
           devctl2: {
@@ -1255,6 +1296,8 @@
               { range: "[8]", title: "IDO Request Enable", description: "Enables IDO Request.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[9]", title: "IDO Completion Enable", description: "Enables IDO Completion.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[10]", title: "LTR Mechanism Enable", description: "Enables LTR Mechanism.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[11]", title: "Emergency Power Reduction Request", description: "Requests all supporting Functions in the component to enter Emergency Power Reduction State." },
+              { range: "[12]", title: "10-Bit Tag Requester Enable", description: "Permits the Requester to use 10-bit Tags for non-UIO Requests." },
               { range: "[14:13]", title: "OBFF Enable", description: "Enables OBFF.", values: { "0": "Disable", "1": "Message A", "2": "Message B", "3": "WAKE#" } },
               { range: "[15]", title: "End-End TLP Prefix Blocking", description: "Enables End-End TLP Prefix Blocking.", values: { "0": "Unblocked", "1": "Blocked" } }
             ]
@@ -1272,8 +1315,16 @@
             offset: "2Ch",
             range: "[31:0]",
             bits: [
+              { range: "[0]", title: "Reserved", description: "Reserved." },
               { range: "[7:1]", title: "Supported Link Speeds Vector", description: "Supported Link Speeds." },
-              { range: "[8]", title: "Crosslink Supported", description: "Supports Crosslink.", values: { "0": "No", "1": "Yes" } }
+              { range: "[8]", title: "Crosslink Supported", description: "Supports Crosslink.", values: { "0": "No", "1": "Yes" } },
+              { range: "[15:9]", title: "Lower SKP OS Generation Supported Speeds Vector", description: "Speeds at which SRIS operation supports software-controlled lower-rate SKP Ordered Set generation." },
+              { range: "[22:16]", title: "Lower SKP OS Reception Supported Speeds Vector", description: "Speeds at which the Port can receive SRNS-rate SKP Ordered Sets while operating in SRIS." },
+              { range: "[23]", title: "Retimer Presence Detect Supported", description: "Supports detection and reporting of Retimer presence." },
+              { range: "[24]", title: "Two Retimers Presence Detect Supported", description: "Supports detection and reporting of two Retimers." },
+              { range: "[25]", title: "Optical Retimer Presence Detect Supported", description: "Supports detection and reporting of an Optical Retimer Solution." },
+              { range: "[30:26]", title: "Reserved", description: "Reserved." },
+              { range: "[31]", title: "DRS Supported", description: "Supports Device Readiness Status messaging." }
             ]
           },
           linkctl2: {
@@ -1281,7 +1332,7 @@
             offset: "30h",
             range: "[15:0]",
             bits: [
-              { range: "[3:0]", title: "Target Link Speed", description: "Target Link Speed.", values: { "1": "2.5 GT/s", "2": "5.0 GT/s", "3": "8.0 GT/s" } },
+              { range: "[3:0]", title: "Target Link Speed", description: "Sets the upper limit for Link operational speed.", values: { "1": "2.5 GT/s", "2": "5.0 GT/s", "3": "8.0 GT/s", "4": "16.0 GT/s", "5": "32.0 GT/s", "6": "64.0 GT/s" } },
               { range: "[4]", title: "Enter Compliance", description: "Enter Compliance.", values: { "0": "No", "1": "Yes" } },
               { range: "[5]", title: "Hardware Autonomous Speed Disable", description: "Disables HW Autonomous Speed.", values: { "0": "Enable", "1": "Disable" } },
               { range: "[6]", title: "Selectable De-emphasis", description: "Selectable De-emphasis.", values: { "0": "-3.5 dB", "1": "-6.0 dB" } },
@@ -1297,11 +1348,18 @@
             range: "[15:0]",
             bits: [
               { range: "[0]", title: "Current De-emphasis Level", description: "Current De-emphasis Level.", values: { "0": "-3.5 dB", "1": "-6.0 dB" } },
-              { range: "[1]", title: "Equalization Complete", description: "Equalization Complete.", values: { "0": "No", "1": "Yes" } },
-              { range: "[2]", title: "Equalization Phase 1 Successful", description: "Equalization Phase 1 Successful.", values: { "0": "No", "1": "Yes" } },
-              { range: "[3]", title: "Equalization Phase 2 Successful", description: "Equalization Phase 2 Successful.", values: { "0": "No", "1": "Yes" } },
-              { range: "[4]", title: "Equalization Phase 3 Successful", description: "Equalization Phase 3 Successful.", values: { "0": "No", "1": "Yes" } },
-              { range: "[5]", title: "Link Equalization Request", description: "Link Equalization Request.", values: { "0": "No", "1": "Yes" } }
+              { range: "[1]", title: "Equalization 8.0 GT/s Complete", description: "The 8.0 GT/s Transmitter Equalization procedure completed." },
+              { range: "[2]", title: "Equalization 8.0 GT/s Phase 1 Successful", description: "Phase 1 of 8.0 GT/s equalization completed successfully." },
+              { range: "[3]", title: "Equalization 8.0 GT/s Phase 2 Successful", description: "Phase 2 of 8.0 GT/s equalization completed successfully." },
+              { range: "[4]", title: "Equalization 8.0 GT/s Phase 3 Successful", description: "Phase 3 of 8.0 GT/s equalization completed successfully." },
+              { range: "[5]", title: "Link Equalization Request 8.0 GT/s", description: "Hardware requests that 8.0 GT/s Link equalization be performed." },
+              { range: "[6]", title: "Retimer Presence Detected", description: "A Retimer was present during the most recent Link negotiation." },
+              { range: "[7]", title: "Two Retimers Presence Detected", description: "Two Retimers were present during the most recent Link negotiation." },
+              { range: "[9:8]", title: "Crosslink Resolution", description: "Reports unsupported, Upstream Port, Downstream Port, or unresolved Crosslink negotiation." },
+              { range: "[10]", title: "Flit Mode Status", description: "The Link is or will be operating in Flit Mode." },
+              { range: "[11]", title: "Optical Retimer Presence Detected", description: "An Optical Retimer Solution was present during the most recent Link negotiation." },
+              { range: "[14:12]", title: "Downstream Component Presence", description: "Reports Link state, downstream component presence, Flit Mode negotiation, and DRS state." },
+              { range: "[15]", title: "DRS Message Received", description: "The Port received a DRS Message; cleared on DL_Down." }
             ]
           },
           slotcap2: {
@@ -1309,7 +1367,9 @@
             offset: "34h",
             range: "[31:0]",
             bits: [
-              { range: "[31:0]", title: "Reserved", description: "Reserved." }
+              { range: "[0]", title: "In-Band PD Disable Supported", description: "The slot supports disabling reporting of the in-band presence-detect state." },
+              { range: "[2:1]", title: "SCap2 OOB PD Supported", description: "Reports whether out-of-band presence detect is supported when SFI is unavailable or hidden." },
+              { range: "[31:3]", title: "Reserved", description: "Reserved." }
             ]
           },
           slotctl2: {
@@ -1364,7 +1424,7 @@
             offset: "0Ch",
             fields: [
               { id: "msi_data", label: "Message Data", range: "[15:0]" },
-              { id: "reserved", label: "Reserved", range: "[31:16]" }
+              { id: "msi_ext_data", label: "Extended Message Data", range: "[31:16]" }
             ]
           },
           {
@@ -1393,12 +1453,15 @@
               { range: "[6:4]", title: "Multiple Message Enable", description: "Number of vectors allocated.", values: { "0": "1", "1": "2", "2": "4", "3": "8", "4": "16", "5": "32" } },
               { range: "[7]", title: "64-bit Address Capable", description: "Indicates support for 64-bit addressing.", values: { "0": "32-bit", "1": "64-bit" } },
               { range: "[8]", title: "Per-vector Masking Capable", description: "Indicates support for masking.", values: { "0": "No", "1": "Yes" } },
-              { range: "[15:9]", title: "Reserved", description: "Reserved." }
+              { range: "[9]", title: "Extended Message Data Capable", description: "The Function can provide the upper 16 bits of MSI message data." },
+              { range: "[10]", title: "Extended Message Data Enable", description: "Enables use of Extended Message Data as the upper 16 bits of the MSI write." },
+              { range: "[15:11]", title: "Reserved", description: "Reserved." }
             ]
           },
           msi_addr: { name: "Message Address", offset: "04h", range: "[31:0]", bits: [{ range: "[31:2]", title: "Message Address", description: "System-specified message address." }, { range: "[1:0]", title: "Reserved", description: "Reserved." }] },
           msi_addr_hi: { name: "Message Upper Address", offset: "08h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Message Upper Address", description: "Upper 32 bits of message address." }] },
           msi_data: { name: "Message Data", offset: "0Ch", range: "[15:0]", bits: [{ range: "[15:0]", title: "Message Data", description: "Pattern to write to message address." }] },
+          msi_ext_data: { name: "Extended Message Data", offset: "0Eh", range: "[15:0]", bits: [{ range: "[15:0]", title: "Extended Message Data", description: "Optional upper 16 bits of the MSI message data when enabled; reserved if not supported in a PVM layout." }] },
           msi_mask: { name: "Mask Bits", offset: "10h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Mask Bits", description: "Per-vector mask bits." }] },
           msi_pending: { name: "Pending Bits", offset: "14h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Pending Bits", description: "Per-vector pending bits." }] }
         }
@@ -1583,64 +1646,31 @@
             name: "Uncorrectable Error Status",
             offset: "04h",
             range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "Undefined", description: "Undefined." },
-              { range: "[4]", title: "Data Link Protocol Error", description: "Data Link Protocol Error.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[5]", title: "Surprise Down Error", description: "Surprise Down Error.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[12]", title: "Poisoned TLP", description: "Poisoned TLP.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[13]", title: "Flow Control Protocol Error", description: "Flow Control Protocol Error.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[14]", title: "Completion Timeout", description: "Completion Timeout.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[15]", title: "Completer Abort", description: "Completer Abort.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[16]", title: "Unexpected Completion", description: "Unexpected Completion.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[17]", title: "Receiver Overflow", description: "Receiver Overflow.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[18]", title: "Malformed TLP", description: "Malformed TLP.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[19]", title: "ECRC Error", description: "ECRC Error.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[20]", title: "Unsupported Request Error", description: "Unsupported Request Error.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[21]", title: "ACS Violation", description: "ACS Violation.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[22]", title: "Internal Uncorrectable Error", description: "Internal Uncorrectable Error.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[23]", title: "MC Blocked TLP", description: "MC Blocked TLP.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[24]", title: "AtomicOp Egress Blocked", description: "AtomicOp Egress Blocked.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[25]", title: "TLP Prefix Blocked Error", description: "TLP Prefix Blocked Error.", values: { "0": "Not Detected", "1": "Detected" } }
-            ]
+            bits: chapter7AerUncorrectableBits("Status")
           },
           uncorr_mask: {
             name: "Uncorrectable Error Mask",
             offset: "08h",
             range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "Uncorrectable Error Mask", description: "Mask bits for Uncorrectable Errors (corresponds to Uncorrectable Error Status).", values: { "0": "Unmasked", "1": "Masked" } }
-            ]
+            bits: chapter7AerUncorrectableBits("Mask")
           },
           uncorr_severity: {
             name: "Uncorrectable Error Severity",
             offset: "0Ch",
             range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "Uncorrectable Error Severity", description: "Severity bits for Uncorrectable Errors (corresponds to Uncorrectable Error Status).", values: { "0": "Non-Fatal", "1": "Fatal" } }
-            ]
+            bits: chapter7AerUncorrectableBits("Severity")
           },
           corr_status: {
             name: "Correctable Error Status",
             offset: "10h",
             range: "[31:0]",
-            bits: [
-              { range: "[0]", title: "Receiver Error", description: "Receiver Error.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[6]", title: "Bad TLP", description: "Bad TLP.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[7]", title: "Bad DLLP", description: "Bad DLLP.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[8]", title: "REPLAY_NUM Rollover", description: "REPLAY_NUM Rollover.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[12]", title: "Replay Timer Timeout", description: "Replay Timer Timeout.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[13]", title: "Advisory Non-Fatal Error", description: "Advisory Non-Fatal Error.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[14]", title: "Internal Correctable Error", description: "Internal Correctable Error.", values: { "0": "Not Detected", "1": "Detected" } },
-              { range: "[15]", title: "Header Log Overflow", description: "Header Log Overflow.", values: { "0": "Not Detected", "1": "Detected" } }
-            ]
+            bits: chapter7AerCorrectableBits("Status")
           },
           corr_mask: {
             name: "Correctable Error Mask",
             offset: "14h",
             range: "[31:0]",
-            bits: [
-              { range: "[31:0]", title: "Correctable Error Mask", description: "Mask bits for Correctable Errors (corresponds to Correctable Error Status).", values: { "0": "Unmasked", "1": "Masked" } }
-            ]
+            bits: chapter7AerCorrectableBits("Mask")
           },
           aer_cap_ctrl: {
             name: "Advanced Error Capabilities and Control",
@@ -1654,7 +1684,12 @@
               { range: "[8]", title: "ECRC Check Enable", description: "Enables ECRC checking.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[9]", title: "Multiple Header Recording Capable", description: "Capable of recording multiple headers.", values: { "0": "No", "1": "Yes" } },
               { range: "[10]", title: "Multiple Header Recording Enable", description: "Enables multiple header recording.", values: { "0": "Disable", "1": "Enable" } },
-              { range: "[11]", title: "TLP Prefix Log Present", description: "Indicates TLP Prefix Log is present.", values: { "0": "No", "1": "Yes" } }
+              { range: "[11]", title: "TLP Prefix Log Present", description: "Indicates that valid Non-Flit Mode End-End TLP Prefix information is present in the TLP Prefix Log." },
+              { range: "[12]", title: "Completion Timeout Prefix/Header Log Capable", description: "Indicates that the Function records the prefix/header of Requests that experience Completion Timeout." },
+              { range: "[17:13]", title: "Header Log Size", description: "Number of DWORDs implemented in the Header Log." },
+              { range: "[18]", title: "Logged TLP was Flit Mode", description: "Indicates that the logged TLP was captured while operating in Flit Mode." },
+              { range: "[23:19]", title: "Logged TLP Size", description: "Number of DWORDs captured in the Header Log and overlapping TLP Prefix Log space." },
+              { range: "[24]", title: "RC ECS Handling Capable", description: "Indicates Root Complex ERR_COR Subclass handling support." }
             ]
           },
           header_log_0: { name: "Header Log DW0", offset: "1Ch", range: "[31:0]", bits: [{ range: "[31:0]", title: "Header Log DW0", description: "First DWORD of the TLP Header." }] },
@@ -1668,7 +1703,11 @@
             bits: [
               { range: "[0]", title: "Correctable Error Reporting Enable", description: "Enables Correctable Error reporting." },
               { range: "[1]", title: "Non-Fatal Error Reporting Enable", description: "Enables Non-Fatal Error reporting." },
-              { range: "[2]", title: "Fatal Error Reporting Enable", description: "Enables Fatal Error reporting." }
+              { range: "[2]", title: "Fatal Error Reporting Enable", description: "Enables Fatal Error reporting." },
+              { range: "[3]", title: "ECS Legacy Handling by SFW Enable", description: "Enables system-firmware handling of ECS Legacy ERR_COR Messages." },
+              { range: "[4]", title: "ECS SIG_SFW Handling by SFW Enable", description: "Enables system-firmware handling of ECS SIG_SFW ERR_COR Messages." },
+              { range: "[5]", title: "ECS SIG_OS Handling by SFW Enable", description: "Enables system-firmware handling of ECS SIG_OS ERR_COR Messages." },
+              { range: "[31:16]", title: "SFW Handling Source ID", description: "Requester ID from the first ERR_COR Message handled by system firmware." }
             ]
           },
           root_err_sta: {
@@ -1676,7 +1715,17 @@
             offset: "30h",
             range: "[31:0]",
             bits: [
-              { range: "[26:0]", title: "Advanced Error Interrupt Message Number", description: "MSI/MSI-X vector for error interrupts." }
+              { range: "[0]", title: "ERR_COR Received", description: "An applicable Correctable Error Message was received." },
+              { range: "[1]", title: "Multiple ERR_COR Received", description: "Another applicable Correctable Error Message was received while ERR_COR Received was already Set." },
+              { range: "[2]", title: "ERR_FATAL/NONFATAL Received", description: "A Fatal or Non-Fatal Error Message was received." },
+              { range: "[3]", title: "Multiple ERR_FATAL/NONFATAL Received", description: "Another Fatal or Non-Fatal Error Message was received before the first was cleared." },
+              { range: "[4]", title: "First Uncorrectable Fatal", description: "The first received Uncorrectable Error Message was Fatal." },
+              { range: "[5]", title: "Non-Fatal Error Messages Received", description: "One or more Non-Fatal Error Messages were received." },
+              { range: "[6]", title: "Fatal Error Messages Received", description: "One or more Fatal Error Messages were received." },
+              { range: "[8:7]", title: "ERR_COR Subclass", description: "Subclass from the first applicable ERR_COR Message." },
+              { range: "[9]", title: "SFW Handling ERR_COR Received", description: "An ERR_COR Message selected for system-firmware handling was received." },
+              { range: "[10]", title: "Multiple SFW Handling ERR_COR Received", description: "Another system-firmware-handled ERR_COR Message was received before the first was cleared." },
+              { range: "[31:27]", title: "Advanced Error Interrupt Message Number", description: "MSI/MSI-X vector used for AER interrupts." }
             ]
           },
           err_src_id: { name: "Error Source Identification", offset: "34h", range: "[31:0]", bits: [{ range: "[15:0]", title: "ERR_COR Source ID", description: "Requester ID of the first correctable error." }, { range: "[31:16]", title: "ERR_FATAL/NONFATAL Source ID", description: "Requester ID of the first uncorrectable error." }] },
@@ -1714,6 +1763,12 @@
             offset: "0Ch",
             fields: [
               { id: "l1pm_ctl2", label: "L1 PM Substates Control 2", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "10h",
+            fields: [
+              { id: "l1pm_status", label: "L1 PM Substates Status", range: "[31:0]" }
             ]
           }
         ],
@@ -1764,6 +1819,15 @@
             bits: [
               { range: "[7:3]", title: "T_POWER_ON", description: "T_POWER_ON value." },
               { range: "[1:0]", title: "T_POWER_ON Scale", description: "T_POWER_ON scale.", values: { "0": "2us", "1": "10us", "2": "100us" } }
+            ]
+          },
+          l1pm_status: {
+            name: "L1 PM Substates Status",
+            offset: "10h",
+            range: "[31:0]",
+            bits: [
+              { range: "[0]", title: "L1 PM Substates Entry Failure", description: "Indicates that an enabled L1 PM Substate could not be entered." },
+              { range: "[1]", title: "L1.2 Entry Successful", description: "Indicates successful entry into L1.2." }
             ]
           }
         }
@@ -1901,7 +1965,12 @@
             offset: "04h",
             range: "[31:0]",
             bits: [
-              { range: "[31:0]", title: "Data Link Feature Capabilities", description: "Indicates supported Data Link features (e.g., Scaled Flow Control)." }
+              { range: "[0]", title: "Local Scaled Flow Control Supported", description: "The Port supports the Scaled Flow Control Data Link Feature." },
+              { range: "[1]", title: "Local Immediate Readiness", description: "All non-Virtual Functions in this Port report Immediate Readiness." },
+              { range: "[4:2]", title: "Local Extended VC Count", description: "Maximum number of Virtual Channels that can be enabled simultaneously in Flit Mode." },
+              { range: "[7:5]", title: "Local L0p Exit Latency", description: "Encodes the Port's knowledge of the larger Port or Retimer L0p exit latency." },
+              { range: "[30:8]", title: "Reserved", description: "Reserved." },
+              { range: "[31]", title: "Data Link Feature Exchange is Enabled", description: "The Port enters the DL_Feature negotiation state." }
             ]
           },
           dlf_status: {
@@ -1909,7 +1978,12 @@
             offset: "08h",
             range: "[31:0]",
             bits: [
-              { range: "[31:0]", title: "Data Link Feature Status", description: "Status of Data Link features." }
+              { range: "[0]", title: "Remote Scaled Flow Control Supported", description: "The remote Port supports Scaled Flow Control." },
+              { range: "[1]", title: "Remote Immediate Readiness", description: "All non-Virtual Functions in the remote Port report Immediate Readiness." },
+              { range: "[4:2]", title: "Remote Extended VC Count", description: "Maximum number of Virtual Channels the remote Port can enable simultaneously in Flit Mode." },
+              { range: "[7:5]", title: "Remote L0p Exit Latency", description: "Encodes the remote Port's L0p Link-widening exit latency." },
+              { range: "[30:8]", title: "Reserved", description: "Reserved." },
+              { range: "[31]", title: "Remote Data Link Feature Supported Valid", description: "A Data Link Feature DLLP was received and the remote feature fields are valid." }
             ]
           }
         }
@@ -1947,6 +2021,30 @@
           {
             offset: "10h",
             fields: [
+              { id: "pl_16g_local_parity", label: "16.0 GT/s Local Data Parity Mismatch Status", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "14h",
+            fields: [
+              { id: "pl_16g_retimer1_parity", label: "16.0 GT/s First Retimer Data Parity Mismatch Status", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "18h",
+            fields: [
+              { id: "pl_16g_retimer2_parity", label: "16.0 GT/s Second Retimer Data Parity Mismatch Status", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "1Ch",
+            fields: [
+              { id: "pl_16g_reserved", label: "Physical Layer 16.0 GT/s Reserved", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "20h-3Ch",
+            fields: [
               { id: "pl_16g_eq_ctl", label: "16.0 GT/s Lane Equalization Control", range: "[31:0]" }
             ]
           }
@@ -1967,7 +2065,7 @@
             offset: "04h",
             range: "[31:0]",
             bits: [
-              { range: "[31:0]", title: "16.0 GT/s Capabilities", description: "Indicates supported 16.0 GT/s features." }
+              { range: "[31:0]", title: "Reserved", description: "Reserved; preserve on writes." }
             ]
           },
           pl_16g_ctl: {
@@ -1975,7 +2073,7 @@
             offset: "08h",
             range: "[31:0]",
             bits: [
-              { range: "[31:0]", title: "16.0 GT/s Control", description: "Controls 16.0 GT/s features." }
+              { range: "[31:0]", title: "Reserved", description: "Reserved; preserve on writes." }
             ]
           },
           pl_16g_status: {
@@ -1983,15 +2081,24 @@
             offset: "0Ch",
             range: "[31:0]",
             bits: [
-              { range: "[31:0]", title: "16.0 GT/s Status", description: "Status of 16.0 GT/s features." }
+              { range: "[0]", title: "Equalization 16.0 GT/s Complete", description: "Indicates completion of the 16.0 GT/s equalization procedure." },
+              { range: "[1]", title: "Equalization 16.0 GT/s Phase 1 Successful", description: "Indicates successful completion of equalization phase 1." },
+              { range: "[2]", title: "Equalization 16.0 GT/s Phase 2 Successful", description: "Indicates successful completion of equalization phase 2." },
+              { range: "[3]", title: "Equalization 16.0 GT/s Phase 3 Successful", description: "Indicates successful completion of equalization phase 3." },
+              { range: "[4]", title: "Link Equalization Request 16.0 GT/s", description: "Requests that the 16.0 GT/s Link equalization procedure be performed." }
             ]
           },
+          pl_16g_local_parity: { name: "16.0 GT/s Local Data Parity Mismatch Status", offset: "10h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Local Data Parity Mismatch Status", description: "Per-lane vector indicating a Data Parity mismatch detected by the local Receiver." }] },
+          pl_16g_retimer1_parity: { name: "16.0 GT/s First Retimer Data Parity Mismatch Status", offset: "14h", range: "[31:0]", bits: [{ range: "[31:0]", title: "First Retimer Data Parity Mismatch Status", description: "Per-lane vector indicating a Data Parity mismatch detected by the first Retimer." }] },
+          pl_16g_retimer2_parity: { name: "16.0 GT/s Second Retimer Data Parity Mismatch Status", offset: "18h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Second Retimer Data Parity Mismatch Status", description: "Per-lane vector indicating a Data Parity mismatch detected by the second Retimer." }] },
+          pl_16g_reserved: { name: "Physical Layer 16.0 GT/s Reserved", offset: "1Ch", range: "[31:0]", bits: [{ range: "[31:0]", title: "Reserved", description: "Reserved; preserve on writes." }] },
           pl_16g_eq_ctl: {
             name: "16.0 GT/s Lane Equalization Control",
-            offset: "10h",
+            offset: "20h-3Ch",
             range: "[31:0]",
             bits: [
-              { range: "[31:0]", title: "Lane Equalization Control", description: "Controls lane equalization for 16.0 GT/s." }
+              { range: "[3:0]", title: "Downstream Port 16.0 GT/s Transmitter Preset", description: "Transmitter preset used when operating as a Downstream Port." },
+              { range: "[7:4]", title: "Upstream Port 16.0 GT/s Transmitter Preset", description: "Transmitter preset used when operating as an Upstream Port; repeated per lane." }
             ]
           }
         }
@@ -2029,6 +2136,30 @@
           {
             offset: "10h",
             fields: [
+              { id: "pl_32g_rx_ts1", label: "Received Modified TS Data 1", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "14h",
+            fields: [
+              { id: "pl_32g_rx_ts2", label: "Received Modified TS Data 2", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "18h",
+            fields: [
+              { id: "pl_32g_tx_ts1", label: "Transmitted Modified TS Data 1", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "1Ch",
+            fields: [
+              { id: "pl_32g_tx_ts2", label: "Transmitted Modified TS Data 2", range: "[31:0]" }
+            ]
+          },
+          {
+            offset: "20h-3Ch",
+            fields: [
               { id: "pl_32g_eq_ctl", label: "32.0 GT/s Lane Equalization Control", range: "[31:0]" }
             ]
           }
@@ -2049,7 +2180,12 @@
             offset: "04h",
             range: "[31:0]",
             bits: [
-              { range: "[31:0]", title: "32.0 GT/s Capabilities", description: "Indicates supported 32.0 GT/s features." }
+              { range: "[0]", title: "Equalization Bypass to Highest NRZ Rate Supported", description: "Indicates support for skipping equalization of intermediate data rates when training to the highest common NRZ rate." },
+              { range: "[1]", title: "No Equalization Needed Supported", description: "Indicates support for signaling that equalization is not needed." },
+              { range: "[8]", title: "Modified TS Usage Mode 0 Supported – PCI Express", description: "Indicates support for PCI Express Modified TS Usage Mode 0; this bit must be Set." },
+              { range: "[9]", title: "Modified TS Usage Mode 1 Supported – Training Set Message", description: "Indicates support for vendor-specific Training Set Messages." },
+              { range: "[10]", title: "Modified TS Usage Mode 2 Supported – Alternate Protocol", description: "Indicates support for negotiating alternate protocols." },
+              { range: "[31:11]", title: "Reserved", description: "Reserved, including Modified TS usage modes reserved for future PCI-SIG definition." }
             ]
           },
           pl_32g_ctl: {
@@ -2057,7 +2193,9 @@
             offset: "08h",
             range: "[31:0]",
             bits: [
-              { range: "[31:0]", title: "32.0 GT/s Control", description: "Controls 32.0 GT/s features." }
+              { range: "[0]", title: "Equalization Bypass to Highest NRZ Rate Disable", description: "When Set, prevents training from skipping equalization of intermediate NRZ rates." },
+              { range: "[1]", title: "No Equalization Needed Disable", description: "When Set, requires the Port to always indicate that equalization is needed." },
+              { range: "[10:8]", title: "Modified TS Usage Mode Selected", description: "Selects the Modified TS usage mode used by a Downstream Port on the next entry to L0." }
             ]
           },
           pl_32g_status: {
@@ -2065,15 +2203,31 @@
             offset: "0Ch",
             range: "[31:0]",
             bits: [
-              { range: "[31:0]", title: "32.0 GT/s Status", description: "Status of 32.0 GT/s features." }
+              { range: "[0]", title: "Equalization 32.0 GT/s Complete", description: "Set when the 32.0 GT/s Transmitter Equalization procedure has completed. Cleared by default; implemented in Function 0 for a Multi-Function Upstream Port.", values: { "0": "Equalization not complete", "1": "Equalization complete" } },
+              { range: "[1]", title: "Equalization 32.0 GT/s Phase 1 Successful", description: "Set when phase 1 of the 32.0 GT/s Transmitter Equalization procedure completes successfully.", values: { "0": "Phase 1 not successful", "1": "Phase 1 successful" } },
+              { range: "[2]", title: "Equalization 32.0 GT/s Phase 2 Successful", description: "Set when phase 2 of the 32.0 GT/s Transmitter Equalization procedure completes successfully.", values: { "0": "Phase 2 not successful", "1": "Phase 2 successful" } },
+              { range: "[3]", title: "Equalization 32.0 GT/s Phase 3 Successful", description: "Set when phase 3 of the 32.0 GT/s Transmitter Equalization procedure completes successfully.", values: { "0": "Phase 3 not successful", "1": "Phase 3 successful" } },
+              { range: "[4]", title: "Link Equalization Request 32.0 GT/s", description: "Set by hardware to request that the 32.0 GT/s Link equalization process be performed. Software clears the request by writing 1.", values: { "0": "No request", "1": "Equalization requested" } },
+              { range: "[5]", title: "Modified TS Received", description: "Set when a Modified TS1 or TS2 Ordered Set is received. While Set, the Received Modified TS Data registers contain meaningful data. Cleared when the Link is down.", values: { "0": "No valid Modified TS data", "1": "Modified TS data valid" } },
+              { range: "[6]", title: "Received Enhanced Link Behavior Control Bit 0", description: "Least-significant bit of the Enhanced Link Behavior Control value from the most recently received TS1 or TS2 in Polling or Configuration. Cleared on DL_Down." },
+              { range: "[7]", title: "Received Enhanced Link Behavior Control Bit 1", description: "Most-significant bit of the Enhanced Link Behavior Control value from the most recently received TS1 or TS2 in Polling or Configuration. Cleared on DL_Down." },
+              { range: "[8]", title: "Transmitter Precoding On", description: "Indicates whether the Receiver requested this Port's Transmitter to enable Precoding. Cleared on DL_Down.", values: { "0": "Precoding not requested", "1": "Precoding requested" } },
+              { range: "[9]", title: "Transmitter Precode Request", description: "When Set, the Port requests transmitter Precoding by setting Transmitter Precode Request in TS1/TS2 Ordered Sets before entering Recovery.Speed.", values: { "0": "Do not request Precoding", "1": "Request Precoding" } },
+              { range: "[10]", title: "No Equalization Needed Received", description: "Set after receiving a Modified TS1/TS2 with No Equalization Needed Set, or a non-modified TS1/TS2 carrying the corresponding encoding.", values: { "0": "Not received", "1": "No Equalization Needed received" } },
+              { range: "[31:11]", title: "Reserved", description: "Reserved and reads as zero." }
             ]
           },
+          pl_32g_rx_ts1: { name: "Received Modified TS Data 1", offset: "10h", range: "[31:0]", bits: [{ range: "[2:0]", title: "Received Modified TS Usage Mode", description: "Modified TS Usage field from the most recently received Modified TS1/TS2." }, { range: "[15:3]", title: "Received Modified TS Information 1", description: "Modified TS Information 1 field from the received Ordered Set." }, { range: "[31:16]", title: "Received Modified TS Vendor ID", description: "Training Set Message or Alternate Protocol Vendor ID from the received Ordered Set." }] },
+          pl_32g_rx_ts2: { name: "Received Modified TS Data 2", offset: "14h", range: "[31:0]", bits: [{ range: "[23:0]", title: "Received Modified TS Information 2", description: "Modified TS Information 2 field from Symbols 12 through 14 of the received Ordered Set." }, { range: "[25:24]", title: "Alternate Protocol Negotiation Status", description: "Reports whether alternate-protocol negotiation is unsupported, disabled, failed, or successful." }] },
+          pl_32g_tx_ts1: { name: "Transmitted Modified TS Data 1", offset: "18h", range: "[31:0]", bits: [{ range: "[2:0]", title: "Transmitted Modified TS Usage Mode", description: "Modified TS Usage field transmitted during Configuration.Complete." }, { range: "[15:3]", title: "Transmitted Modified TS Information 1", description: "Modified TS Information 1 field transmitted in Modified TS2." }, { range: "[31:16]", title: "Transmitted Modified TS Vendor ID", description: "Training Set Message or Alternate Protocol Vendor ID transmitted in Modified TS2." }] },
+          pl_32g_tx_ts2: { name: "Transmitted Modified TS Data 2", offset: "1Ch", range: "[31:0]", bits: [{ range: "[23:0]", title: "Transmitted Modified TS Information 2", description: "Modified TS Information 2 field transmitted in Symbols 12 through 14." }, { range: "[25:24]", title: "Alternate Protocol Negotiation Status", description: "Reports the status of alternate-protocol negotiation." }] },
           pl_32g_eq_ctl: {
             name: "32.0 GT/s Lane Equalization Control",
-            offset: "10h",
+            offset: "20h-3Ch",
             range: "[31:0]",
             bits: [
-              { range: "[31:0]", title: "Lane Equalization Control", description: "Controls lane equalization for 32.0 GT/s." }
+              { range: "[3:0]", title: "Downstream Port 32.0 GT/s Transmitter Preset", description: "Transmitter preset used for 32.0 GT/s equalization while operating as a Downstream Port." },
+              { range: "[7:4]", title: "Upstream Port 32.0 GT/s Transmitter Preset", description: "Transmitter preset sent or captured for 32.0 GT/s equalization; repeated for each implemented lane." }
             ]
           }
         }
@@ -2129,7 +2283,8 @@
             offset: "06h",
             range: "[15:0]",
             bits: [
-              { range: "[0]", title: "Margining Software Ready", description: "Indicates if margining software is ready.", values: { "0": "No", "1": "Yes" } }
+              { range: "[0]", title: "Margining Ready", description: "Indicates that the Margining feature is ready to accept margining commands." },
+              { range: "[1]", title: "Margining Software Ready", description: "When driver software is required, indicates that software initialization is complete." }
             ]
           },
           lmr_lane_ctl: {
@@ -2137,7 +2292,10 @@
             offset: "08h",
             range: "[15:0]",
             bits: [
-              { range: "[15:0]", title: "Margining Lane Control", description: "Controls lane margining." }
+              { range: "[2:0]", title: "Receiver Number", description: "Selects the Receiver number targeted by the margining command." },
+              { range: "[5:3]", title: "Margin Type", description: "Selects the margining command or measurement type." },
+              { range: "[6]", title: "Usage Model", description: "Selects the usage model for the margining operation." },
+              { range: "[15:8]", title: "Margin Payload", description: "Command-specific payload interpreted together with Margin Type." }
             ]
           },
           lmr_lane_status: {
@@ -2145,7 +2303,10 @@
             offset: "0Ah",
             range: "[15:0]",
             bits: [
-              { range: "[15:0]", title: "Margining Lane Status", description: "Status of lane margining." }
+              { range: "[2:0]", title: "Receiver Number Status", description: "Reports the Receiver number associated with the current margining result." },
+              { range: "[5:3]", title: "Margin Type Status", description: "Reports the margin type associated with the current result." },
+              { range: "[6]", title: "Usage Model Status", description: "Reports the usage model associated with the current result." },
+              { range: "[15:8]", title: "Margin Payload Status", description: "Reports the command-specific margining result payload." }
             ]
           }
         }
@@ -2167,6 +2328,12 @@
             fields: [
               { id: "acs_cap", label: "ACS Capability", range: "[15:0]" },
               { id: "acs_ctl", label: "ACS Control", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "08h+",
+            fields: [
+              { id: "acs_egress_vector", label: "Egress Control Vector", range: "[31:0]" }
             ]
           }
         ],
@@ -2192,7 +2359,9 @@
               { range: "[3]", title: "ACS P2P Completion Redirect", description: "Indicates support for P2P Completion Redirect.", values: { "0": "No", "1": "Yes" } },
               { range: "[4]", title: "ACS Upstream Forwarding", description: "Indicates support for Upstream Forwarding.", values: { "0": "No", "1": "Yes" } },
               { range: "[5]", title: "ACS P2P Egress Control", description: "Indicates support for P2P Egress Control.", values: { "0": "No", "1": "Yes" } },
-              { range: "[6]", title: "ACS Direct Translated P2P", description: "Indicates support for Direct Translated P2P.", values: { "0": "No", "1": "Yes" } }
+              { range: "[6]", title: "ACS Direct Translated P2P", description: "Indicates support for Direct Translated P2P.", values: { "0": "No", "1": "Yes" } },
+              { range: "[7]", title: "ACS Enhanced Capability", description: "Indicates support for the ACS Enhanced Capability mechanisms." },
+              { range: "[15:8]", title: "Egress Control Vector Size", description: "Number of applicable Egress Control Vector bits; 00h encodes 256 bits." }
             ]
           },
           acs_ctl: {
@@ -2206,7 +2375,19 @@
               { range: "[3]", title: "ACS P2P Completion Redirect Enable", description: "Enables P2P Completion Redirect.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[4]", title: "ACS Upstream Forwarding Enable", description: "Enables Upstream Forwarding.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[5]", title: "ACS P2P Egress Control Enable", description: "Enables P2P Egress Control.", values: { "0": "Disable", "1": "Enable" } },
-              { range: "[6]", title: "ACS Direct Translated P2P Enable", description: "Enables Direct Translated P2P.", values: { "0": "Disable", "1": "Enable" } }
+              { range: "[6]", title: "ACS Direct Translated P2P Enable", description: "Enables Direct Translated P2P.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[7]", title: "ACS I/O Request Blocking Enable", description: "Blocks applicable upstream I/O Requests." },
+              { range: "[9:8]", title: "ACS DSP Memory Target Access Control", description: "Controls access to applicable Downstream Port Memory BAR Space." },
+              { range: "[11:10]", title: "ACS USP Memory Target Access Control", description: "Controls access to Switch Upstream Port Memory BAR Space." },
+              { range: "[12]", title: "ACS Unclaimed Request Redirect Control", description: "Controls forwarding of unclaimed Requests upstream." }
+            ]
+          },
+          acs_egress_vector: {
+            name: "Egress Control Vector",
+            offset: "08h+",
+            range: "[31:0]",
+            bits: [
+              { range: "[31:0]", title: "Egress Control Vector", description: "Bit array controlling peer-to-peer access; extends across as many DWORDs as required by Egress Control Vector Size." }
             ]
           }
         }
@@ -2228,6 +2409,12 @@
             fields: [
               { id: "ltr_max_snoop", label: "Max Snoop Latency", range: "[15:0]" },
               { id: "ltr_max_nosnoop", label: "Max No-Snoop Latency", range: "[31:16]" }
+            ]
+          },
+          {
+            offset: "08h",
+            fields: [
+              { id: "ltr_cap", label: "LTR Capabilities", range: "[31:0]" }
             ]
           }
         ],
@@ -2261,6 +2448,14 @@
               { range: "[12:10]", title: "Max No-Snoop Latency Scale", description: "Scale for Max No-Snoop Latency.", values: { "0": "1ns", "1": "32ns", "2": "1024ns", "3": "32768ns", "4": "1048576ns", "5": "33554432ns" } },
               { range: "[15:13]", title: "Reserved", description: "Reserved." }
             ]
+          },
+          ltr_cap: {
+            name: "LTR Capabilities",
+            offset: "08h",
+            range: "[31:0]",
+            bits: [
+              { range: "[1]", title: "LTR Enable Preserved Across FLR", description: "Indicates whether Function 0 preserves LTR Mechanism Enable across Function Level Reset." }
+            ]
           }
         }
       },
@@ -2273,49 +2468,57 @@
           {
             offset: "00h",
             fields: [
-              { id: "ea_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
+              { id: "ea_hdr", label: "Capability Header / Num Entries", range: "[31:0]" }
             ]
           },
           {
             offset: "04h",
             fields: [
-              { id: "ea_num_entries", label: "Num Entries / Match Offset", range: "[31:0]" }
+              { id: "ea_num_entries", label: "Type 1 Fixed Bus Numbers / First Entry", range: "[31:0]" }
             ]
           },
           {
             offset: "08h",
             fields: [
-              { id: "ea_first_entry", label: "First Entry", range: "[31:0]" }
+              { id: "ea_first_entry", label: "EA Entry Header", range: "[31:0]" }
             ]
           }
         ],
         bitfields: {
           ea_hdr: {
-            name: "Enhanced Capability Header",
+            name: "Enhanced Allocation Capability First DW",
             offset: "00h",
             range: "[31:0]",
             bits: [
-              { range: "[15:0]", title: "Extended Capability ID", description: "ID = 0014h for EA." },
-              { range: "[19:16]", title: "Capability Version", description: "Version = 1h." },
-              { range: "[31:20]", title: "Next Capability Offset", description: "Offset to the next capability." }
+              { range: "[7:0]", title: "Capability ID", description: "Capability ID 14h identifies Enhanced Allocation." },
+              { range: "[15:8]", title: "Next Capability Pointer", description: "Pointer to the next PCI-compatible Capability." },
+              { range: "[21:16]", title: "Num Entries", description: "Number of Enhanced Allocation entries following the capability header." },
+              { range: "[31:22]", title: "Reserved", description: "Reserved." }
             ]
           },
           ea_num_entries: {
-            name: "Num Entries / Match Offset",
+            name: "Type 1 Fixed Bus Numbers / Entry Location",
             offset: "04h",
             range: "[31:0]",
             bits: [
-              { range: "[5:0]", title: "Num Entries", description: "Number of entries in the EA capability." },
-              { range: "[15:6]", title: "Reserved", description: "Reserved." },
-              { range: "[31:16]", title: "Fixed", description: "Fixed value." } // Simplified
+              { range: "[7:0]", title: "Fixed Secondary Bus Number", description: "For a Type 1 Function, fixed Bus Number of the secondary interface." },
+              { range: "[15:8]", title: "Fixed Subordinate Bus Number", description: "For a Type 1 Function, highest fixed Bus Number below the bridge." },
+              { range: "[31:16]", title: "Reserved", description: "Reserved. For a Type 0 Function, the first EA entry begins at offset 04h instead." }
             ]
           },
           ea_first_entry: {
-            name: "First Entry",
+            name: "Enhanced Allocation Entry Header",
             offset: "08h",
             range: "[31:0]",
             bits: [
-              { range: "[31:0]", title: "First Entry", description: "First EA Entry (simplified view)." }
+              { range: "[2:0]", title: "Entry Size", description: "Number of DWORDs following this entry header." },
+              { range: "[3]", title: "Reserved", description: "Reserved." },
+              { range: "[7:4]", title: "BAR Equivalent Indicator", description: "Identifies the equivalent BAR, Expansion ROM, VF BAR, resource-behind-bridge, or no equivalent." },
+              { range: "[15:8]", title: "Primary Properties", description: "Primary resource type and properties for this allocation." },
+              { range: "[23:16]", title: "Secondary Properties", description: "Optional compatible alternate resource type and properties." },
+              { range: "[29:24]", title: "Reserved", description: "Reserved." },
+              { range: "[30]", title: "Writable", description: "Indicates whether Base, MaxOffset, and applicable field-size bits are software writable." },
+              { range: "[31]", title: "Enable", description: "Enables or disables this Enhanced Allocation entry." }
             ]
           }
         }
@@ -2371,25 +2574,220 @@
     function chapter7WholeRegisterBits(range, label, description) {
       return [makeChapter7Bit(range, label, description)];
     }
+
+    function chapter7AerUncorrectableBits(kind) {
+      const fields = [
+        [0, "Undefined"], [4, "Data Link Protocol Error"], [5, "Surprise Down Error"],
+        [12, "Poisoned TLP Received"], [13, "Flow Control Protocol Error"],
+        [14, "Completion Timeout"], [15, "Completer Abort"], [16, "Unexpected Completion"],
+        [17, "Receiver Overflow"], [18, "Malformed TLP"], [19, "ECRC Error"],
+        [20, "Unsupported Request Error"], [21, "ACS Violation"],
+        [22, "Uncorrectable Internal Error"], [23, "MC Blocked TLP"],
+        [24, "AtomicOp Egress Blocked"], [25, "TLP Prefix Blocked Error"],
+        [26, "Poisoned TLP Egress Blocked"], [27, "DMWr Request Egress Blocked"],
+        [28, "IDE Check Failed"], [29, "Misrouted IDE TLP"],
+        [30, "PCRC Check Failed"], [31, "TLP Translation Egress Blocked"]
+      ];
+      return fields.map(([bit, name]) => {
+        if (name === "Undefined") {
+          return makeChapter7Bit(`[${bit}]`, "Undefined", "Legacy undefined bit; software must ignore the value read.");
+        }
+        const suffix = kind === "Status" ? " Status" : ` ${kind}`;
+        const description = kind === "Status"
+          ? `Indicates that a ${name} condition was detected.`
+          : kind === "Mask"
+            ? `When Set, suppresses recording and reporting of ${name}.`
+            : `Selects Fatal when Set and Non-Fatal when Clear for ${name}.`;
+        return makeChapter7Bit(`[${bit}]`, `${name}${suffix}`, description);
+      });
+    }
+
+    function chapter7AerCorrectableBits(kind) {
+      const fields = [
+        [0, "Receiver Error"], [6, "Bad TLP"], [7, "Bad DLLP"],
+        [8, "REPLAY_NUM Rollover"], [12, "Replay Timer Timeout"],
+        [13, "Advisory Non-Fatal Error"], [14, "Corrected Internal Error"],
+        [15, "Header Log Overflow"]
+      ];
+      return fields.map(([bit, name]) => makeChapter7Bit(
+        `[${bit}]`,
+        `${name} ${kind}`,
+        kind === "Status"
+          ? `Indicates that a ${name} condition was detected.`
+          : `When Set, suppresses reporting of ${name}.`
+      ));
+    }
+
+    function chapter7FberLaneCounters(firstLane) {
+      return [
+        makeChapter7Bit("[15:0]", `Lane #${firstLane} Correctable Counter`, "Counts per-Lane FEC-correctable bit errors or SKP Ordered Set parity mismatches."),
+        makeChapter7Bit("[31:16]", `Lane #${firstLane + 1} Correctable Counter`, "Counts per-Lane FEC-correctable bit errors or SKP Ordered Set parity mismatches.")
+      ];
+    }
+
+    function chapter7OrderedSetControl1Bits() {
+      return [
+        makeChapter7Flag("[0]", "Ordered Set Error Injection Enable", "Starts or stops Ordered Set error injection."),
+        makeChapter7Flag("[1]", "Inject Errors on Transmitted Ordered Sets", "Enables error injection in transmitted Ordered Sets."),
+        makeChapter7Flag("[2]", "Inject Errors on Received Ordered Sets", "Enables error injection in received Ordered Sets."),
+        makeChapter7Bit("[7:3]", "Number of Errors Injected", "Number of Ordered Set errors to inject; zero continues until disabled."),
+        makeChapter7Bit("[15:8]", "Spacing Between Injected Errors", "Number of Ordered Sets between injections; zero selects pseudo-random spacing."),
+        makeChapter7Flag("[16]", "Inject Error on TS0 OS", "Enables injection on TS0 Ordered Sets."),
+        makeChapter7Flag("[17]", "Inject Error on TS1 OS", "Enables injection on TS1 Ordered Sets."),
+        makeChapter7Flag("[18]", "Inject Error on TS2 OS", "Enables injection on TS2 Ordered Sets."),
+        makeChapter7Flag("[19]", "Inject Error on SKP OS", "Enables injection on SKP Ordered Sets."),
+        makeChapter7Flag("[20]", "Inject Error on EIEOS OS", "Enables injection on EIEOS Ordered Sets."),
+        makeChapter7Flag("[21]", "Inject Error on EIOS OS", "Enables injection on EIOS Ordered Sets."),
+        makeChapter7Flag("[22]", "Inject Error on SDS OS", "Enables injection on SDS Ordered Sets."),
+        makeChapter7Flag("[23]", "Inject Error in Polling State", "Enables injection while the LTSSM is in Polling."),
+        makeChapter7Flag("[24]", "Inject Error in Configuration State", "Enables injection while the LTSSM is in Configuration."),
+        makeChapter7Flag("[25]", "Inject Error in L0 State", "Enables injection while the LTSSM is in L0."),
+        makeChapter7Flag("[26]", "Inject Error in non-EQ Recovery", "Enables injection in Recovery states other than Recovery.Equalization."),
+        makeChapter7Flag("[27]", "Inject Error in Recovery.Equalization Phases 0 and 1", "Enables injection during equalization phases 0 and 1."),
+        makeChapter7Flag("[28]", "Inject Error in Recovery.Equalization Phase 2", "Enables injection during equalization phase 2."),
+        makeChapter7Flag("[29]", "Inject Error in Recovery.Equalization Phase 3", "Enables injection during equalization phase 3."),
+        makeChapter7Reserved("[31:30]")
+      ];
+    }
+
+    function chapter7OrderedSetStatusBits(direction) {
+      const names = ["TS0", "TS1", "TS2", "SKP", "EIEOS", "EIOS", "SDS", "Polling", "Configuration", "L0", "non-EQ Recovery", "Recovery.Equalization Phases 0 and 1", "Recovery.Equalization Phase 2", "Recovery.Equalization Phase 3"];
+      const bits = names.map((name, index) => makeChapter7Bit(
+        `[${index * 2 + 1}:${index * 2}]`,
+        `${direction} Injection Status ${name}`,
+        "Reports not started, active, completed, or aborted/error for this Ordered Set or LTSSM-state injection category."
+      ));
+      bits.push(makeChapter7Reserved("[31:28]"));
+      return bits;
+    }
+
+    function chapter7RpPioBits(kind) {
+      const fields = [
+        [0, "Cfg UR Completion"], [1, "Cfg CA Completion"], [2, "Cfg Completion Timeout"],
+        [8, "I/O UR Completion"], [9, "I/O CA Completion"], [10, "I/O Completion Timeout"],
+        [16, "Memory UR Completion"], [17, "Memory CA Completion"], [18, "Memory Completion Timeout"]
+      ];
+      const bits = fields.map(([bit, name]) => makeChapter7Bit(
+        `[${bit}]`,
+        `${name} ${kind}`,
+        kind === "Status"
+          ? `Indicates that an RP PIO ${name} condition occurred.`
+          : `${kind} control corresponding to the RP PIO ${name} condition.`
+      ));
+      bits.push(makeChapter7Reserved("[7:3]"), makeChapter7Reserved("[15:11]"), makeChapter7Reserved("[31:19]"));
+      return bits;
+    }
+
+    function chapter7ResizableBarCapabilityBits(subject = "BAR") {
+      return [
+        makeChapter7Reserved("[3:0]"),
+        makeChapter7Bit("[31:4]", `Supported ${subject} Sizes`, `Each Set bit reports support for the ${subject} size encoded by that bit position.`)
+      ];
+    }
+
+    function chapter7ResizableBarControlBits(subject = "BAR", first = false) {
+      return [
+        makeChapter7Bit("[2:0]", `${subject} Index`, `Identifies the ${subject} controlled by this register pair.`),
+        first
+          ? [makeChapter7Reserved("[4:3]"), makeChapter7Bit("[7:5]", `Number of Resizable ${subject}s`, `Total number of resizable ${subject} register pairs in this capability.`)]
+          : [makeChapter7Reserved("[7:3]")],
+        makeChapter7Bit("[13:8]", `${subject} Size`, `Selects the active ${subject} size.`),
+        makeChapter7Reserved("[15:14]"),
+        makeChapter7Bit("[31:16]", `Supported ${subject} Sizes 63:48`, `Additional supported-size bits for ${subject} sizes from 256 TB through 8 EB.`)
+      ].flat();
+    }
+
+    function chapter7VcPortCapability1Bits(arbitration = "Port") {
+      return [
+        makeChapter7Bit("[2:0]", "Extended VC Count", "Number of Virtual Channels supported in addition to the default VC."),
+        makeChapter7Reserved("[3]"),
+        makeChapter7Bit("[6:4]", "Low Priority Extended VC Count", "Number of Extended VCs in the lowest-priority VC group."),
+        makeChapter7Reserved("[7]"),
+        makeChapter7Bit("[9:8]", "Reference Clock", `Reference clock encoding for time-based WRR ${arbitration} Arbitration.`),
+        makeChapter7Bit("[11:10]", `${arbitration} Arbitration Table Entry Size`, `Encoded size of each ${arbitration} Arbitration Table entry.`),
+        makeChapter7Reserved("[31:12]")
+      ];
+    }
+
+    function chapter7VcPortCapability2Bits(prefix = "") {
+      return [
+        makeChapter7Bit("[7:0]", "VC Arbitration Capability", "Bit vector identifying supported VC arbitration mechanisms."),
+        makeChapter7Reserved("[23:8]"),
+        makeChapter7Bit("[31:24]", `${prefix}VC Arbitration Table Offset`, "Zero-based DQWORD offset to the VC Arbitration Table; zero indicates that the table is absent.")
+      ];
+    }
+
+    function chapter7VcPortControlBits(prefix = "") {
+      return [
+        makeChapter7Flag("[0]", `Load ${prefix}VC Arbitration Table`, "Requests hardware to load the programmed VC Arbitration Table into arbitration logic."),
+        makeChapter7Bit("[3:1]", "VC Arbitration Select", "Selects one supported VC arbitration mechanism."),
+        makeChapter7Flag("[4]", "All VCs Enabled", "Indicates that every VC intended for use by the Port has been enabled."),
+        makeChapter7Reserved("[15:5]")
+      ];
+    }
+
+    function chapter7VcResourceCapabilityBits(functionArbitration = false) {
+      return functionArbitration
+        ? [
+            makeChapter7Bit("[7:0]", "Function Arbitration Capability", "Bit vector identifying supported Function Arbitration mechanisms."),
+            makeChapter7Reserved("[15:8]"),
+            makeChapter7Bit("[22:16]", "Maximum Time Slots", "Maximum supported time slots minus one for time-based WRR Function Arbitration."),
+            makeChapter7Reserved("[23]"),
+            makeChapter7Bit("[31:24]", "Function Arbitration Table Offset", "Zero-based DQWORD offset to the Function Arbitration Table.")
+          ]
+        : [
+            makeChapter7Bit("[7:0]", "Port Arbitration Capability", "Bit vector identifying supported Port Arbitration mechanisms."),
+            makeChapter7Reserved("[13:8]"),
+            makeChapter7Bit("[14]", "Undefined", "Software must ignore this legacy undefined bit."),
+            makeChapter7Flag("[15]", "Reject Snoop Transactions", "Permits rejection of transactions that do not set No Snoop when the attribute is applicable."),
+            makeChapter7Bit("[22:16]", "Maximum Time Slots", "Maximum supported time slots minus one for time-based WRR Port Arbitration."),
+            makeChapter7Reserved("[23]"),
+            makeChapter7Bit("[31:24]", "Port Arbitration Table Offset", "Zero-based DQWORD offset to the Port Arbitration Table.")
+          ];
+    }
+
+    function chapter7VcResourceControlBits(functionArbitration = false) {
+      const arbitration = functionArbitration ? "Function" : "Port";
+      return [
+        makeChapter7Bit("[7:0]", "TC/VC Map", "Each Set bit maps the corresponding Traffic Class to this VC resource."),
+        makeChapter7Reserved("[15:8]"),
+        makeChapter7Flag("[16]", `Load ${arbitration} Arbitration Table`, `Requests hardware to load the programmed ${arbitration} Arbitration Table.`),
+        makeChapter7Bit("[19:17]", `${arbitration} Arbitration Select`, `Selects one supported ${arbitration} Arbitration mechanism.`),
+        makeChapter7Reserved("[23:20]"),
+        makeChapter7Bit("[26:24]", "VC ID", "Assigns a Virtual Channel identifier to this VC resource."),
+        makeChapter7Bit("[29:27]", "Shared Flow Control Usage Limit", "Limits the percentage of shared Flow Control credits this VC may consume."),
+        makeChapter7Flag("[30]", "Shared Flow Control Usage Limit Enable", "Enables enforcement of Shared Flow Control Usage Limit."),
+        makeChapter7Flag("[31]", "VC Enable", "Enables this Virtual Channel resource.")
+      ];
+    }
+
+    function chapter7VcResourceStatusBits(functionArbitration = false) {
+      return [
+        makeChapter7Flag("[0]", `${functionArbitration ? "Function" : "Port"} Arbitration Table Status`, "Indicates that table contents have not yet been completely loaded into arbitration logic."),
+        makeChapter7Flag("[1]", "VC Negotiation Pending", "Indicates that Virtual Channel initialization or disabling negotiation is still in progress."),
+        makeChapter7Reserved("[15:2]")
+      ];
+    }
     
     function makeChapter7Structure(def) {
       const bitfields = {};
       const rows = def.registers.map(register => {
         const offset = register[0];
         const label = register[1];
+        const range = register[3] || "[31:0]";
         const fieldId = chapter7FieldId(def.id, label);
-        const bits = register[2] || chapter7WholeRegisterBits("[31:0]", label, `${label} register from Chapter 7.`);
+        const bits = register[2] || chapter7WholeRegisterBits(range, label, `${label} register from Chapter 7.`);
     
         bitfields[fieldId] = {
           name: label,
           offset,
-          range: "[31:0]",
+          range,
           bits
         };
     
         return {
           offset,
-          fields: [{ id: fieldId, label, range: "[31:0]" }]
+          fields: [{ id: fieldId, label, range }]
         };
       });
     
@@ -2420,7 +2818,7 @@
         description: "Provides an address/data window for reading and writing Vital Product Data.",
         registers: [
           ["00h", "VPD Capability Header / Address", [
-            ...chapter7HeaderBits(false),
+            ...chapter7HeaderBits(false).slice(0, 2),
             makeChapter7Bit("[30:16]", "VPD Address", "Address within VPD storage."),
             makeChapter7Flag("[31]", "F / Transfer Complete", "Indicates transfer completion or starts a selected VPD access.")
           ]],
@@ -2434,7 +2832,7 @@
         description: "PCI-compatible capability containing vendor-defined registers after the standard capability header.",
         registers: [
           ["00h", "Vendor-Specific Capability Header", [
-            ...chapter7HeaderBits(false),
+            ...chapter7HeaderBits(false).slice(0, 2),
             makeChapter7Bit("[23:16]", "Capability Length", "Total length of the vendor-specific capability structure in bytes."),
             makeChapter7Bit("[31:24]", "Vendor-Specific Data", "First byte of vendor-defined data.")
           ]],
@@ -2477,9 +2875,11 @@
         description: "Reports power-budget data entries selected through a data selector register.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Power Budgeting Data Select / Control", [makeChapter7Bit("[7:0]", "Data Select", "Selects which power-budget data entry is exposed."), makeChapter7Bit("[15:8]", "Data Scale", "Scale applied to selected power data."), makeChapter7Bit("[23:16]", "Power Rail", "Power rail associated with the selected entry."), makeChapter7Bit("[31:24]", "Power Type", "Type of power-budget data.")]],
+          ["04h", "Power Budgeting Data Select", [makeChapter7Bit("[7:0]", "Data Select", "Selects which power-budget data entry is exposed."), makeChapter7Reserved("[15:8]")], "[15:0]"],
+          ["06h", "Power Budgeting Control", [makeChapter7Flag("[0]", "Power Budgeting Enable", "Enables power budgeting operation."), makeChapter7Reserved("[15:1]")], "[15:0]"],
           ["08h", "Power Budgeting Data", [makeChapter7Bit("[7:0]", "Base Power", "Power value for the selected entry."), makeChapter7Bit("[9:8]", "Data Scale", "Scale for the base power value."), makeChapter7Bit("[12:10]", "PM Sub State", "Power-management substate associated with the entry."), makeChapter7Bit("[14:13]", "PM State", "Power-management state associated with the entry."), makeChapter7Bit("[17:15]", "Type", "Type of power information reported."), makeChapter7Bit("[20:18]", "Power Rail", "Power rail for this entry."), makeChapter7Reserved("[31:21]")]],
-          ["0Ch", "Power Budgeting Capability / Sense Detect", [makeChapter7Flag("[0]", "System Allocated", "Reports system-allocated power budget support."), makeChapter7Bit("[15:8]", "Sense Detect", "Reports power-sense detection information."), makeChapter7Reserved("[31:16]")]]
+          ["0Ch", "Power Budgeting Capability", [makeChapter7Flag("[0]", "System Allocated", "Reports system-allocated power budget support."), makeChapter7Reserved("[7:1]")], "[7:0]"],
+          ["0Dh", "Power Budgeting Sense Detect", [makeChapter7Bit("[7:0]", "Sense Detect", "Reports power-sense detection information.")], "[7:0]"]
         ]
       },
       {
@@ -2489,9 +2889,9 @@
         description: "Adds additional device capability, control, and status registers introduced after Device Capabilities 2.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Device Capabilities 3", [makeChapter7Flag("[0]", "Emergency Power Reduction Supported", "Reports support for Emergency Power Reduction."), makeChapter7Flag("[1]", "Device Readiness Notification Supported", "Reports support for readiness notification behavior."), makeChapter7Flag("[2]", "16-bit Tag Completer Supported", "Reports completer support for 16-bit tags."), makeChapter7Reserved("[31:3]")]],
-          ["08h", "Device Control 3", [makeChapter7Flag("[0]", "Emergency Power Reduction Request", "Requests Emergency Power Reduction behavior."), makeChapter7Flag("[1]", "Device Readiness Notification Enable", "Enables readiness notifications."), makeChapter7Flag("[2]", "16-bit Tag Requester Enable", "Enables requester use of 16-bit tags when supported."), makeChapter7Reserved("[31:3]")]],
-          ["0Ch", "Device Status 3", [makeChapter7Flag("[0]", "Emergency Power Reduction Status", "Reports Emergency Power Reduction state."), makeChapter7Flag("[1]", "Device Readiness Status", "Reports whether the Function is ready for normal operation."), makeChapter7Reserved("[31:2]")]]
+          ["04h", "Device Capabilities 3", [makeChapter7Flag("[0]", "DMWr Request Routing Supported", "Indicates support for routing DMWr Requests."), makeChapter7Flag("[1]", "14-Bit Tag Completer Supported", "Indicates 14-Bit Tag Completer capability."), makeChapter7Flag("[2]", "14-Bit Tag Requester Supported", "Indicates 14-Bit Tag Requester capability for non-UIO Requests."), makeChapter7Flag("[3]", "L0p Supported", "Indicates that the Port supports L0p."), makeChapter7Bit("[6:4]", "Port L0p Exit Latency", "Worst-case latency for this Port to widen a Link using L0p."), makeChapter7Bit("[9:7]", "Retimer L0p Exit Latency", "Worst-case L0p exit latency for Retimers associated with this Port."), makeChapter7Flag("[10]", "UIO Mem RdWr Completer Supported", "Supports UIO Memory Read and Write as a Completer."), makeChapter7Flag("[11]", "UIO Mem RdWr Requester Supported", "Supports UIO Memory Read and/or Write as a Requester."), makeChapter7Bit("[14:12]", "OHC-E Support", "Maximum OHC-E size supported as a receiver or forwarding element in Flit Mode."), makeChapter7Reserved("[31:15]")]],
+          ["08h", "Device Control 3", [makeChapter7Flag("[0]", "DMWr Requester Enable", "Permits the Function to initiate DMWr Requests when Bus Master Enable is also Set."), makeChapter7Flag("[1]", "DMWr Egress Blocking", "Blocks DMWr Requests targeting this Egress Port."), makeChapter7Flag("[2]", "14-Bit Tag Requester Enable", "Permits generation of 14-Bit Tags for non-UIO Requests."), makeChapter7Flag("[3]", "L0p Enable", "Enables L0p Link-width management behavior."), makeChapter7Bit("[6:4]", "Target Link Width", "Requests a directed L0p Link Width change or dynamic width selection."), makeChapter7Flag("[7]", "UIO Mem RdWr Requester Enable", "Permits initiation of UIO Memory Read and Write Requests."), makeChapter7Flag("[8]", "UIO Request 256B Boundary Disable", "Allows UIO Requests to cross naturally aligned 256-byte boundaries."), makeChapter7Reserved("[31:9]")]],
+          ["0Ch", "Device Status 3", [makeChapter7Bit("[2:0]", "Initial Link Width", "Link Width established during initial Link training."), makeChapter7Flag("[3]", "Segment Captured", "Indicates capture of a valid Segment value from a Configuration Write Request."), makeChapter7Flag("[4]", "Remote L0p Supported", "Indicates that the remote Link partner supports L0p."), makeChapter7Reserved("[31:5]")]]
         ]
       },
       {
@@ -2501,10 +2901,10 @@
         description: "Controls and reports 64.0 GT/s link equalization and physical-layer state.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "64.0 GT/s Capabilities", [makeChapter7Flag("[0]", "64.0 GT/s Supported", "Reports whether the port supports 64.0 GT/s operation."), makeChapter7Flag("[1]", "Retimer Presence Detect Supported", "Reports support for retimer presence detection."), makeChapter7Reserved("[31:2]")]],
-          ["08h", "64.0 GT/s Control", [makeChapter7Flag("[0]", "Equalization Control", "Controls 64.0 GT/s equalization procedures."), makeChapter7Flag("[1]", "Start Equalization", "Starts equalization when written by software."), makeChapter7Reserved("[31:2]")]],
-          ["0Ch", "64.0 GT/s Status", [makeChapter7Flag("[0]", "Equalization Complete", "Indicates that 64.0 GT/s equalization completed."), makeChapter7Flag("[1]", "Equalization Phase 1 Successful", "Reports phase 1 success."), makeChapter7Flag("[2]", "Equalization Phase 2 Successful", "Reports phase 2 success."), makeChapter7Flag("[3]", "Equalization Phase 3 Successful", "Reports phase 3 success."), makeChapter7Reserved("[31:4]")]],
-          ["10h", "64.0 GT/s Lane Equalization Control", chapter7WholeRegisterBits("[31:0]", "Lane Equalization Control", "Per-lane equalization control fields; repeated for implemented lanes.")]
+          ["04h", "64.0 GT/s Capabilities", [makeChapter7Reserved("[31:0]")]],
+          ["08h", "64.0 GT/s Control", [makeChapter7Reserved("[31:0]")]],
+          ["0Ch", "64.0 GT/s Status", [makeChapter7Flag("[0]", "Equalization 64.0 GT/s Complete", "The 64.0 GT/s Transmitter Equalization procedure completed."), makeChapter7Flag("[1]", "Equalization 64.0 GT/s Phase 1 Successful", "Phase 1 of 64.0 GT/s equalization completed successfully."), makeChapter7Flag("[2]", "Equalization 64.0 GT/s Phase 2 Successful", "Phase 2 of 64.0 GT/s equalization completed successfully."), makeChapter7Flag("[3]", "Equalization 64.0 GT/s Phase 3 Successful", "Phase 3 of 64.0 GT/s equalization completed successfully."), makeChapter7Flag("[4]", "Link Equalization Request 64.0 GT/s", "Hardware requests that 64.0 GT/s Link equalization be performed."), makeChapter7Flag("[5]", "Transmitter Precoding On", "The Receiver requested this transmitter to enable Precoding."), makeChapter7Flag("[6]", "Transmitter Precode Request", "This Port requests its Link partner to use transmitter Precoding."), makeChapter7Flag("[7]", "No Equalization Needed Received", "A training sequence indicated that no equalization is needed."), makeChapter7Reserved("[31:8]")]],
+          ["10h", "64.0 GT/s Lane Equalization Control", [makeChapter7Bit("[3:0]", "Lane 0 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset used by Lane 0 when operating as a Downstream Port."), makeChapter7Bit("[7:4]", "Lane 0 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset sent or captured for Lane 0 when operating as an Upstream Port."), makeChapter7Bit("[11:8]", "Lane 1 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset used by Lane 1 when operating as a Downstream Port."), makeChapter7Bit("[15:12]", "Lane 1 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset sent or captured for Lane 1 when operating as an Upstream Port."), makeChapter7Bit("[19:16]", "Lane 2 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset used by Lane 2 when operating as a Downstream Port."), makeChapter7Bit("[23:20]", "Lane 2 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset sent or captured for Lane 2 when operating as an Upstream Port."), makeChapter7Bit("[27:24]", "Lane 3 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset used by Lane 3 when operating as a Downstream Port."), makeChapter7Bit("[31:28]", "Lane 3 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset sent or captured for Lane 3 when operating as an Upstream Port.")]]
         ]
       },
       {
@@ -2514,20 +2914,63 @@
         description: "Captures flit error logs and supports Flit Bit Error Ratio measurements.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Flit Error Log 1"],
-          ["08h", "Flit Error Log 2"],
-          ["0Ch", "Flit Error Counter Control / Status", [makeChapter7Flag("[0]", "Counter Enable", "Enables flit error counting."), makeChapter7Flag("[1]", "Counter Reset", "Resets flit error counters."), makeChapter7Flag("[16]", "Counter Valid", "Indicates counter values are valid."), makeChapter7Flag("[17]", "Counter Overflow", "Indicates a counter overflow occurred."), makeChapter7Reserved("[31:18]")]],
+          ["04h", "Flit Error Log 1", [makeChapter7Bit("[31:0]", "Flit Error Log 1", "Captures the first portion of information associated with the logged Flit error.")]],
+          ["08h", "Flit Error Log 2", [makeChapter7Bit("[31:0]", "Flit Error Log 2", "Captures the second portion of information associated with the logged Flit error.")]],
+          ["0Ch", "Flit Error Counter Control", [makeChapter7Flag("[0]", "Counter Enable", "Enables flit error counting."), makeChapter7Flag("[1]", "Counter Reset", "Resets flit error counters."), makeChapter7Reserved("[15:2]")], "[15:0]"],
+          ["0Eh", "Flit Error Counter Status", [makeChapter7Flag("[0]", "Counter Valid", "Indicates counter values are valid."), makeChapter7Flag("[1]", "Counter Overflow", "Indicates a counter overflow occurred."), makeChapter7Reserved("[15:2]")], "[15:0]"],
           ["10h", "FBER Measurement Control", [makeChapter7Flag("[0]", "Measurement Enable", "Enables FBER measurement."), makeChapter7Flag("[1]", "Measurement Reset", "Resets FBER measurement state."), makeChapter7Reserved("[31:2]")]],
-          ["14h", "FBER Measurement Status 1"],
-          ["18h", "FBER Measurement Status 2"],
-          ["1Ch", "FBER Measurement Status 3"],
-          ["20h", "FBER Measurement Status 4"],
-          ["24h", "FBER Measurement Status 5"],
-          ["28h", "FBER Measurement Status 6"],
-          ["2Ch", "FBER Measurement Status 7"],
-          ["30h", "FBER Measurement Status 8"],
-          ["34h", "FBER Measurement Status 9"],
-          ["38h", "FBER Measurement Status 10"]
+          ["14h", "FBER Measurement Status 1", [makeChapter7Bit("[31:0]", "Flit Counter", "Saturating per-Link counter incremented for every received Flit while FBER measurement is enabled.")]],
+          ["18h", "FBER Measurement Status 2", [makeChapter7Bit("[15:0]", "Invalid Flit Counter", "Saturating counter incremented for every invalid Flit received while measurement is enabled."), makeChapter7Reserved("[31:16]")]],
+          ["1Ch", "FBER Measurement Status 3", chapter7FberLaneCounters(0)],
+          ["20h", "FBER Measurement Status 4", chapter7FberLaneCounters(2)],
+          ["24h", "FBER Measurement Status 5", chapter7FberLaneCounters(4)],
+          ["28h", "FBER Measurement Status 6", chapter7FberLaneCounters(6)],
+          ["2Ch", "FBER Measurement Status 7", chapter7FberLaneCounters(8)],
+          ["30h", "FBER Measurement Status 8", chapter7FberLaneCounters(10)],
+          ["34h", "FBER Measurement Status 9", chapter7FberLaneCounters(12)],
+          ["38h", "FBER Measurement Status 10", chapter7FberLaneCounters(14)]
+        ]
+      },
+      {
+        id: "resizable_bar_extcap",
+        type: "ExtCap",
+        name: "Resizable BAR",
+        description: "Reports supported sizes and selects the active size for each resizable BAR.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Resizable BAR Capability Register 0", chapter7ResizableBarCapabilityBits()],
+          ["08h", "Resizable BAR Control Register 0", chapter7ResizableBarControlBits("BAR", true)],
+          ["0Ch", "Resizable BAR Capability Register 1", chapter7ResizableBarCapabilityBits()],
+          ["10h", "Resizable BAR Control Register 1", chapter7ResizableBarControlBits()],
+          ["14h", "Resizable BAR Capability Register 2", chapter7ResizableBarCapabilityBits()],
+          ["18h", "Resizable BAR Control Register 2", chapter7ResizableBarControlBits()],
+          ["1Ch", "Resizable BAR Capability Register 3", chapter7ResizableBarCapabilityBits()],
+          ["20h", "Resizable BAR Control Register 3", chapter7ResizableBarControlBits()],
+          ["24h", "Resizable BAR Capability Register 4", chapter7ResizableBarCapabilityBits()],
+          ["28h", "Resizable BAR Control Register 4", chapter7ResizableBarControlBits()],
+          ["2Ch", "Resizable BAR Capability Register 5", chapter7ResizableBarCapabilityBits()],
+          ["30h", "Resizable BAR Control Register 5", chapter7ResizableBarControlBits()]
+        ]
+      },
+      {
+        id: "vf_resizable_bar_extcap",
+        type: "ExtCap",
+        name: "VF Resizable BAR",
+        description: "Reports supported sizes and selects the active size for each SR-IOV VF BAR.",
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "VF Resizable BAR Capability Register 0", chapter7ResizableBarCapabilityBits("VF BAR")],
+          ["08h", "VF Resizable BAR Control Register 0", chapter7ResizableBarControlBits("VF BAR", true)],
+          ["0Ch", "VF Resizable BAR Capability Register 1", chapter7ResizableBarCapabilityBits("VF BAR")],
+          ["10h", "VF Resizable BAR Control Register 1", chapter7ResizableBarControlBits("VF BAR")],
+          ["14h", "VF Resizable BAR Capability Register 2", chapter7ResizableBarCapabilityBits("VF BAR")],
+          ["18h", "VF Resizable BAR Control Register 2", chapter7ResizableBarControlBits("VF BAR")],
+          ["1Ch", "VF Resizable BAR Capability Register 3", chapter7ResizableBarCapabilityBits("VF BAR")],
+          ["20h", "VF Resizable BAR Control Register 3", chapter7ResizableBarControlBits("VF BAR")],
+          ["24h", "VF Resizable BAR Capability Register 4", chapter7ResizableBarCapabilityBits("VF BAR")],
+          ["28h", "VF Resizable BAR Control Register 4", chapter7ResizableBarControlBits("VF BAR")],
+          ["2Ch", "VF Resizable BAR Capability Register 5", chapter7ResizableBarCapabilityBits("VF BAR")],
+          ["30h", "VF Resizable BAR Control Register 5", chapter7ResizableBarControlBits("VF BAR")]
         ]
       },
       {
@@ -2537,7 +2980,8 @@
         description: "Extends routing ID interpretation so a device can expose more than eight functions.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "ARI Capability / Control", [makeChapter7Bit("[7:0]", "Next Function Number", "Next ARI function number in the linked list."), makeChapter7Flag("[8]", "MFVC Function Groups Capability", "Reports MFVC function group support."), makeChapter7Flag("[9]", "ACS Function Groups Capability", "Reports ACS function group support."), makeChapter7Bit("[23:16]", "Function Group", "Function group assigned to this function."), makeChapter7Flag("[24]", "MFVC Function Groups Enable", "Enables MFVC function group operation."), makeChapter7Flag("[25]", "ACS Function Groups Enable", "Enables ACS function group operation."), makeChapter7Reserved("[31:26]")]]
+          ["04h", "ARI Capability", [makeChapter7Bit("[7:0]", "Next Function Number", "Next ARI function number in the linked list."), makeChapter7Flag("[8]", "MFVC Function Groups Capability", "Reports MFVC function group support."), makeChapter7Flag("[9]", "ACS Function Groups Capability", "Reports ACS function group support."), makeChapter7Reserved("[15:10]")], "[15:0]"],
+          ["06h", "ARI Control", [makeChapter7Bit("[7:0]", "Function Group", "Function group assigned to this function."), makeChapter7Flag("[8]", "MFVC Function Groups Enable", "Enables MFVC function group operation."), makeChapter7Flag("[9]", "ACS Function Groups Enable", "Enables ACS function group operation."), makeChapter7Reserved("[15:10]")], "[15:0]"]
         ]
       },
       {
@@ -2547,7 +2991,8 @@
         description: "Reports and controls Process Address Space ID support for memory requests.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "PASID Capability / Control", [makeChapter7Flag("[0]", "Exec Permission Supported", "Supports PASID execute permission checks."), makeChapter7Flag("[1]", "Privileged Mode Supported", "Supports PASID privileged-mode indication."), makeChapter7Bit("[6:2]", "Max PASID Width", "Maximum PASID width supported."), makeChapter7Flag("[16]", "PASID Enable", "Enables use of PASID by this Function."), makeChapter7Flag("[17]", "Exec Permission Enable", "Enables execute permission use."), makeChapter7Flag("[18]", "Privileged Mode Enable", "Enables privileged-mode use."), makeChapter7Reserved("[31:19]")]]
+          ["04h", "PASID Capability", [makeChapter7Flag("[0]", "Exec Permission Supported", "Supports PASID execute permission checks."), makeChapter7Flag("[1]", "Privileged Mode Supported", "Supports PASID privileged-mode indication."), makeChapter7Bit("[6:2]", "Max PASID Width", "Maximum PASID width supported."), makeChapter7Reserved("[15:7]")], "[15:0]"],
+          ["06h", "PASID Control", [makeChapter7Flag("[0]", "PASID Enable", "Enables use of PASID by this Function."), makeChapter7Flag("[1]", "Exec Permission Enable", "Enables execute permission use."), makeChapter7Flag("[2]", "Privileged Mode Enable", "Enables privileged-mode use."), makeChapter7Reserved("[15:3]")], "[15:0]"]
         ]
       },
       {
@@ -2557,9 +3002,10 @@
         description: "Provides Function Readiness Status queueing and message queue state.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "FRS Queueing Capability", [makeChapter7Bit("[4:0]", "Maximum Queue Depth", "Maximum number of FRS messages that can be queued."), makeChapter7Reserved("[31:5]")]],
-          ["08h", "FRS Queueing Status / Control", [makeChapter7Flag("[0]", "Queue Empty", "No FRS messages are queued."), makeChapter7Flag("[1]", "Queue Overflow", "An FRS queue overflow occurred."), makeChapter7Flag("[16]", "Queue Enable", "Enables FRS queueing."), makeChapter7Flag("[17]", "Interrupt Enable", "Enables interrupt signaling for queue events."), makeChapter7Reserved("[31:18]")]],
-          ["0Ch", "FRS Message Queue"]
+          ["04h", "FRS Queueing Capability", [makeChapter7Bit("[11:0]", "FRS Queue Max Depth", "Maximum number of FRS messages that can be queued."), makeChapter7Bit("[20:16]", "FRS Interrupt Message Number", "MSI/MSI-X vector used for FRS interrupts."), makeChapter7Reserved("[31:21]")]],
+          ["08h", "FRS Queueing Status", [makeChapter7Flag("[0]", "FRS Message Received", "A new FRS Message was received or generated."), makeChapter7Flag("[1]", "FRS Message Overflow", "An FRS Message arrived while the queue was full."), makeChapter7Reserved("[15:2]")], "[15:0]"],
+          ["0Ah", "FRS Queueing Control", [makeChapter7Flag("[0]", "FRS Interrupt Enable", "Enables interrupt signaling for FRS queue events."), makeChapter7Reserved("[15:1]")], "[15:0]"],
+          ["0Ch", "FRS Message Queue", [makeChapter7Bit("[15:0]", "FRS Message Queue Function ID", "Requester ID from the oldest queued FRS Message."), makeChapter7Bit("[19:16]", "FRS Message Queue Reason", "FRS Reason from the oldest queued message."), makeChapter7Bit("[31:20]", "FRS Message Queue Depth", "Current number of messages in the queue.")]]
         ]
       },
       {
@@ -2568,15 +3014,15 @@
         name: "Flattening Portal Bridge (FPB)",
         description: "Controls FPB routing vectors and vector access windows.",
         registers: [
-          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "FPB Capabilities", [makeChapter7Flag("[0]", "FPB Supported", "Reports FPB capability."), makeChapter7Bit("[7:1]", "RID Vector Size", "Size encoding for RID vector resources."), makeChapter7Bit("[15:8]", "Memory Vector Size", "Size encoding for memory vector resources."), makeChapter7Reserved("[31:16]")]],
-          ["08h", "FPB RID Vector Control 1"],
-          ["0Ch", "FPB RID Vector Control 2"],
-          ["10h", "FPB MEM Low Vector Control"],
-          ["14h", "FPB MEM High Vector Control 1"],
-          ["18h", "FPB MEM High Vector Control 2"],
+          ["00h", "FPB Capability Header", chapter7HeaderBits(false)],
+          ["04h", "FPB Capabilities", [makeChapter7Flag("[0]", "FPB RID Decode Mechanism Supported", "Indicates support for the FPB RID Vector mechanism."), makeChapter7Flag("[1]", "FPB MEM Low Decode Mechanism Supported", "Indicates support for the FPB MEM Low Vector mechanism."), makeChapter7Flag("[2]", "FPB MEM High Decode Mechanism Supported", "Indicates support for the FPB MEM High Vector mechanism."), makeChapter7Bit("[7:3]", "FPB Num Sec Dev", "Number of Device Numbers on the secondary side minus one, for Switch Upstream Ports."), makeChapter7Bit("[10:8]", "FPB RID Vector Size Supported", "Encoded implemented RID Vector size and permitted granularities."), makeChapter7Reserved("[15:11]"), makeChapter7Bit("[18:16]", "FPB MEM Low Vector Size Supported", "Encoded implemented MEM Low Vector size."), makeChapter7Reserved("[23:19]"), makeChapter7Bit("[26:24]", "FPB MEM High Vector Size Supported", "Encoded implemented MEM High Vector size."), makeChapter7Reserved("[31:27]")]],
+          ["08h", "FPB RID Vector Control 1", [makeChapter7Flag("[0]", "FPB RID Decode Mechanism Enable", "Enables the FPB RID Decode mechanism."), makeChapter7Reserved("[3:1]"), makeChapter7Bit("[7:4]", "FPB RID Vector Granularity", "Selects RID Vector granularity in units of 8, 64, or 256 RIDs."), makeChapter7Reserved("[18:8]"), makeChapter7Bit("[31:19]", "FPB RID Vector Start", "RID offset, in units of eight RIDs, where the RID Vector is applied.")]],
+          ["0Ch", "FPB RID Vector Control 2", [makeChapter7Reserved("[2:0]"), makeChapter7Bit("[15:3]", "RID Secondary Start", "RID offset where downstream Type 1 Configuration Requests are converted to Type 0."), makeChapter7Reserved("[31:16]")]],
+          ["10h", "FPB MEM Low Vector Control", [makeChapter7Flag("[0]", "FPB MEM Low Decode Mechanism Enable", "Enables the FPB MEM Low Decode mechanism."), makeChapter7Reserved("[3:1]"), makeChapter7Bit("[7:4]", "FPB MEM Low Vector Granularity", "Selects granularity from 1 MB through 16 MB."), makeChapter7Reserved("[19:8]"), makeChapter7Bit("[31:20]", "FPB MEM Low Vector Start", "Base address bits 31:20 where the MEM Low Vector is applied.")]],
+          ["14h", "FPB MEM High Vector Control 1", [makeChapter7Flag("[0]", "FPB MEM High Decode Mechanism Enable", "Enables the FPB MEM High Decode mechanism."), makeChapter7Reserved("[3:1]"), makeChapter7Bit("[7:4]", "FPB MEM High Vector Granularity", "Selects granularity from 256 MB through 32 GB."), makeChapter7Reserved("[27:8]"), makeChapter7Bit("[31:28]", "FPB MEM High Vector Start Lower", "Lower base-address bits for the MEM High Vector.")]],
+          ["18h", "FPB MEM High Vector Control 2", [makeChapter7Bit("[31:0]", "FPB MEM High Vector Start Upper", "Base address bits 63:32 where the MEM High Vector is applied.")]],
           ["1Ch", "FPB Vector Access Control", [makeChapter7Bit("[15:0]", "Vector Select", "Selects vector entry for indirect access."), makeChapter7Flag("[16]", "Write Enable", "Enables writes through the vector access window."), makeChapter7Reserved("[31:17]")]],
-          ["20h", "FPB Vector Access Data"]
+          ["20h", "FPB Vector Access Data", [makeChapter7Bit("[31:0]", "FPB Vector Access Data", "Reads or writes the selected DWORD of the RID, MEM Low, or MEM High Vector.")]]
         ]
       },
       {
@@ -2586,14 +3032,14 @@
         description: "Measures flit-mode performance and LTSSM timing/status information.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Flit Performance Measurement Capability", [makeChapter7Flag("[0]", "Measurement Supported", "Reports support for flit performance measurement."), makeChapter7Bit("[7:1]", "Counter Width", "Width of performance measurement counters."), makeChapter7Reserved("[31:8]")]],
-          ["08h", "Flit Performance Measurement Control", [makeChapter7Flag("[0]", "Measurement Enable", "Enables performance measurement."), makeChapter7Flag("[1]", "Measurement Reset", "Resets measurement counters."), makeChapter7Bit("[7:2]", "Measurement Select", "Selects the measurement to report."), makeChapter7Reserved("[31:8]")]],
-          ["0Ch", "Flit Performance Measurement Status", [makeChapter7Flag("[0]", "Measurement Valid", "Indicates measurement data is valid."), makeChapter7Flag("[1]", "Overflow", "Indicates a measurement overflow."), makeChapter7Reserved("[31:2]")]],
-          ["10h", "LTSSM Performance Measurement Status 1"],
-          ["14h", "LTSSM Performance Measurement Status 2"],
-          ["18h", "LTSSM Performance Measurement Status 3"],
-          ["1Ch", "LTSSM Performance Measurement Status 4"],
-          ["20h", "LTSSM Performance Measurement Status 5"]
+          ["04h", "Flit Performance Measurement Capability", [makeChapter7Bit("[9:0]", "Flit Performance Interrupt Vector", "MSI or MSI-X vector used by this measurement mechanism."), makeChapter7Bit("[12:10]", "LTSSM Tracking Register Count", "Number of simultaneous LTSSM transition events that can be tracked, from zero through five."), makeChapter7Reserved("[31:13]")]],
+          ["08h", "Flit Performance Measurement Control", [makeChapter7Flag("[0]", "Flit Latency Measurement Enable", "Starts or stops Ack, Nak, and Replay latency measurement."), makeChapter7Bit("[3:1]", "Flit Response Type", "Selects Flit-to-Ack, Flit-to-Nak, or Nak-to-Replay latency measurement."), makeChapter7Bit("[5:4]", "Reserved", "Reserved or implementation-defined no-effect bits."), makeChapter7Bit("[10:6]", "Number of Instances to Track", "Selects worst-case measurement or a cumulative number of Flits."), makeChapter7Bit("[13:11]", "Flit Delay Interrupt Threshold", "Selects the latency threshold that generates an interrupt."), makeChapter7Bit("[18:14]", "LTSSM State Transition Tracker", "Each Set bit enables tracking of one defined LTSSM transition."), makeChapter7Bit("[23:19]", "LTSSM Transition Instances to Track", "Selects worst-case or aggregate LTSSM transition delay measurement."), makeChapter7Bit("[26:24]", "LTSSM State Transition Tracker Interrupt", "Selects the interrupt threshold for non-L1.2 tracked transitions."), makeChapter7Bit("[29:27]", "LTSSM L1.2 PM Substate Interrupt", "Selects the interrupt threshold for tracked L1.1/L1.2 transitions."), makeChapter7Reserved("[31:30]")]],
+          ["0Ch", "Flit Performance Measurement Status", [makeChapter7Bit("[1:0]", "Flit Latency Tracking Status", "Reports not started, started, completed, or completed with error."), makeChapter7Bit("[6:2]", "Flit Latency Tracking", "Number of Flits tracked and recorded in the latency counter."), makeChapter7Flag("[7]", "Interrupt Generated Based on Trigger Event", "Indicates that the configured Flit latency trigger generated an interrupt."), makeChapter7Bit("[23:8]", "Flit Latency Tracking Counter", "Contains the aggregate or worst-case measured latency in 8 ns units."), makeChapter7Reserved("[31:24]")]],
+          ["10h", "LTSSM Performance Measurement Status 1", [makeChapter7Bit("[1:0]", "LTSSM State Transition Tracking Status", "Reports not started, started, completed, or error."), makeChapter7Bit("[6:2]", "LTSSM State Transition Tracking", "Number of measured LTSSM transitions tracked so far."), makeChapter7Flag("[7]", "LTSSM Trigger Interrupt Generated", "Indicates that the configured transition trigger generated an interrupt."), makeChapter7Bit("[23:8]", "LTSSM State Transition Tracking Counter", "Contains aggregate or worst-case transition delay."), makeChapter7Reserved("[31:24]")]],
+          ["14h", "LTSSM Performance Measurement Status 2", [makeChapter7Bit("[1:0]", "LTSSM State Transition Tracking Status", "Reports not started, started, completed, or error."), makeChapter7Bit("[6:2]", "LTSSM State Transition Tracking", "Number of measured LTSSM transitions tracked so far."), makeChapter7Flag("[7]", "LTSSM Trigger Interrupt Generated", "Indicates that the configured transition trigger generated an interrupt."), makeChapter7Bit("[23:8]", "LTSSM State Transition Tracking Counter", "Contains aggregate or worst-case transition delay."), makeChapter7Reserved("[31:24]")]],
+          ["18h", "LTSSM Performance Measurement Status 3", [makeChapter7Bit("[1:0]", "LTSSM State Transition Tracking Status", "Reports not started, started, completed, or error."), makeChapter7Bit("[6:2]", "LTSSM State Transition Tracking", "Number of measured LTSSM transitions tracked so far."), makeChapter7Flag("[7]", "LTSSM Trigger Interrupt Generated", "Indicates that the configured transition trigger generated an interrupt."), makeChapter7Bit("[23:8]", "LTSSM State Transition Tracking Counter", "Contains aggregate or worst-case transition delay."), makeChapter7Reserved("[31:24]")]],
+          ["1Ch", "LTSSM Performance Measurement Status 4", [makeChapter7Bit("[1:0]", "LTSSM State Transition Tracking Status", "Reports not started, started, completed, or error."), makeChapter7Bit("[6:2]", "LTSSM State Transition Tracking", "Number of measured LTSSM transitions tracked so far."), makeChapter7Flag("[7]", "LTSSM Trigger Interrupt Generated", "Indicates that the configured transition trigger generated an interrupt."), makeChapter7Bit("[23:8]", "LTSSM State Transition Tracking Counter", "Contains aggregate or worst-case transition delay."), makeChapter7Reserved("[31:24]")]],
+          ["20h", "LTSSM Performance Measurement Status 5", [makeChapter7Bit("[1:0]", "LTSSM State Transition Tracking Status", "Reports not started, started, completed, or error."), makeChapter7Bit("[6:2]", "LTSSM State Transition Tracking", "Number of measured LTSSM transitions tracked so far."), makeChapter7Flag("[7]", "LTSSM Trigger Interrupt Generated", "Indicates that the configured transition trigger generated an interrupt."), makeChapter7Bit("[23:8]", "LTSSM State Transition Tracking Counter", "Contains aggregate or worst-case transition delay."), makeChapter7Reserved("[31:24]")]]
         ]
       },
       {
@@ -2603,14 +3049,14 @@
         description: "Provides controls and status for injecting flit and ordered-set errors for validation.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Flit Error Injection Capability", [makeChapter7Flag("[0]", "Flit Injection Supported", "Reports support for flit error injection."), makeChapter7Flag("[1]", "Ordered Set Injection Supported", "Reports support for ordered-set error injection."), makeChapter7Reserved("[31:2]")]],
-          ["08h", "Flit Error Injection Control 1", [makeChapter7Flag("[0]", "Injection Enable", "Enables selected flit error injection."), makeChapter7Bit("[7:1]", "Injection Type", "Selects the type of flit error to inject."), makeChapter7Reserved("[31:8]")]],
-          ["0Ch", "Flit Error Injection Control 2"],
-          ["10h", "Flit Error Injection Status", [makeChapter7Flag("[0]", "Injection Busy", "Injection is in progress."), makeChapter7Flag("[1]", "Injection Complete", "Selected injection completed."), makeChapter7Flag("[2]", "Injection Error", "Selected injection could not be performed."), makeChapter7Reserved("[31:3]")]],
-          ["14h", "Ordered Set Error Injection Control 1"],
-          ["18h", "Ordered Set Error Injection Control 2"],
-          ["1Ch", "Ordered Set Error Tx Injection Status"],
-          ["20h", "Ordered Set Error Rx Injection Status"]
+          ["04h", "Flit Error Injection Capability", [makeChapter7Reserved("[31:0]")]],
+          ["08h", "Flit Error Injection Control 1", [makeChapter7Flag("[0]", "Flit Error Injection Enable", "Starts or stops Flit error injection."), makeChapter7Flag("[1]", "Inject Errors on Transmitted Flits", "Enables error injection in transmitted Flits."), makeChapter7Flag("[2]", "Inject Errors on Received Flits", "Enables error injection in received Flits."), makeChapter7Bit("[15:3]", "Flit Error Injection Enable Data Rate", "Each defined bit enables injection at the corresponding 2.5 through 64.0 GT/s data rate."), makeChapter7Bit("[20:16]", "Number of Errors Injected", "Number of errors to inject; zero means continue until disabled."), makeChapter7Bit("[28:21]", "Spacing Between Injected Errors", "Number of Flits between injection sequences; zero selects pseudo-random spacing."), makeChapter7Bit("[31:29]", "Injection on Flit Type", "Selects any, non-IDLE, Payload, NOP, IDLE, or consecutive Payload Flit injection.")]],
+          ["0Ch", "Flit Error Injection Control 2", [makeChapter7Bit("[2:0]", "Consecutive Error Injection", "Number of consecutive Flits additionally injected with errors."), makeChapter7Bit("[4:3]", "Error Type Being Injected", "Selects random, correctable single-group, correctable all-groups, or uncorrectable errors."), makeChapter7Bit("[11:5]", "Error Offset within Flit", "Byte offset or spacing used for injected errors."), makeChapter7Bit("[19:12]", "Error Magnitude", "Error value applied to each selected byte; zero selects a random non-zero value."), makeChapter7Reserved("[31:20]")]],
+          ["10h", "Flit Error Injection Status", [makeChapter7Bit("[1:0]", "Flit Error Tx Injection Status", "Reports not started, active, completed, or aborted/error for transmit injection."), makeChapter7Bit("[3:2]", "Flit Error Rx Injection Status", "Reports not started, active, completed, or aborted/error for receive injection."), makeChapter7Reserved("[31:4]")]],
+          ["14h", "Ordered Set Error Injection Control 1", chapter7OrderedSetControl1Bits()],
+          ["18h", "Ordered Set Error Injection Control 2", [makeChapter7Bit("[15:0]", "Error Injection Bytes", "Bit mask selecting Ordered Set bytes to corrupt; zero selects a pseudo-random byte."), makeChapter7Bit("[31:16]", "Lane Number for Error Injection", "Bit mask selecting Lanes participating in Ordered Set error injection.")]],
+          ["1Ch", "Ordered Set Error Tx Injection Status", chapter7OrderedSetStatusBits("Tx")],
+          ["20h", "Ordered Set Error Rx Injection Status", chapter7OrderedSetStatusBits("Rx")]
         ]
       },
       {
@@ -2620,10 +3066,10 @@
         description: "Reports and controls NOP flit generation, monitoring, and related status.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "NOP Flit Capabilities", [makeChapter7Flag("[0]", "NOP Flit Supported", "Reports NOP flit support."), makeChapter7Bit("[7:1]", "Maximum NOP Rate", "Maximum supported NOP flit rate encoding."), makeChapter7Reserved("[31:8]")]],
-          ["08h", "NOP Flit Control 1", [makeChapter7Flag("[0]", "NOP Enable", "Enables NOP flit behavior."), makeChapter7Bit("[7:1]", "NOP Rate", "Requested NOP flit rate encoding."), makeChapter7Reserved("[31:8]")]],
-          ["0Ch", "NOP Flit Control 2"],
-          ["10h", "NOP Flit Status", [makeChapter7Flag("[0]", "NOP Active", "NOP flit behavior is active."), makeChapter7Flag("[1]", "NOP Error", "A NOP flit-related error was detected."), makeChapter7Reserved("[31:2]")]]
+          ["04h", "NOP Flit Capabilities", [makeChapter7Flag("[0]", "NOP.Debug TX Support", "Indicates transmitter support for NOP.Debug Flits."), makeChapter7Flag("[1]", "NOP.Vendor TX Support", "Indicates transmitter support for NOP.Vendor Flits."), makeChapter7Reserved("[31:2]")]],
+          ["08h", "NOP Flit Control 1", [makeChapter7Flag("[0]", "NOP.Debug TX Enable", "Enables transmission of NOP.Debug Flits."), makeChapter7Flag("[1]", "NOP.Vendor TX Enable", "Enables transmission of NOP.Vendor Flits."), makeChapter7Bit("[8:2]", "Debug Opcodes Enable", "Restricts periodic NOP.Debug transmission to a selected PCI-SIG Debug Opcode; zero permits any."), makeChapter7Reserved("[9]"), makeChapter7Bit("[13:10]", "Debug Flit Maximum Rate Hint", "Desired maximum periodic NOP.Debug Flit injection rate."), makeChapter7Reserved("[15:14]"), makeChapter7Bit("[23:16]", "Number of NOP Streams", "Number of usable NOP Stream IDs minus one."), makeChapter7Bit("[31:24]", "NOP Stream ID Start", "Lowest NOP Stream ID usable by the transmitter.")]],
+          ["0Ch", "NOP Flit Control 2", [makeChapter7Flag("[0]", "Request NOP.Debug Flits", "Writing 1 requests transmission of the programmed NOP.Debug Flits."), makeChapter7Flag("[1]", "Request Priority", "Prioritizes requested NOP.Debug Flits over periodic Debug Flits."), makeChapter7Bit("[8:2]", "Debug Opcodes Requested", "Selects the Debug Opcode requested for transmission."), makeChapter7Reserved("[9]"), makeChapter7Bit("[13:10]", "Number of NOP.Debug Flits Requested", "Number of NOP.Debug Flits requested for transmission."), makeChapter7Reserved("[15:14]"), makeChapter7Bit("[31:16]", "Vendor ID Requested", "Vendor ID associated with the requested Debug Opcode.")]],
+          ["10h", "NOP Flit Status", [makeChapter7Flag("[0]", "NOP.Debug Flit Request in Progress", "Indicates that requested NOP.Debug Flit transmission has started but is not complete."), makeChapter7Reserved("[31:1]")]]
         ]
       },
       {
@@ -2633,14 +3079,15 @@
         description: "Reports and controls Virtual Channel resources and arbitration tables.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Port VC Capability Register 1", [makeChapter7Bit("[2:0]", "Extended VC Count", "Number of additional Virtual Channels supported."), makeChapter7Bit("[6:4]", "Low Priority Extended VC Count", "Number of low-priority Extended VCs supported."), makeChapter7Reserved("[31:7]")]],
-          ["08h", "Port VC Capability Register 2", [makeChapter7Bit("[7:0]", "VC Arbitration Capability", "Supported VC arbitration mechanisms."), makeChapter7Bit("[31:24]", "VC Arbitration Table Offset", "Offset to the VC arbitration table.")]],
-          ["0Ch", "Port VC Control / Status"],
-          ["10h", "VC Resource Capability"],
-          ["14h", "VC Resource Control"],
-          ["18h", "VC Resource Status"],
-          ["1Ch", "VC Arbitration Table"],
-          ["20h", "Port Arbitration Table"]
+          ["04h", "Port VC Capability Register 1", chapter7VcPortCapability1Bits()],
+          ["08h", "Port VC Capability Register 2", chapter7VcPortCapability2Bits()],
+          ["0Ch", "Port VC Control", chapter7VcPortControlBits(), "[15:0]"],
+          ["0Eh", "Port VC Status", [makeChapter7Flag("[0]", "VC Arbitration Table Status", "Indicates that programmed table contents have not yet been completely loaded into VC arbitration logic."), makeChapter7Reserved("[15:1]")], "[15:0]"],
+          ["10h", "VC Resource Capability", chapter7VcResourceCapabilityBits()],
+          ["14h", "VC Resource Control", chapter7VcResourceControlBits()],
+          ["18h", "VC Resource Status", chapter7VcResourceStatusBits(), "[15:0]"],
+          ["1Ch", "VC Arbitration Table", chapter7WholeRegisterBits("[31:0]", "VC Arbitration Table Entries", "Programmable packed entries representing one VC arbitration period.")],
+          ["20h", "Port Arbitration Table", chapter7WholeRegisterBits("[31:0]", "Port Arbitration Table Entries", "Programmable packed Port Number entries representing one Port arbitration period.")]
         ]
       },
       {
@@ -2650,14 +3097,15 @@
         description: "Virtual Channel controls for multi-function devices.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "MFVC Port VC Capability Register 1"],
-          ["08h", "MFVC Port VC Capability Register 2"],
-          ["0Ch", "MFVC Port VC Control / Status"],
-          ["10h", "MFVC VC Resource Capability"],
-          ["14h", "MFVC VC Resource Control"],
-          ["18h", "MFVC VC Resource Status"],
-          ["1Ch", "MFVC VC Arbitration Table"],
-          ["20h", "Function Arbitration Table"]
+          ["04h", "MFVC Port VC Capability Register 1", chapter7VcPortCapability1Bits("Function")],
+          ["08h", "MFVC Port VC Capability Register 2", chapter7VcPortCapability2Bits("MFVC ")],
+          ["0Ch", "MFVC Port VC Control", chapter7VcPortControlBits("MFVC "), "[15:0]"],
+          ["0Eh", "MFVC Port VC Status", [makeChapter7Flag("[0]", "VC Arbitration Table Status", "Indicates that programmed MFVC table contents have not yet been completely loaded."), makeChapter7Reserved("[15:1]")], "[15:0]"],
+          ["10h", "MFVC VC Resource Capability", chapter7VcResourceCapabilityBits(true)],
+          ["14h", "MFVC VC Resource Control", chapter7VcResourceControlBits(true)],
+          ["18h", "MFVC VC Resource Status", chapter7VcResourceStatusBits(true), "[15:0]"],
+          ["1Ch", "MFVC VC Arbitration Table", chapter7WholeRegisterBits("[31:0]", "MFVC VC Arbitration Table Entries", "Programmable packed entries representing one MFVC VC arbitration period.")],
+          ["20h", "Function Arbitration Table", chapter7WholeRegisterBits("[31:0]", "Function Arbitration Table Entries", "Programmable packed Function Number or Function Group entries representing one Function arbitration period.")]
         ]
       },
       {
@@ -2679,7 +3127,7 @@
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "Vendor-Specific Header", [makeChapter7Bit("[15:0]", "VSEC ID", "Vendor-specific capability identifier."), makeChapter7Bit("[19:16]", "VSEC Revision", "Vendor-specific capability revision."), makeChapter7Bit("[31:20]", "VSEC Length", "Total length of the VSEC structure in bytes.")]],
-          ["08h", "Vendor-Specific Registers"]
+          ["08h", "Vendor-Specific Registers", [makeChapter7Bit("[31:0]", "Vendor-Specific Data", "Vendor-defined payload; interpretation is specified by the vendor identified by the device.")]]
         ]
       },
       {
@@ -2691,7 +3139,7 @@
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "DVSEC Header 1", [makeChapter7Bit("[15:0]", "DVSEC Vendor ID", "Vendor ID designating the DVSEC owner."), makeChapter7Bit("[19:16]", "DVSEC Revision", "Revision of the DVSEC definition."), makeChapter7Bit("[31:20]", "DVSEC Length", "Length of the DVSEC structure in bytes.")]],
           ["08h", "DVSEC Header 2", [makeChapter7Bit("[15:0]", "DVSEC ID", "Designated vendor-specific capability identifier."), makeChapter7Reserved("[31:16]")]],
-          ["0Ch", "DVSEC Registers"]
+          ["0Ch", "DVSEC Registers", [makeChapter7Bit("[31:0]", "DVSEC-Specific Data", "Payload defined by the designated vendor and DVSEC ID.")]]
         ]
       },
       {
@@ -2702,8 +3150,8 @@
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "RCRB Vendor ID and Device ID", [makeChapter7Bit("[15:0]", "Vendor ID", "Vendor identifier for the RCRB."), makeChapter7Bit("[31:16]", "Device ID", "Device identifier for the RCRB.")]],
-          ["08h", "RCRB Capabilities"],
-          ["0Ch", "RCRB Control", [makeChapter7Flag("[0]", "RCRB Enable", "Enables RCRB function when implemented."), makeChapter7Reserved("[31:1]")]]
+          ["08h", "RCRB Capabilities", [makeChapter7Flag("[0]", "Configuration RRS Software Visibility", "Indicates that the Root Complex can return Request Retry Status for Configuration Requests."), makeChapter7Reserved("[31:1]")]],
+          ["0Ch", "RCRB Control", [makeChapter7Flag("[0]", "Configuration RRS Software Visibility Enable", "Enables Request Retry Status responses for Configuration Requests associated with this RCRB."), makeChapter7Reserved("[31:1]")]]
         ]
       },
       {
@@ -2713,9 +3161,12 @@
         description: "Declares Root Complex internal elements and links.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Element Self Description", [makeChapter7Bit("[3:0]", "Element Type", "Type of Root Complex element."), makeChapter7Bit("[11:4]", "Number of Link Entries", "Number of link entries that follow."), makeChapter7Reserved("[31:12]")]],
-          ["08h", "Link Description"],
-          ["0Ch", "Link Address"]
+          ["04h", "Element Self Description", [makeChapter7Bit("[3:0]", "Element Type", "Configuration Space element, system egress/internal sink, or internal Root Complex Link."), makeChapter7Reserved("[7:4]"), makeChapter7Bit("[15:8]", "Number of Link Entries", "Number of Link Entries following this register."), makeChapter7Bit("[23:16]", "Component ID", "Identifies the Root Complex Component containing this element."), makeChapter7Bit("[31:24]", "Port Number", "Port Number of this element within its Root Complex Component.")]],
+          ["08h", "Reserved", [makeChapter7Reserved("[31:0]")]],
+          ["10h", "Link Description", [makeChapter7Flag("[0]", "Link Valid", "Indicates that this Link Entry declares a valid Link."), makeChapter7Flag("[1]", "Link Type", "Selects memory-mapped RCRB address or Configuration Space target format."), makeChapter7Flag("[2]", "Associate RCRB Header", "Associates the declaring element with an RCRB Header in the target RCRB."), makeChapter7Reserved("[15:3]"), makeChapter7Bit("[23:16]", "Target Component ID", "Identifies the Root Complex Component targeted by this Link Entry."), makeChapter7Bit("[31:24]", "Target Port Number", "Port Number of the target element within its Component.")]],
+          ["14h", "Link Entry Reserved", [makeChapter7Reserved("[31:0]")]],
+          ["18h", "Link Address Low", [makeChapter7Bit("[31:0]", "Link Address Bits 31:0", "Lower target RCRB base address or encoded Configuration Space address, depending on Link Type.")]],
+          ["1Ch", "Link Address High", [makeChapter7Bit("[31:0]", "Link Address Bits 63:32", "Upper target RCRB or Configuration Space base address.")]]
         ]
       },
       {
@@ -2726,7 +3177,8 @@
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "Root Complex Link Capabilities", [makeChapter7Bit("[3:0]", "Link Speed", "Supported internal link speed encoding."), makeChapter7Bit("[9:4]", "Link Width", "Supported internal link width encoding."), makeChapter7Reserved("[31:10]")]],
-          ["08h", "Root Complex Link Control / Status", [makeChapter7Flag("[0]", "Link Disable", "Disables the internal link when supported."), makeChapter7Bit("[19:16]", "Current Link Speed", "Current internal link speed encoding."), makeChapter7Bit("[25:20]", "Negotiated Link Width", "Current internal link width encoding."), makeChapter7Reserved("[31:26]")]]
+          ["08h", "Root Complex Link Control", [makeChapter7Flag("[0]", "Link Disable", "Disables the internal link when supported."), makeChapter7Reserved("[15:1]")], "[15:0]"],
+          ["0Ah", "Root Complex Link Status", [makeChapter7Bit("[3:0]", "Current Link Speed", "Current internal link speed encoding."), makeChapter7Bit("[9:4]", "Negotiated Link Width", "Current internal link width encoding."), makeChapter7Reserved("[15:10]")], "[15:0]"]
         ]
       },
       {
@@ -2736,8 +3188,8 @@
         description: "Identifies RCiEPs associated with a Root Complex Event Collector.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Association Bitmap for RCiEPs"],
-          ["08h", "RCEC Associated Bus Numbers", [makeChapter7Bit("[7:0]", "Next Bus Number", "Next associated bus number."), makeChapter7Bit("[15:8]", "Last Bus Number", "Last associated bus number."), makeChapter7Reserved("[31:16]")]]
+          ["04h", "Association Bitmap for RCiEPs", [makeChapter7Bit("[31:0]", "RCiEP Association Bitmap", "Each Set bit associates the RCiEP with the corresponding Device Number on the RCEC's Bus.")]],
+          ["08h", "RCEC Associated Bus Numbers", [makeChapter7Reserved("[7:0]"), makeChapter7Bit("[15:8]", "RCEC Next Bus", "Lowest additional Bus Number containing RCiEPs associated with this RCEC; FFh indicates no additional bus."), makeChapter7Bit("[23:16]", "RCEC Last Bus", "Highest additional Bus Number containing associated RCiEPs; 00h indicates no additional bus."), makeChapter7Reserved("[31:24]")]]
         ]
       },
       {
@@ -2747,12 +3199,18 @@
         description: "Controls multicast group addressing, receive, and blocking behavior.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Multicast Capability / Control", [makeChapter7Bit("[5:0]", "Max Group", "Maximum multicast group number supported."), makeChapter7Flag("[6]", "ECRC Regeneration Supported", "Reports support for ECRC regeneration."), makeChapter7Bit("[21:16]", "Num Group", "Number of multicast groups enabled."), makeChapter7Flag("[22]", "Enable", "Enables multicast operation."), makeChapter7Reserved("[31:23]")]],
-          ["08h", "MC Base Address"],
-          ["10h", "MC Receive"],
-          ["18h", "MC Block All"],
-          ["20h", "MC Block Untranslated"],
-          ["28h", "MC Overlay BAR"]
+          ["04h", "Multicast Capability", [makeChapter7Bit("[5:0]", "MC_Max_Group", "Maximum supported Multicast Group number, encoded as the number of groups minus one."), makeChapter7Reserved("[7:6]"), makeChapter7Bit("[13:8]", "MC_Window_Size_Requested", "For Endpoints, log2 of the requested Multicast Window size."), makeChapter7Reserved("[14]"), makeChapter7Flag("[15]", "MC_ECRC_Regeneration_Supported", "Indicates support for regenerating ECRC on forwarded Multicast TLPs.")], "[15:0]"],
+          ["06h", "Multicast Control", [makeChapter7Bit("[5:0]", "MC_Num_Group", "Number of Multicast Groups configured for use, encoded as the number minus one."), makeChapter7Reserved("[14:6]"), makeChapter7Flag("[15]", "MC_Enable", "Enables the Multicast mechanism for this component.")], "[15:0]"],
+          ["08h", "MC Base Address", [makeChapter7Bit("[5:0]", "MC_Index_Position", "Bit position of the least-significant Multicast Group number bit in the address."), makeChapter7Reserved("[11:6]"), makeChapter7Bit("[31:12]", "MC_Base_Address [31:12]", "Lower portion of the Multicast address range base address.")]],
+          ["0Ch", "MC Base Address Upper", [makeChapter7Bit("[31:0]", "MC_Base_Address [63:32]", "Upper 32 bits of the Multicast address range base address.")]],
+          ["10h", "MC Receive Low", [makeChapter7Bit("[31:0]", "MC_Receive [31:0]", "Each Set bit accepts or forwards TLPs for the corresponding Multicast Group.")]],
+          ["14h", "MC Receive High", [makeChapter7Bit("[31:0]", "MC_Receive [63:32]", "Upper Multicast Group receive/forward vector.")]],
+          ["18h", "MC Block All Low", [makeChapter7Bit("[31:0]", "MC_Block_All [31:0]", "Each Set bit blocks this Function from sending TLPs to the corresponding Multicast Group.")]],
+          ["1Ch", "MC Block All High", [makeChapter7Bit("[31:0]", "MC_Block_All [63:32]", "Upper Multicast Group block vector.")]],
+          ["20h", "MC Block Untranslated Low", [makeChapter7Bit("[31:0]", "MC_Block_Untranslated [31:0]", "Each Set bit blocks TLPs with untranslated addresses to the corresponding Multicast Group.")]],
+          ["24h", "MC Block Untranslated High", [makeChapter7Bit("[31:0]", "MC_Block_Untranslated [63:32]", "Upper untranslated-address block vector.")]],
+          ["28h", "MC Overlay BAR Low", [makeChapter7Bit("[5:0]", "MC_Overlay_Size", "Power-of-two overlay aperture size; values below 6 disable overlay."), makeChapter7Bit("[31:6]", "MC_Overlay_BAR [31:6]", "Lower portion of the unicast overlay window base address.")]],
+          ["2Ch", "MC Overlay BAR High", [makeChapter7Bit("[31:0]", "MC_Overlay_BAR [63:32]", "Upper portion of the unicast overlay window base address.")]]
         ]
       },
       {
@@ -2762,10 +3220,11 @@
         description: "Reports and controls dynamic power allocation substate information.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "DPA Capability", [makeChapter7Bit("[4:0]", "Substate Maximum", "Maximum DPA substate supported."), makeChapter7Flag("[5]", "Transition Latency Unit", "Reports latency unit used by DPA latency indicators."), makeChapter7Reserved("[31:6]")]],
-          ["08h", "DPA Latency Indicator"],
-          ["0Ch", "DPA Status / Control", [makeChapter7Bit("[4:0]", "Substate Status", "Current DPA substate."), makeChapter7Bit("[20:16]", "Substate Control", "Requested DPA substate."), makeChapter7Flag("[21]", "DPA Enable", "Enables DPA control."), makeChapter7Reserved("[31:22]")]],
-          ["10h", "DPA Power Allocation Array"]
+          ["04h", "DPA Capability", [makeChapter7Bit("[4:0]", "Substate_Max", "Maximum substate number; total supported substates equal this value plus one."), makeChapter7Reserved("[7:5]"), makeChapter7Bit("[9:8]", "Transition Latency Unit", "Scale applied to Transition Latency Value 0 and 1: 1 ms, 10 ms, or 100 ms."), makeChapter7Reserved("[11:10]"), makeChapter7Bit("[13:12]", "Power Allocation Scale", "Scale applied to each Substate Power Allocation value."), makeChapter7Reserved("[15:14]"), makeChapter7Bit("[23:16]", "Transition Latency Value 0", "First maximum transition latency value."), makeChapter7Bit("[31:24]", "Transition Latency Value 1", "Second maximum transition latency value.")]],
+          ["08h", "DPA Latency Indicator", [makeChapter7Bit("[31:0]", "Transition Latency Indicator Bits", "For each supported substate, selects Transition Latency Value 0 or Transition Latency Value 1.")]],
+          ["0Ch", "DPA Status", [makeChapter7Bit("[4:0]", "Substate Status", "Current DPA substate."), makeChapter7Reserved("[7:5]"), makeChapter7Flag("[8]", "Substate Control Enabled", "When Set, Substate Control determines the current substate; software clears this bit by writing 1."), makeChapter7Reserved("[15:9]")], "[15:0]"],
+          ["0Eh", "DPA Control", [makeChapter7Bit("[4:0]", "Substate Control", "Requested Function substate when Substate Control Enabled is Set."), makeChapter7Reserved("[15:5]")], "[15:0]"],
+          ["10h", "DPA Power Allocation Array", [makeChapter7Bit("[7:0]", "Substate Power Allocation", "Power allocation value for the associated substate, scaled by Power Allocation Scale."), makeChapter7Reserved("[31:8]")]]
         ]
       },
       {
@@ -2777,7 +3236,7 @@
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "TPH Requester Capability", [makeChapter7Flag("[0]", "No ST Mode Supported", "Supports TPH without steering tags."), makeChapter7Flag("[1]", "Interrupt Vector Mode Supported", "Supports interrupt-vector steering-table mode."), makeChapter7Flag("[2]", "Device Specific Mode Supported", "Supports device-specific steering-table mode."), makeChapter7Bit("[10:8]", "ST Table Location", "Location of the steering tag table."), makeChapter7Bit("[26:16]", "ST Table Size", "Number of steering tag table entries minus one."), makeChapter7Reserved("[31:27]")]],
           ["08h", "TPH Requester Control", [makeChapter7Bit("[1:0]", "ST Mode Select", "Selects steering tag mode."), makeChapter7Flag("[8]", "TPH Requester Enable", "Enables generation of requests with TPH."), makeChapter7Reserved("[31:9]")]],
-          ["0Ch", "TPH ST Table"]
+          ["0Ch", "TPH ST Table", [makeChapter7Bit("[31:0]", "Steering Tag Table Entries", "Packed Steering Tag values used by Interrupt Vector or Device-Specific TPH modes.")]]
         ]
       },
       {
@@ -2787,16 +3246,18 @@
         description: "Controls containment of errors below a Downstream Port and exposes RP PIO error logging.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "DPC Capability / Control", [makeChapter7Flag("[0]", "DPC Trigger Supported", "Reports DPC trigger support."), makeChapter7Flag("[1]", "DPC Completion Timeout Supported", "Reports DPC on completion timeout support."), makeChapter7Bit("[7:4]", "RP Extensions", "Root Port extension capability encoding."), makeChapter7Flag("[16]", "DPC Trigger Enable", "Enables DPC trigger handling."), makeChapter7Flag("[17]", "DPC Completion Timeout Enable", "Enables DPC on completion timeout."), makeChapter7Flag("[18]", "DPC Interrupt Enable", "Enables DPC interrupt signaling."), makeChapter7Reserved("[31:19]")]],
-          ["08h", "DPC Status / Error Source ID", [makeChapter7Flag("[0]", "DPC Trigger Status", "A DPC trigger occurred."), makeChapter7Bit("[2:1]", "DPC Trigger Reason", "Reason for the DPC trigger."), makeChapter7Flag("[3]", "DPC Interrupt Status", "DPC interrupt is pending."), makeChapter7Bit("[31:16]", "DPC Error Source ID", "Requester ID associated with the DPC event."), makeChapter7Reserved("[15:4]")]],
-          ["0Ch", "RP PIO Status"],
-          ["10h", "RP PIO Mask"],
-          ["14h", "RP PIO Severity"],
-          ["18h", "RP PIO SysError"],
-          ["1Ch", "RP PIO Exception"],
-          ["20h", "RP PIO Header Log"],
-          ["30h", "RP PIO ImpSpec Log"],
-          ["34h", "RP PIO TLP Prefix Log"]
+          ["04h", "DPC Capability", [makeChapter7Bit("[4:0]", "DPC Interrupt Message Number", "MSI/MSI-X vector used for DPC interrupts."), makeChapter7Flag("[5]", "RP Extensions for DPC", "Indicates support for Root Port-specific DPC extensions and RP PIO logging."), makeChapter7Flag("[6]", "Poisoned TLP Egress Blocking Supported", "Supports blocking transmission of poisoned TLPs."), makeChapter7Flag("[7]", "DPC Software Triggering Supported", "Supports software-triggered DPC."), makeChapter7Bit("[11:8]", "RP PIO Log Size [3:0]", "Low four bits of the number of DWORDs allocated for RP PIO logs."), makeChapter7Flag("[12]", "DL_Active ERR_COR Signaling Supported", "Supports ERR_COR signaling when the Link enters DL_Active."), makeChapter7Bit("[13]", "RP PIO Log Size [4]", "High bit of RP PIO Log Size for Flit Mode."), makeChapter7Reserved("[15:14]")], "[15:0]"],
+          ["06h", "DPC Control", [makeChapter7Bit("[1:0]", "DPC Trigger Enable", "Enables DPC and selects whether ERR_NONFATAL also triggers containment."), makeChapter7Flag("[2]", "DPC Completion Control", "Selects CA or UR Completion Status for Completions formed during DPC."), makeChapter7Flag("[3]", "DPC Interrupt Enable", "Enables interrupt generation when DPC triggers."), makeChapter7Flag("[4]", "DPC ERR_COR Enable", "Enables ERR_COR signaling when DPC triggers."), makeChapter7Flag("[5]", "Poisoned TLP Egress Blocking Enable", "Enables blocking of poisoned TLP transmission."), makeChapter7Flag("[6]", "DPC Software Trigger", "Writing 1 triggers DPC when enabled and supported."), makeChapter7Flag("[7]", "DL_Active ERR_COR Enable", "Enables ERR_COR signaling on transition to DL_Active."), makeChapter7Flag("[8]", "DPC SIG_SFW Enable", "Enables ECS SIG_SFW ERR_COR signaling for applicable DPC events."), makeChapter7Reserved("[15:9]")], "[15:0]"],
+          ["08h", "DPC Status", [makeChapter7Flag("[0]", "DPC Trigger Status", "Indicates that DPC has triggered and the Port is in containment."), makeChapter7Bit("[2:1]", "DPC Trigger Reason", "Reports uncorrectable error, ERR_NONFATAL, ERR_FATAL, or an extended trigger reason."), makeChapter7Flag("[3]", "DPC Interrupt Status", "Indicates that DPC triggered while interrupt signaling was enabled."), makeChapter7Flag("[4]", "DPC RP Busy", "Indicates Root Port internal activity that must complete before clearing Trigger Status."), makeChapter7Bit("[6:5]", "DPC Trigger Reason Extension", "Reports RP PIO error or software trigger when Trigger Reason is the extension encoding."), makeChapter7Reserved("[7]"), makeChapter7Bit("[12:8]", "RP PIO First Error Pointer", "Identifies the first Set error bit in RP PIO Status."), makeChapter7Flag("[13]", "DPC SIG_SFW Status", "Indicates that a SIG_SFW ERR_COR Message was sent for a DPC event."), makeChapter7Reserved("[15:14]")], "[15:0]"],
+          ["0Ah", "DPC Error Source ID", [makeChapter7Bit("[15:0]", "DPC Error Source ID", "Requester ID associated with the DPC event.")], "[15:0]"],
+          ["0Ch", "RP PIO Status", chapter7RpPioBits("Status")],
+          ["10h", "RP PIO Mask", chapter7RpPioBits("Mask")],
+          ["14h", "RP PIO Severity", chapter7RpPioBits("Severity")],
+          ["18h", "RP PIO SysError", chapter7RpPioBits("SysError")],
+          ["1Ch", "RP PIO Exception", chapter7RpPioBits("Exception")],
+          ["20h", "RP PIO Header Log", [makeChapter7Bit("[31:0]", "RP PIO Header Log DWORD", "Part of the captured Request TLP header associated with the recorded RP PIO error; the complete log spans multiple DWORDs.")]],
+          ["30h", "RP PIO ImpSpec Log", [makeChapter7Bit("[31:0]", "RP PIO Implementation-Specific Log", "Optional implementation-specific information associated with the recorded RP PIO error.")]],
+          ["34h", "RP PIO TLP Prefix Log", [makeChapter7Bit("[31:0]", "RP PIO TLP Prefix/Header Log DWORD", "In Non-Flit Mode, captures End-End TLP Prefix data; in Flit Mode, this space continues the Header Log.")]]
         ]
       },
       {
@@ -2806,7 +3267,7 @@
         description: "Reports and controls Precision Time Measurement requester/responder/root behavior.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "PTM Capability", [makeChapter7Flag("[0]", "PTM Requester Capable", "Can issue PTM requests."), makeChapter7Flag("[1]", "PTM Responder Capable", "Can respond to PTM requests."), makeChapter7Flag("[2]", "PTM Root Capable", "Can act as a PTM root."), makeChapter7Bit("[15:8]", "Local Clock Granularity", "Local clock granularity encoding."), makeChapter7Reserved("[31:16]")]],
+          ["04h", "PTM Capability", [makeChapter7Flag("[0]", "PTM Requester Capable", "Implements the PTM Requester role."), makeChapter7Flag("[1]", "PTM Responder Capable", "Implements the PTM Responder role."), makeChapter7Flag("[2]", "PTM Root Capable", "Can act as a source of PTM Master Time."), makeChapter7Flag("[3]", "ePTM Capable", "Supports Enhanced Precision Time Measurement."), makeChapter7Flag("[4]", "PTM Propagation Delay Adaptation Capable", "Supports PTM Propagation Delay Adaptation control."), makeChapter7Reserved("[7:5]"), makeChapter7Bit("[15:8]", "Local Clock Granularity", "Period of the local clock in nanoseconds; zero means no local clock and FFh means greater than 254 ns."), makeChapter7Reserved("[31:16]")]],
           ["08h", "PTM Control", [makeChapter7Flag("[0]", "PTM Enable", "Enables PTM operation."), makeChapter7Flag("[1]", "Root Select", "Selects this Function as PTM root when supported."), makeChapter7Bit("[15:8]", "Effective Granularity", "Effective clock granularity programmed by software."), makeChapter7Reserved("[31:16]")]]
         ]
       },
@@ -2817,8 +3278,8 @@
         description: "Reports time requirements for device readiness after reset or power transitions.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Readiness Time Reporting 1"],
-          ["08h", "Readiness Time Reporting 2"]
+          ["04h", "Readiness Time Reporting 1", [makeChapter7Bit("[11:0]", "Reset Time", "Time required to become Configuration-Ready after Conventional Reset, using the Readiness Time floating-point encoding."), makeChapter7Bit("[23:12]", "DL_Up Time", "Time required after the upstream Downstream Port reports Data Link Layer Link Active."), makeChapter7Reserved("[30:24]"), makeChapter7Flag("[31]", "Valid", "Indicates that all reported readiness time values are valid.")]],
+          ["08h", "Readiness Time Reporting 2", [makeChapter7Bit("[11:0]", "FLR Time", "Time required to become Configuration-Ready after Function Level Reset."), makeChapter7Bit("[23:12]", "D3Hot to D0 Time", "Time required to become Configuration-Ready after transition from D3Hot to D0."), makeChapter7Reserved("[31:24]")]]
         ]
       },
       {
@@ -2828,13 +3289,13 @@
         description: "Reports hierarchy identity data and GUID registers.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Hierarchy ID Status", [makeChapter7Flag("[0]", "Hierarchy ID Valid", "Hierarchy ID data is valid."), makeChapter7Reserved("[31:1]")]],
-          ["08h", "Hierarchy ID Data"],
-          ["0Ch", "Hierarchy ID GUID 1"],
-          ["10h", "Hierarchy ID GUID 2"],
-          ["14h", "Hierarchy ID GUID 3"],
-          ["18h", "Hierarchy ID GUID 4"],
-          ["1Ch", "Hierarchy ID GUID 5"]
+          ["04h", "Hierarchy ID Status", [makeChapter7Bit("[15:0]", "Message Requester ID", "Requester ID from the most recently received Hierarchy ID Message, where applicable."), makeChapter7Reserved("[27:16]"), makeChapter7Flag("[28]", "Hierarchy ID Writeable", "Indicates that Hierarchy ID Data and GUID registers are writable."), makeChapter7Flag("[29]", "Hierarchy ID VF Configurable", "Indicates that Hierarchy ID Writeable can be configured for a VF."), makeChapter7Flag("[30]", "Hierarchy ID Pending", "Requests transmission of a Hierarchy ID Message on a Downstream Port."), makeChapter7Flag("[31]", "Hierarchy ID Valid", "Indicates that the remaining fields in this capability are meaningful.")]],
+          ["08h", "Hierarchy ID Data", [makeChapter7Bit("[7:0]", "System GUID Authority ID", "Authority identifier associated with the System GUID."), makeChapter7Reserved("[15:8]"), makeChapter7Bit("[31:16]", "Hierarchy ID", "Hierarchy identifier carried in the Hierarchy ID Message.")]],
+          ["0Ch", "Hierarchy ID GUID 1", [makeChapter7Bit("[15:0]", "System GUID 1", "System GUID bits 143:128."), makeChapter7Reserved("[31:16]")]],
+          ["10h", "Hierarchy ID GUID 2", [makeChapter7Bit("[31:0]", "System GUID 2", "System GUID bits 127:96.")]],
+          ["14h", "Hierarchy ID GUID 3", [makeChapter7Bit("[31:0]", "System GUID 3", "System GUID bits 95:64.")]],
+          ["18h", "Hierarchy ID GUID 4", [makeChapter7Bit("[31:0]", "System GUID 4", "System GUID bits 63:32.")]],
+          ["1Ch", "Hierarchy ID GUID 5", [makeChapter7Bit("[31:0]", "System GUID 5", "System GUID bits 31:0.")]]
         ]
       },
       {
@@ -2844,9 +3305,9 @@
         description: "Controls enclosure-management indicators and reports NPEM status.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "NPEM Capability", [makeChapter7Flag("[0]", "NPEM Supported", "Reports NPEM support."), makeChapter7Flag("[1]", "OK Control Supported", "Supports OK indicator control."), makeChapter7Flag("[2]", "Locate Control Supported", "Supports locate indicator control."), makeChapter7Flag("[3]", "Fail Control Supported", "Supports fail indicator control."), makeChapter7Reserved("[31:4]")]],
-          ["08h", "NPEM Control", [makeChapter7Flag("[0]", "NPEM Enable", "Enables NPEM control."), makeChapter7Flag("[1]", "OK Control", "Controls OK indication."), makeChapter7Flag("[2]", "Locate Control", "Controls locate indication."), makeChapter7Flag("[3]", "Fail Control", "Controls fail indication."), makeChapter7Reserved("[31:4]")]],
-          ["0Ch", "NPEM Status", [makeChapter7Flag("[0]", "Command Completed", "Last NPEM command completed."), makeChapter7Flag("[1]", "Command Failed", "Last NPEM command failed."), makeChapter7Reserved("[31:2]")]]
+          ["04h", "NPEM Capability", [makeChapter7Flag("[0]", "NPEM Capable", "The enclosure implements NPEM functionality."), makeChapter7Flag("[1]", "NPEM Reset Capable", "Supports the optional NPEM Reset mechanism."), makeChapter7Flag("[2]", "NPEM OK Capable", "Supports the NPEM OK indication."), makeChapter7Flag("[3]", "NPEM Locate Capable", "Supports the NPEM Locate indication."), makeChapter7Flag("[4]", "NPEM Fail Capable", "Supports the NPEM Fail indication."), makeChapter7Flag("[5]", "NPEM Rebuild Capable", "Supports the NPEM Rebuild indication."), makeChapter7Flag("[6]", "NPEM PFA Capable", "Supports the predictive-failure-analysis indication."), makeChapter7Flag("[7]", "NPEM Hot Spare Capable", "Supports the Hot Spare indication."), makeChapter7Flag("[8]", "NPEM In A Critical Array Capable", "Supports the In A Critical Array indication."), makeChapter7Flag("[9]", "NPEM In A Failed Array Capable", "Supports the In A Failed Array indication."), makeChapter7Flag("[10]", "NPEM Invalid Device Type Capable", "Supports the Invalid Device Type indication."), makeChapter7Flag("[11]", "NPEM Disabled Capable", "Supports the Disabled indication."), makeChapter7Reserved("[23:12]"), makeChapter7Bit("[31:24]", "Enclosure-specific Capabilities", "Enclosure-defined indication capability bits.")]],
+          ["08h", "NPEM Control", [makeChapter7Flag("[0]", "NPEM Enable", "Enables NPEM operation."), makeChapter7Flag("[1]", "NPEM Initiate Reset", "Writing one initiates NPEM Reset when supported."), makeChapter7Flag("[2]", "NPEM OK Control", "Controls the OK indication."), makeChapter7Flag("[3]", "NPEM Locate Control", "Controls the Locate indication."), makeChapter7Flag("[4]", "NPEM Fail Control", "Controls the Fail indication."), makeChapter7Flag("[5]", "NPEM Rebuild Control", "Controls the Rebuild indication."), makeChapter7Flag("[6]", "NPEM PFA Control", "Controls the predictive-failure-analysis indication."), makeChapter7Flag("[7]", "NPEM Hot Spare Control", "Controls the Hot Spare indication."), makeChapter7Flag("[8]", "NPEM In A Critical Array Control", "Controls the In A Critical Array indication."), makeChapter7Flag("[9]", "NPEM In A Failed Array Control", "Controls the In A Failed Array indication."), makeChapter7Flag("[10]", "NPEM Invalid Device Type Control", "Controls the Invalid Device Type indication."), makeChapter7Flag("[11]", "NPEM Disabled Control", "Controls the Disabled indication."), makeChapter7Reserved("[23:12]"), makeChapter7Bit("[31:24]", "Enclosure-specific Controls", "Enclosure-defined control bits.")]],
+          ["0Ch", "NPEM Status", [makeChapter7Flag("[0]", "NPEM Command Completed", "The last NPEM command completed and another command can be accepted."), makeChapter7Reserved("[23:1]"), makeChapter7Bit("[31:24]", "Enclosure-specific Status", "Enclosure-defined status bits.")]]
         ]
       },
       {
@@ -2856,11 +3317,11 @@
         description: "Reports and selects alternate protocol operation for a link.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Alternate Protocol Capabilities", [makeChapter7Flag("[0]", "Alternate Protocol Supported", "Reports support for alternate protocol mode."), makeChapter7Bit("[7:1]", "Protocol Count", "Number of alternate protocols supported."), makeChapter7Reserved("[31:8]")]],
-          ["08h", "Alternate Protocol Control", [makeChapter7Flag("[0]", "Alternate Protocol Enable", "Enables selected alternate protocol operation."), makeChapter7Bit("[7:1]", "Protocol Select", "Selects the alternate protocol."), makeChapter7Reserved("[31:8]")]],
-          ["0Ch", "Alternate Protocol Data 1"],
-          ["10h", "Alternate Protocol Data 2"],
-          ["14h", "Alternate Protocol Selective Enable Mask"]
+          ["04h", "Alternate Protocol Capabilities", [makeChapter7Bit("[7:0]", "Alternate Protocol Count", "Number of Alternate Protocols or Training Set Message protocols supported on the Link."), makeChapter7Flag("[8]", "Alternate Protocol Selective Enable Supported", "Indicates presence of the Selective Enable Mask register."), makeChapter7Reserved("[31:9]")]],
+          ["08h", "Alternate Protocol Control", [makeChapter7Bit("[7:0]", "Alternate Protocol Index Select", "Selects which Lane/protocol entry is exposed through Alternate Protocol Data registers."), makeChapter7Flag("[8]", "Alternate Protocol Negotiation Global Enable", "Globally enables Alternate Protocol Negotiation for the Link."), makeChapter7Reserved("[31:9]")]],
+          ["0Ch", "Alternate Protocol Data 1", [makeChapter7Bit("[2:0]", "Alternate Protocol Usage Information", "Modified TS Usage value associated with the selected alternate protocol."), makeChapter7Reserved("[4:3]"), makeChapter7Bit("[15:5]", "Alternate Protocol Details", "Protocol-specific details associated with the selected entry."), makeChapter7Bit("[31:16]", "Alternate Protocol Vendor ID", "Vendor ID associated with the selected alternate protocol; FFFFh indicates an invalid or disabled entry.")]],
+          ["10h", "Alternate Protocol Data 2", [makeChapter7Bit("[23:0]", "Modified TS Information 2", "Symbols 12 through 14 for the selected alternate protocol."), makeChapter7Reserved("[31:24]")]],
+          ["14h", "Alternate Protocol Selective Enable Mask", [makeChapter7Flag("[0]", "PCI Express Protocol Enable", "PCI Express is protocol index 00h and is enabled by default."), makeChapter7Bit("[31:1]", "Other Protocol Enable Mask", "Each bit enables the corresponding non-PCIe protocol for the next negotiation.")]]
         ]
       },
       {
@@ -2870,10 +3331,11 @@
         description: "SFI capability, control, status, and CAM access registers.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "SFI Capability / Control", [makeChapter7Flag("[0]", "SFI Supported", "Reports SFI support."), makeChapter7Bit("[7:1]", "CAM Size", "Size encoding for the SFI CAM."), makeChapter7Flag("[16]", "SFI Enable", "Enables SFI operation."), makeChapter7Bit("[23:17]", "SFI Mode", "Selects SFI operating mode."), makeChapter7Reserved("[31:24]")]],
-          ["08h", "SFI Status", [makeChapter7Flag("[0]", "SFI Ready", "SFI logic is ready."), makeChapter7Flag("[1]", "CAM Access Busy", "CAM access is in progress."), makeChapter7Reserved("[31:2]")]],
-          ["0Ch", "SFI CAM Address"],
-          ["10h", "SFI CAM Data"]
+          ["04h", "SFI Capability", [makeChapter7Flag("[0]", "SFI OOB PD Supported", "The slot supports reporting out-of-band presence detect state."), makeChapter7Flag("[1]", "Enhanced SFI Supported", "The capability supports the Enhanced SFI feature set."), makeChapter7Flag("[2]", "SFI CAM Unsupported", "The SFI Configuration Access Mechanism is not supported."), makeChapter7Flag("[3]", "SFI Hidden In-Band", "The capability is hidden from in-band Configuration Requests but remains visible through PCIe-MI."), makeChapter7Reserved("[15:4]")], "[15:0]"],
+          ["06h", "SFI Control", [makeChapter7Flag("[0]", "SFI PD State Mask", "Masks Presence Detect State in Slot Status."), makeChapter7Flag("[1]", "SFI DLL State Mask", "Masks Data Link Layer Link Active in Link Status."), makeChapter7Flag("[2]", "SFI OOB PD Changed Enable", "Enables ERR_COR signaling for an out-of-band presence-detect change."), makeChapter7Flag("[3]", "SFI DLL State Changed Enable", "Enables ERR_COR signaling for a Data Link Layer state change."), makeChapter7Bit("[5:4]", "SFI DPF Control", "Selects the Downstream Port Filtering level."), makeChapter7Flag("[6]", "SFI HPS Suppress", "Suppresses Hot-Plug Surprise capability and behavior."), makeChapter7Flag("[7]", "SFI DRS Mask", "Masks DRS Message Received in Link Status 2."), makeChapter7Flag("[8]", "SFI DRS Signaling Enable", "Enables ERR_COR signaling for SFI DRS Received."), makeChapter7Flag("[9]", "SFI DRS Trigger", "Writing one emulates receipt of a DRS Message when not masked."), makeChapter7Bit("[11:10]", "SFI Quarantine Mode", "Selects the conditions that transition the Port into quarantine."), makeChapter7Flag("[12]", "SFI RO In-Band", "Forces in-band accesses to this capability to be read-only."), makeChapter7Reserved("[15:13]")], "[15:0]"],
+          ["08h", "SFI Status", [makeChapter7Flag("[0]", "SFI PD State", "Actual in-band presence-detect state."), makeChapter7Flag("[1]", "SFI OOB PD State", "Actual out-of-band presence-detect state."), makeChapter7Flag("[2]", "SFI OOB PD Changed", "The out-of-band presence-detect state changed."), makeChapter7Flag("[3]", "SFI DLL State", "Actual Data Link Layer active state."), makeChapter7Flag("[4]", "SFI DLL State Changed", "The Data Link Layer state changed."), makeChapter7Flag("[5]", "SFI DRS Received", "Actual DRS Message Received state."), makeChapter7Flag("[6]", "SFI Quarantine", "The Port is quarantined."), makeChapter7Reserved("[31:7]")]],
+          ["0Ch", "SFI CAM Address", [makeChapter7Bit("[27:0]", "SFI CAM Address", "Target Bus, Device, Function, Extended Register Number, and Register Number for SFI CAM access."), makeChapter7Reserved("[31:28]")]],
+          ["10h", "SFI CAM Data", [makeChapter7Bit("[31:0]", "SFI CAM Data", "Data transferred by the selected SFI CAM read or write operation.")]]
         ]
       },
       {
@@ -2886,8 +3348,8 @@
           ["04h", "DOE Capabilities", [makeChapter7Flag("[0]", "DOE Interrupt Supported", "Reports support for DOE interrupt generation."), makeChapter7Reserved("[31:1]")]],
           ["08h", "DOE Control", [makeChapter7Flag("[0]", "DOE Abort", "Aborts the current DOE transfer."), makeChapter7Flag("[1]", "DOE Interrupt Enable", "Enables DOE interrupt signaling."), makeChapter7Flag("[2]", "DOE Go", "Starts DOE object transfer."), makeChapter7Reserved("[31:3]")]],
           ["0Ch", "DOE Status", [makeChapter7Flag("[0]", "DOE Busy", "DOE mailbox is busy."), makeChapter7Flag("[1]", "DOE Interrupt Status", "DOE interrupt is pending."), makeChapter7Flag("[2]", "DOE Error", "DOE transfer error occurred."), makeChapter7Flag("[31]", "Data Object Ready", "A DOE read data object is ready."), makeChapter7Reserved("[30:3]")]],
-          ["10h", "DOE Write Data Mailbox"],
-          ["14h", "DOE Read Data Mailbox"]
+          ["10h", "DOE Write Data Mailbox", [makeChapter7Bit("[31:0]", "DOE Write Data", "Next DWORD written by software into the DOE request object mailbox.")]],
+          ["14h", "DOE Read Data Mailbox", [makeChapter7Bit("[31:0]", "DOE Read Data", "Next DWORD of the DOE response object returned to software.")]]
         ]
       },
       {
@@ -2899,7 +3361,7 @@
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "Shadow Functions Capability", [makeChapter7Bit("[7:0]", "Instance Count", "Number of shadow function instances supported."), makeChapter7Reserved("[31:8]")]],
           ["08h", "Shadow Functions Control", [makeChapter7Flag("[0]", "Shadow Functions Enable", "Enables shadow function operation."), makeChapter7Reserved("[31:1]")]],
-          ["0Ch", "Shadow Functions Instance Register Entry"]
+          ["0Ch", "Shadow Functions Instance Register Entry", [makeChapter7Bit("[15:0]", "Shadow Function Number", "Unsigned Bus/Device/Function offset, or Bus/Function offset for ARI, added to the Function containing this capability."), makeChapter7Reserved("[31:16]")]]
         ]
       },
       {
@@ -2909,18 +3371,18 @@
         description: "Reports and controls Link IDE and Selective IDE streams and associations.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "IDE Capability", [makeChapter7Flag("[0]", "Link IDE Stream Supported", "Reports Link IDE stream support."), makeChapter7Flag("[1]", "Selective IDE Stream Supported", "Reports Selective IDE stream support."), makeChapter7Bit("[7:2]", "Selective Stream Count", "Number of Selective IDE streams supported."), makeChapter7Reserved("[31:8]")]],
-          ["08h", "IDE Control", [makeChapter7Flag("[0]", "IDE Enable", "Enables IDE operation."), makeChapter7Reserved("[31:1]")]],
-          ["0Ch", "Link IDE Stream Control"],
-          ["10h", "Link IDE Stream Status"],
-          ["14h", "Selective IDE Stream Capability"],
-          ["18h", "Selective IDE Stream Control"],
-          ["1Ch", "Selective IDE Stream Status"],
-          ["20h", "IDE RID Association 1"],
-          ["24h", "IDE RID Association 2"],
-          ["28h", "IDE Address Association 1"],
-          ["2Ch", "IDE Address Association 2"],
-          ["30h", "IDE Address Association 3"]
+          ["04h", "IDE Capability", [makeChapter7Flag("[0]", "Link IDE Stream Supported", "Indicates that Link IDE Stream register blocks are implemented."), makeChapter7Flag("[1]", "Selective IDE Streams Supported", "Indicates that Selective IDE Stream register blocks are implemented."), makeChapter7Flag("[2]", "Flow-Through IDE Stream Supported", "Supports passing Selective IDE Streams through Switch or Root Ports."), makeChapter7Flag("[3]", "Partial Header Encryption Supported", "Supports partial header encryption for IDE Streams."), makeChapter7Flag("[4]", "Aggregation Supported", "Supports aggregation of Requests and Completions in IDE Streams."), makeChapter7Flag("[5]", "PCRC Supported", "Supports generation and checking of PCRC."), makeChapter7Flag("[6]", "IDE_KM Protocol Supported", "Supports the IDE_KM responder protocol."), makeChapter7Flag("[7]", "Selective IDE for Configuration Requests Supported", "Supports associating Configuration Requests with Selective IDE Streams."), makeChapter7Bit("[12:8]", "Supported Algorithms", "Bit/encoding field identifying supported IDE security algorithms."), makeChapter7Bit("[15:13]", "Number of TCs Supported for Link IDE", "Encoded number of Traffic Classes supported for Link IDE Streams."), makeChapter7Bit("[23:16]", "Number of Selective IDE Streams Supported", "Number of Selective IDE Streams minus one."), makeChapter7Flag("[24]", "TEE-Limited Stream Supported", "Supports the TEE-Limited Stream control mechanism."), makeChapter7Flag("[25]", "XT Supported", "Supports sending and receiving IDE TLPs with XT content."), makeChapter7Reserved("[31:26]")]],
+          ["08h", "IDE Control", [makeChapter7Reserved("[1:0]"), makeChapter7Flag("[2]", "Flow-Through IDE Stream Enabled", "Enables flow-through operation for Selective IDE Streams on Switch and Root Ports."), makeChapter7Reserved("[31:3]")]],
+          ["0Ch", "Link IDE Stream Control", [makeChapter7Flag("[0]", "Link IDE Stream Enable", "Enables this Link IDE Stream; clearing immediately transitions the Stream to Insecure."), makeChapter7Flag("[1]", "XT Enable", "Enables generation and processing of the XT bit for this Stream."), makeChapter7Bit("[3:2]", "Tx Aggregation Mode NPR", "Selects aggregation level for transmitted Non-Posted Requests."), makeChapter7Bit("[5:4]", "Tx Aggregation Mode PR", "Selects aggregation level for transmitted Posted Requests."), makeChapter7Bit("[7:6]", "Tx Aggregation Mode CPL", "Selects aggregation level for transmitted Completions."), makeChapter7Flag("[8]", "PCRC Enable", "Enables PCRC generation and checking for TLPs carrying P content."), makeChapter7Reserved("[9]"), makeChapter7Bit("[13:10]", "Partial Header Encryption Mode", "Selects which address/header fields are encrypted."), makeChapter7Bit("[18:14]", "Selected Algorithm", "Selects the IDE security algorithm."), makeChapter7Bit("[21:19]", "TC", "Traffic Class associated with this Link IDE register block."), makeChapter7Reserved("[23:22]"), makeChapter7Bit("[31:24]", "Stream_ID", "Stream identifier programmed identically in both Partner Ports.")]],
+          ["10h", "Link IDE Stream Status", [makeChapter7Bit("[3:0]", "Link IDE Stream State", "Reports Insecure, Secure, or an unknown reserved Stream state."), makeChapter7Reserved("[30:4]"), makeChapter7Flag("[31]", "Received IDE Fail Message", "Indicates receipt of one or more IDE Fail Messages for this Stream.")]],
+          ["14h", "Selective IDE Stream Capability", [makeChapter7Bit("[3:0]", "Number of Address Association Register Blocks", "Number of Selective IDE Address Association blocks implemented for this Stream."), makeChapter7Reserved("[31:4]")]],
+          ["18h", "Selective IDE Stream Control", [makeChapter7Flag("[0]", "Selective IDE Stream Enable", "Enables this Selective IDE Stream; clearing immediately transitions it to Insecure."), makeChapter7Flag("[1]", "XT Enable", "Enables XT content for this Stream."), makeChapter7Bit("[3:2]", "Tx Aggregation Mode NPR", "Selects Non-Posted Request aggregation."), makeChapter7Bit("[5:4]", "Tx Aggregation Mode PR", "Selects Posted Request aggregation."), makeChapter7Bit("[7:6]", "Tx Aggregation Mode CPL", "Selects Completion aggregation."), makeChapter7Flag("[8]", "PCRC Enable", "Enables PCRC generation and checking."), makeChapter7Flag("[9]", "Selective IDE for Configuration Requests Enable", "Associates matching Configuration Requests with this Stream."), makeChapter7Bit("[13:10]", "Partial Header Encryption Mode", "Selects partial-header encryption coverage."), makeChapter7Bit("[18:14]", "Selected Algorithm", "Selects the IDE security algorithm."), makeChapter7Bit("[21:19]", "TC", "Traffic Class associated with this Selective IDE Stream."), makeChapter7Flag("[22]", "Default Stream", "Makes this the default Selective IDE Stream for the selected TC."), makeChapter7Flag("[23]", "TEE-Limited Stream", "Restricts associated Requests to the TEE-Limited Stream criteria."), makeChapter7Bit("[31:24]", "Stream_ID", "Stream identifier programmed in both Partner Ports.")]],
+          ["1Ch", "Selective IDE Stream Status", [makeChapter7Bit("[3:0]", "Selective IDE Stream State", "Reports Insecure, Secure, or an unknown reserved Stream state."), makeChapter7Reserved("[30:4]"), makeChapter7Flag("[31]", "Received IDE Fail Message", "Indicates receipt of one or more IDE Fail Messages for this Stream.")]],
+          ["20h", "IDE RID Association 1", [makeChapter7Reserved("[7:0]"), makeChapter7Bit("[23:8]", "RID Limit", "Highest Requester ID in the range associated with this Stream_ID."), makeChapter7Reserved("[31:24]")]],
+          ["24h", "IDE RID Association 2", [makeChapter7Flag("[0]", "Valid", "Indicates that Segment Base, RID Base, and RID Limit have been programmed."), makeChapter7Reserved("[7:1]"), makeChapter7Bit("[23:8]", "RID Base", "Lowest Requester ID in the range associated with this Stream_ID."), makeChapter7Bit("[31:24]", "Segment Base", "Segment number associated with the RID range in Flit Mode.")]],
+          ["28h", "IDE Address Association 1", [makeChapter7Flag("[0]", "Valid", "Indicates that this address association block defines a valid memory range."), makeChapter7Reserved("[7:1]"), makeChapter7Bit("[19:8]", "Memory Base Lower", "Memory Base address bits 31:20; lower address bits are zero."), makeChapter7Bit("[31:20]", "Memory Limit Lower", "Memory Limit address bits 31:20; lower address bits are ones.")]],
+          ["2Ch", "IDE Address Association 2", [makeChapter7Bit("[31:0]", "Memory Limit Upper", "Memory Limit address bits 63:32.")]],
+          ["30h", "IDE Address Association 3", [makeChapter7Bit("[31:0]", "Memory Base Upper", "Memory Base address bits 63:32.")]]
         ]
       },
       {
@@ -2937,13 +3399,13 @@
         description: "Streamlined virtual-channel capability and resource controls.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "SVC Port Capability Register 1"],
-          ["08h", "SVC Port Capability Register 2"],
-          ["0Ch", "SVC Port Control", [makeChapter7Flag("[0]", "SVC Enable", "Enables SVC operation."), makeChapter7Reserved("[31:1]")]],
-          ["10h", "SVC Port Status", [makeChapter7Flag("[0]", "SVC Enabled", "SVC operation is enabled."), makeChapter7Reserved("[31:1]")]],
-          ["14h", "SVC Resource Capability"],
-          ["18h", "SVC Resource Control"],
-          ["1Ch", "SVC Resource Status"]
+          ["04h", "SVC Port Capability Register 1", [makeChapter7Bit("[2:0]", "SVC Extended VC Count", "Number of Virtual Channels supported in addition to VC0."), makeChapter7Reserved("[31:3]")]],
+          ["08h", "SVC Port Capability Register 2", [makeChapter7Reserved("[31:0]")]],
+          ["0Ch", "SVC Port Control", [makeChapter7Flag("[0]", "VC Enablement Completed", "Indicates that software completed enabling all VCs intended for use."), makeChapter7Reserved("[31:1]")]],
+          ["10h", "SVC Port Status", [makeChapter7Flag("[0]", "Use VC/MFVC", "Selects whether VC0 operation uses VC/MFVC resources or SVC resources."), makeChapter7Reserved("[31:1]")]],
+          ["14h", "SVC Resource Capability", [makeChapter7Reserved("[7:0]"), makeChapter7Bit("[11:8]", "SVC VC Protocols Supported", "Identifies non-UIO, UIO, or vendor-defined protocol support for this VC."), makeChapter7Bit("[14:12]", "SVC VC ID", "Virtual Channel identifier assigned to this SVC resource."), makeChapter7Reserved("[31:15]")]],
+          ["18h", "SVC Resource Control", [makeChapter7Bit("[7:0]", "SVC TC/VC Map", "Each Set bit maps the corresponding Traffic Class to this SVC resource."), makeChapter7Bit("[11:8]", "SVC VC Protocol Selected", "Selects non-UIO, UIO, or vendor-defined protocol operation."), makeChapter7Reserved("[26:12]"), makeChapter7Bit("[29:27]", "SVC Shared Flow Control Usage Limit", "Limits the percentage of shared Flow Control credits consumed by this VC."), makeChapter7Flag("[30]", "SVC Shared Flow Control Usage Limit Enable", "Enables the shared-credit usage limit."), makeChapter7Flag("[31]", "SVC VC Enable", "Enables this SVC Virtual Channel.")]],
+          ["1Ch", "SVC Resource Status", [makeChapter7Reserved("[0]"), makeChapter7Flag("[1]", "SVC VC Negotiation Pending", "Indicates that Virtual Channel initialization or disabling negotiation is still pending."), makeChapter7Reserved("[31:2]")]]
         ]
       },
       {
@@ -2960,6 +3422,54 @@
     ];
     
     addChapter7Structures(chapter7MissingStructures);
+
+    /*
+     * Make every displayed register bit-complete. Chapter 7 tables explicitly
+     * define reserved/undefined gaps; keeping them visible prevents omitted
+     * bit positions from looking like undocumented implementation space.
+     */
+    function addUnspecifiedBitRanges(structure) {
+      Object.values(structure.bitfields || {}).forEach(field => {
+        const fieldRange = /^\[(\d+)(?::(\d+))?\]$/.exec(field.range || "");
+        if (!fieldRange || !Array.isArray(field.bits)) return;
+
+        const fieldHigh = Number(fieldRange[1]);
+        const fieldLow = fieldRange[2] === undefined ? fieldHigh : Number(fieldRange[2]);
+        const width = Math.abs(fieldHigh - fieldLow) + 1;
+        const occupied = new Array(width).fill(false);
+
+        field.bits.forEach(bit => {
+          const match = /^\[(\d+)(?::(\d+))?\]$/.exec(bit.range || "");
+          if (!match) return;
+          const high = Number(match[1]);
+          const low = match[2] === undefined ? high : Number(match[2]);
+          for (let index = Math.min(low, high); index <= Math.max(low, high) && index < width; index++) {
+            occupied[index] = true;
+          }
+        });
+
+        let index = 0;
+        while (index < width) {
+          if (occupied[index]) {
+            index++;
+            continue;
+          }
+          const low = index;
+          while (index + 1 < width && !occupied[index + 1]) index++;
+          const high = index;
+          field.bits.push(makeChapter7Reserved(high === low ? `[${low}]` : `[${high}:${low}]`));
+          index++;
+        }
+
+        field.bits.sort((a, b) => {
+          const aHigh = Number((/^\[(\d+)/.exec(a.range) || [0, 0])[1]);
+          const bHigh = Number((/^\[(\d+)/.exec(b.range) || [0, 0])[1]);
+          return bHigh - aHigh;
+        });
+      });
+    }
+
+    structures.forEach(addUnspecifiedBitRanges);
     
     /* ===== State ===== */
     let currentStructureId = structures[0]?.id;
