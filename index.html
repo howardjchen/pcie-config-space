@@ -99,12 +99,6 @@
       font-size: 14px;
     }
 
-    .section-subtitle {
-      margin: 0 0 10px;
-      font-size: 12px;
-      color: #555;
-    }
-
     /* bitfield “map” (Bottom-Left) - Flexbox Layout */
     .struct-container {
       display: flex;
@@ -141,8 +135,6 @@
       text-overflow: ellipsis;
       cursor: pointer;
       background: #fff;
-      box-sizing: border-box;
-      /* Include border in width */
       padding: 0 4px;
     }
 
@@ -231,11 +223,6 @@
       /* Defined bits */
     }
 
-    .bit-box.set {
-      background: #a3d3a3;
-      /* If we had values, but here just defined */
-    }
-
     /* Description List */
     .bit-list {
       list-style: none;
@@ -300,11 +287,6 @@
       font-size: 12px;
     }
 
-    .toolbar input {
-      font-size: 12px;
-      padding: 3px 6px;
-    }
-
     /* Splitters */
     .splitter-horizontal {
       height: 6px;
@@ -359,8 +341,6 @@
     <!-- optional toolbar: config dump / search can be added here later -->
     <div class="toolbar">
       <div style="font-weight:600;">PCIe Config Space Viewer</div>
-      <div style="margin-left:auto; font-size:11px; color:#4b5563;">
-      </div>
     </div>
 
     <!-- TOP: List of all Headers / Capabilities / Extended Capabilities -->
@@ -388,10 +368,8 @@
       <div class="bottom-left">
         <div class="section-title" id="struct-title" style="background:#d1d5db; padding:4px; margin:0;">Structure</div>
         <!-- Removed subtitle to match image style closer, or keep it minimal -->
-        <div style="padding:0;">
-          <div class="struct-container" id="bitfield-container">
-            <!-- JS render -->
-          </div>
+        <div class="struct-container" id="bitfield-container">
+          <!-- JS render -->
         </div>
         <div class="placeholder" id="bitfield-placeholder" style="display:none; padding:8px;">
           No bitfield layout defined.
@@ -402,25 +380,23 @@
       <div class="splitter-vertical" id="splitter-v"></div>
 
       <div class="bottom-right" id="bottom-right-pane">
-        <div id="detail-container">
-          <!-- Header -->
-          <div class="detail-header">
-            <div class="detail-title" id="field-title">Select a register</div>
-            <div class="detail-subtitle" id="field-subtitle"></div>
-          </div>
+        <!-- Header -->
+        <div class="detail-header">
+          <div class="detail-title" id="field-title">Select a register</div>
+          <div class="detail-subtitle" id="field-subtitle"></div>
+        </div>
 
-          <!-- Bit Bar -->
-          <div class="bit-bar-container" id="bit-bar-container" style="display:none;">
-            <div class="bit-numbers" id="bit-numbers"></div>
-            <div class="bit-bar" id="bit-bar"></div>
-          </div>
+        <!-- Bit Bar -->
+        <div class="bit-bar-container" id="bit-bar-container" style="display:none;">
+          <div class="bit-numbers" id="bit-numbers"></div>
+          <div class="bit-bar" id="bit-bar"></div>
+        </div>
 
-          <!-- Description List -->
-          <ul class="bit-list" id="bit-list"></ul>
+        <!-- Description List -->
+        <ul class="bit-list" id="bit-list"></ul>
 
-          <div class="placeholder" id="bits-placeholder" style="display:none;">
-            No bit descriptions defined.
-          </div>
+        <div class="placeholder" id="bits-placeholder" style="display:none;">
+          No bit descriptions defined.
         </div>
       </div>
     </div>
@@ -2537,8 +2513,6 @@
      * rows[] drive the bit map and bitfields{} drives the detail pane.
      */
     
-    const existingStructureIds = new Set(structures.map(struct => struct.id));
-    
     function makeChapter7Bit(range, title, description, values) {
       const item = { range, title, description };
       if (values) item.values = values;
@@ -2799,15 +2773,6 @@
         rows,
         bitfields
       };
-    }
-    
-    function addChapter7Structures(definitions) {
-      definitions.forEach(def => {
-        if (!existingStructureIds.has(def.id)) {
-          structures.push(makeChapter7Structure(def));
-          existingStructureIds.add(def.id);
-        }
-      });
     }
     
     const chapter7MissingStructures = [
@@ -3421,7 +3386,7 @@
       }
     ];
     
-    addChapter7Structures(chapter7MissingStructures);
+    structures.push(...chapter7MissingStructures.map(makeChapter7Structure));
 
     /*
      * Make every displayed register bit-complete. Chapter 7 tables explicitly
@@ -3494,9 +3459,7 @@
     const splitterH = document.getElementById("splitter-h");
     const splitterV = document.getElementById("splitter-v");
     const topPane = document.getElementById("top-pane");
-    const bottomPane = document.getElementById("bottom-pane");
     const leftPane = document.querySelector(".bottom-left");
-    const rightPane = document.getElementById("bottom-right-pane");
     
     // Horizontal Splitter
     let isDraggingH = false;
@@ -3565,10 +3528,7 @@
         tdName.textContent = struct.name;
         tdDesc.textContent = struct.description || "";
     
-        tr.appendChild(tdId);
-        tr.appendChild(tdType);
-        tr.appendChild(tdName);
-        tr.appendChild(tdDesc);
+        tr.append(tdId, tdType, tdName, tdDesc);
     
         tr.addEventListener("click", () => {
           currentStructureId = struct.id;
@@ -3580,11 +3540,7 @@
       });
     }
     
-    function pickDefaultFieldKey(struct) {
-      if (!struct || !struct.bitfields) return null;
-      const keys = Object.keys(struct.bitfields);
-      return keys.length ? keys[0] : null;
-    }
+    const pickDefaultFieldKey = struct => Object.keys(struct?.bitfields || {})[0] || null;
     
     function renderBitfieldMap(struct) {
       bitfieldContainer.innerHTML = "";
@@ -3602,34 +3558,14 @@
         const contentDiv = document.createElement("div");
         contentDiv.className = "struct-content-flex";
     
-        // We need to reverse the fields because in PCI, higher bits (left) come first in visual representation if we want [31:0]
-        // But usually the spec lists fields from low to high or high to low.
-        // Let's assume the `fields` array is ordered from Low Bit to High Bit? 
-        // Or High to Low? 
-        // Standard practice: Vendor ID [15:0] (Offset 00h), Device ID [31:16] (Offset 02h/part of 00h row)
-        // If the row is 00h, and fields are [VendorID, DeviceID], 
-        // VendorID is bits 0-15, DeviceID is bits 16-31.
-        // Visually, 31 is on the LEFT, 0 is on the RIGHT.
-        // So we should render Device ID then Vendor ID.
-        // Let's check our data. 
-        // type0: fields: [{id: "vendorid", range: "[15:0]"}, {id: "deviceid", range: "[31:16]"}]
-        // We want Device ID (Left) -> Vendor ID (Right).
-        // So we should reverse the fields array for rendering if it's sorted by low bit.
-        // Let's assume input order is Low->High (Vendor, then Device).
-        // So we reverse it.
-    
-        const fieldsToRender = [...(row.fields || [])].reverse();
-    
-        fieldsToRender.forEach(field => {
+        // Input is low-to-high; render high-to-low.
+        [...(row.fields || [])].reverse().forEach(field => {
           const fieldDiv = document.createElement("div");
           fieldDiv.className = "struct-field-flex";
           fieldDiv.dataset.fieldKey = field.id;
           fieldDiv.textContent = field.label;
     
-          // Calculate width
-          const bits = parseRangeWidth(field.range);
-          const widthPercent = (bits / 32) * 100;
-          fieldDiv.style.width = `${widthPercent}%`;
+          fieldDiv.style.width = `${parseRangeWidth(field.range) / 32 * 100}%`;
     
           if (field.id === currentFieldKey) {
             fieldDiv.classList.add("selected");
@@ -3637,20 +3573,18 @@
     
           fieldDiv.addEventListener("click", () => {
             currentFieldKey = field.id;
-            updateBitfieldSelection(struct);
+            updateBitfieldSelection();
             renderBitDetails(struct);
           });
     
           contentDiv.appendChild(fieldDiv);
         });
     
-        rowDiv.appendChild(contentDiv);
-    
         // 2. Offset (Right)
         const offsetDiv = document.createElement("div");
         offsetDiv.className = "struct-offset-flex";
         offsetDiv.textContent = row.offset;
-        rowDiv.appendChild(offsetDiv);
+        rowDiv.append(contentDiv, offsetDiv);
     
         bitfieldContainer.appendChild(rowDiv);
       });
@@ -3666,15 +3600,9 @@
       return (high - low) + 1;
     }
     
-    function updateBitfieldSelection(struct) {
-      const cells = bitfieldContainer.querySelectorAll(".struct-field-flex");
-      cells.forEach(cell => {
-        if (cell.dataset.fieldKey === currentFieldKey) {
-          cell.classList.add("selected");
-        } else {
-          cell.classList.remove("selected");
-        }
-      });
+    function updateBitfieldSelection() {
+      bitfieldContainer.querySelectorAll(".struct-field-flex").forEach(cell =>
+        cell.classList.toggle("selected", cell.dataset.fieldKey === currentFieldKey));
     }
     
     function renderBitDetails(struct) {
@@ -3714,8 +3642,7 @@
         descDiv.className = "bit-list-desc";
         descDiv.textContent = bit.description;
     
-        li.appendChild(titleDiv);
-        li.appendChild(descDiv);
+        li.append(titleDiv, descDiv);
     
         if (bit.values) {
           const valuesTable = document.createElement("table");
@@ -3728,8 +3655,7 @@
             const meanCell = document.createElement("td");
             meanCell.className = "bit-meaning-cell";
             meanCell.textContent = meaning;
-            row.appendChild(valCell);
-            row.appendChild(meanCell);
+            row.append(valCell, meanCell);
             valuesTable.appendChild(row);
           }
           li.appendChild(valuesTable);
@@ -3743,8 +3669,6 @@
       bitNumbers.innerHTML = "";
       bitBar.innerHTML = "";
     
-      // Determine total bits for this register (e.g. 16 or 32)
-      const totalBits = parseRangeWidth(field.range);
       const { high, low } = parseRange(field.range);
     
       // Create numbers row
@@ -3753,8 +3677,7 @@
       const numSpanLow = document.createElement("span");
       numSpanLow.textContent = low;
     
-      bitNumbers.appendChild(numSpanHigh);
-      bitNumbers.appendChild(numSpanLow);
+      bitNumbers.append(numSpanHigh, numSpanLow);
     
       // Create bit boxes
       for (let b = high; b >= low; b--) {
@@ -3770,10 +3693,7 @@
         if (bitDef) {
           // If defined, check if it is Reserved. 
           // If NOT Reserved, add .active (white). Reserved stays default (gray).
-          const isReserved = /reserved|rsvd/i.test(bitDef.title);
-          if (!isReserved) {
-            box.classList.add("active");
-          }
+          box.classList.toggle("active", !/reserved|rsvd/i.test(bitDef.title));
           box.title = `Bit ${b}: ${bitDef.title}`;
         } else {
           box.title = `Bit ${b}`;
@@ -3802,7 +3722,6 @@
     }
     
     // Init
-    renderStructureList();
     updateAll();
   </script>
 </body>
