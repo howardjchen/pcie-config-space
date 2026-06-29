@@ -1878,9 +1878,9 @@
             ]
           },
           {
-            offset: "0Ch + 4*(n div 2), lanes n and n+1; 0 <= n < Maximum Link Width",
+            offset: "0Ch + 4*g; 0 <= g < ceil(Maximum Link Width / 2)",
             fields: [
-              { id: "lane_eq_ctl", label: "Lane Equalization Control (Lane 0)", range: "[31:0]" } // Showing Lane 0 as example
+              { id: "lane_eq_ctl", label: "Lane Equalization Control (Lanes 2g and 2g+1)", range: "[31:0]" }
             ]
           }
         ],
@@ -1914,33 +1914,20 @@
             ]
           },
           lane_eq_ctl: {
-            name: "Lane Equalization Control (repeated per two lanes)",
-            offset: "0Ch + 4*(n div 2), lanes n and n+1; 0 <= n < Maximum Link Width",
-            range: "[15:0]", // Usually 16 bits per lane pair, but here we simplify or show 32 bits if it's 2 lanes per register? 
-            // Spec says: Lane 0 is bits 15:0 of offset 0Ch. Lane 1 is bits 31:16 of offset 0Ch.
-            // Let's define it as 16 bits for Lane 0 for simplicity in this view, or show full 32 bits with 2 lanes.
-            // The row defined above says "Lane Equalization Control (Lane 0)" range "[31:0]". 
-            // If I want to match that, I should probably show Lane 0 and Lane 1 in the row or just Lane 0.
-            // Let's stick to the row definition: range "[31:0]". 
-            // Wait, I defined the row as `lane_eq_ctl` range `[31:0]`.
-            // So I should probably define bits for [15:0] (Lane 0) and [31:16] (Lane 1).
-            // Or just Lane 0 if I want to keep it simple as "Lane 0".
-            // Let's update the row to be more accurate or just show Lane 0/1.
-            // For now, I'll define bits for Lane 0 in [15:0] and Lane 1 in [31:16].
+            name: "Lane Equalization Control group g (repeated per two lanes)",
+            offset: "0Ch + 4*g; 0 <= g < ceil(Maximum Link Width / 2)",
             range: "[31:0]",
             bits: [
-              // Lane 0
-              { range: "[3:0]", title: "Lane 0 Downstream Port Transmitter Preset", description: "Transmitter Preset for Lane 0." },
-              { range: "[7:4]", title: "Lane 0 Downstream Port Receiver Preset Hint", description: "Receiver Preset Hint for Lane 0." },
-              { range: "[11:8]", title: "Lane 0 Upstream Port Transmitter Preset", description: "Transmitter Preset for Lane 0." },
-              { range: "[14:12]", title: "Lane 0 Upstream Port Receiver Preset Hint", description: "Receiver Preset Hint for Lane 0." },
-              { range: "[15]", title: "Lane 0 Reserved", description: "Reserved." },
-              // Lane 1
-              { range: "[19:16]", title: "Lane 1 Downstream Port Transmitter Preset", description: "Transmitter Preset for Lane 1." },
-              { range: "[23:20]", title: "Lane 1 Downstream Port Receiver Preset Hint", description: "Receiver Preset Hint for Lane 1." },
-              { range: "[27:24]", title: "Lane 1 Upstream Port Transmitter Preset", description: "Transmitter Preset for Lane 1." },
-              { range: "[30:28]", title: "Lane 1 Upstream Port Receiver Preset Hint", description: "Receiver Preset Hint for Lane 1." },
-              { range: "[31]", title: "Lane 1 Reserved", description: "Reserved." }
+              { range: "[3:0]", title: "Lane 2g Downstream Port Transmitter Preset", description: "Transmitter Preset for Lane 2g." },
+              { range: "[7:4]", title: "Lane 2g Downstream Port Receiver Preset Hint", description: "Receiver Preset Hint for Lane 2g." },
+              { range: "[11:8]", title: "Lane 2g Upstream Port Transmitter Preset", description: "Transmitter Preset for Lane 2g." },
+              { range: "[14:12]", title: "Lane 2g Upstream Port Receiver Preset Hint", description: "Receiver Preset Hint for Lane 2g." },
+              { range: "[15]", title: "Lane 2g Reserved", description: "Reserved." },
+              { range: "[19:16]", title: "Lane 2g+1 Downstream Port Transmitter Preset", description: "Transmitter Preset for Lane 2g+1." },
+              { range: "[23:20]", title: "Lane 2g+1 Downstream Port Receiver Preset Hint", description: "Receiver Preset Hint for Lane 2g+1." },
+              { range: "[27:24]", title: "Lane 2g+1 Upstream Port Transmitter Preset", description: "Transmitter Preset for Lane 2g+1." },
+              { range: "[30:28]", title: "Lane 2g+1 Upstream Port Receiver Preset Hint", description: "Receiver Preset Hint for Lane 2g+1." },
+              { range: "[31]", title: "Lane 2g+1 Reserved", description: "Reserved." }
             ]
           }
         }
@@ -2064,9 +2051,9 @@
             ]
           },
           {
-            offset: "20h + 4*(n div 4), lanes n..n+3; 0 <= n < Maximum Link Width",
+            offset: "20h + 4*g; 0 <= g < ceil(Maximum Link Width / 4)",
             fields: [
-              { id: "pl_16g_eq_ctl", label: "16.0 GT/s Lane Equalization Control", range: "[31:0]" }
+              { id: "pl_16g_eq_ctl", label: "16.0 GT/s Lane Equalization Control (Lanes 4g..4g+3)", range: "[31:0]" }
             ]
           }
         ],
@@ -2114,12 +2101,18 @@
           pl_16g_retimer2_parity: { name: "16.0 GT/s Second Retimer Data Parity Mismatch Status", offset: "18h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Second Retimer Data Parity Mismatch Status", description: "Per-lane vector indicating a Data Parity mismatch detected by the second Retimer." }] },
           pl_16g_reserved: { name: "Physical Layer 16.0 GT/s Reserved", offset: "1Ch", range: "[31:0]", bits: [{ range: "[31:0]", title: "Reserved", description: "Reserved; preserve on writes." }] },
           pl_16g_eq_ctl: {
-            name: "16.0 GT/s Lane Equalization Control",
-            offset: "20h + 4*(n div 4), lanes n..n+3; 0 <= n < Maximum Link Width",
+            name: "16.0 GT/s Lane Equalization Control group g",
+            offset: "20h + 4*g; 0 <= g < ceil(Maximum Link Width / 4)",
             range: "[31:0]",
             bits: [
-              { range: "[3:0]", title: "Downstream Port 16.0 GT/s Transmitter Preset", description: "Transmitter preset used when operating as a Downstream Port." },
-              { range: "[7:4]", title: "Upstream Port 16.0 GT/s Transmitter Preset", description: "Transmitter preset used when operating as an Upstream Port; repeated per lane." }
+              { range: "[3:0]", title: "Lane 4g Downstream Port 16.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g." },
+              { range: "[7:4]", title: "Lane 4g Upstream Port 16.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g." },
+              { range: "[11:8]", title: "Lane 4g+1 Downstream Port 16.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g+1." },
+              { range: "[15:12]", title: "Lane 4g+1 Upstream Port 16.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g+1." },
+              { range: "[19:16]", title: "Lane 4g+2 Downstream Port 16.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g+2." },
+              { range: "[23:20]", title: "Lane 4g+2 Upstream Port 16.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g+2." },
+              { range: "[27:24]", title: "Lane 4g+3 Downstream Port 16.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g+3." },
+              { range: "[31:28]", title: "Lane 4g+3 Upstream Port 16.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g+3." }
             ]
           }
         }
@@ -2179,9 +2172,9 @@
             ]
           },
           {
-            offset: "20h + 4*(n div 4), lanes n..n+3; 0 <= n < Maximum Link Width",
+            offset: "20h + 4*g; 0 <= g < ceil(Maximum Link Width / 4)",
             fields: [
-              { id: "pl_32g_eq_ctl", label: "32.0 GT/s Lane Equalization Control", range: "[31:0]" }
+              { id: "pl_32g_eq_ctl", label: "32.0 GT/s Lane Equalization Control (Lanes 4g..4g+3)", range: "[31:0]" }
             ]
           }
         ],
@@ -2243,12 +2236,18 @@
           pl_32g_tx_ts1: { name: "Transmitted Modified TS Data 1", offset: "18h", range: "[31:0]", bits: [{ range: "[2:0]", title: "Transmitted Modified TS Usage Mode", description: "Modified TS Usage field transmitted during Configuration.Complete." }, { range: "[15:3]", title: "Transmitted Modified TS Information 1", description: "Modified TS Information 1 field transmitted in Modified TS2." }, { range: "[31:16]", title: "Transmitted Modified TS Vendor ID", description: "Training Set Message or Alternate Protocol Vendor ID transmitted in Modified TS2." }] },
           pl_32g_tx_ts2: { name: "Transmitted Modified TS Data 2", offset: "1Ch", range: "[31:0]", bits: [{ range: "[23:0]", title: "Transmitted Modified TS Information 2", description: "Modified TS Information 2 field transmitted in Symbols 12 through 14." }, { range: "[25:24]", title: "Alternate Protocol Negotiation Status", description: "Reports the status of alternate-protocol negotiation." }] },
           pl_32g_eq_ctl: {
-            name: "32.0 GT/s Lane Equalization Control",
-            offset: "20h + 4*(n div 4), lanes n..n+3; 0 <= n < Maximum Link Width",
+            name: "32.0 GT/s Lane Equalization Control group g",
+            offset: "20h + 4*g; 0 <= g < ceil(Maximum Link Width / 4)",
             range: "[31:0]",
             bits: [
-              { range: "[3:0]", title: "Downstream Port 32.0 GT/s Transmitter Preset", description: "Transmitter preset used for 32.0 GT/s equalization while operating as a Downstream Port." },
-              { range: "[7:4]", title: "Upstream Port 32.0 GT/s Transmitter Preset", description: "Transmitter preset sent or captured for 32.0 GT/s equalization; repeated for each implemented lane." }
+              { range: "[3:0]", title: "Lane 4g Downstream Port 32.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g." },
+              { range: "[7:4]", title: "Lane 4g Upstream Port 32.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g." },
+              { range: "[11:8]", title: "Lane 4g+1 Downstream Port 32.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g+1." },
+              { range: "[15:12]", title: "Lane 4g+1 Upstream Port 32.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g+1." },
+              { range: "[19:16]", title: "Lane 4g+2 Downstream Port 32.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g+2." },
+              { range: "[23:20]", title: "Lane 4g+2 Upstream Port 32.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g+2." },
+              { range: "[27:24]", title: "Lane 4g+3 Downstream Port 32.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g+3." },
+              { range: "[31:28]", title: "Lane 4g+3 Upstream Port 32.0 GT/s Transmitter Preset", description: "Transmitter Preset for Lane 4g+3." }
             ]
           }
         }
@@ -2947,7 +2946,7 @@
           ["04h", "64.0 GT/s Capabilities", [makeChapter7Reserved("[31:0]")]],
           ["08h", "64.0 GT/s Control", [makeChapter7Reserved("[31:0]")]],
           ["0Ch", "64.0 GT/s Status", [makeChapter7Flag("[0]", "Equalization 64.0 GT/s Complete", "The 64.0 GT/s Transmitter Equalization procedure completed."), makeChapter7Flag("[1]", "Equalization 64.0 GT/s Phase 1 Successful", "Phase 1 of 64.0 GT/s equalization completed successfully."), makeChapter7Flag("[2]", "Equalization 64.0 GT/s Phase 2 Successful", "Phase 2 of 64.0 GT/s equalization completed successfully."), makeChapter7Flag("[3]", "Equalization 64.0 GT/s Phase 3 Successful", "Phase 3 of 64.0 GT/s equalization completed successfully."), makeChapter7Flag("[4]", "Link Equalization Request 64.0 GT/s", "Hardware requests that 64.0 GT/s Link equalization be performed."), makeChapter7Flag("[5]", "Transmitter Precoding On", "The Receiver requested this transmitter to enable Precoding."), makeChapter7Flag("[6]", "Transmitter Precode Request", "This Port requests its Link partner to use transmitter Precoding."), makeChapter7Flag("[7]", "No Equalization Needed Received", "A training sequence indicated that no equalization is needed."), makeChapter7Reserved("[31:8]")]],
-          ["10h + 4*(n div 4), lanes n..n+3; 0 <= n < Maximum Link Width", "64.0 GT/s Lane Equalization Control (repeated)", [makeChapter7Bit("[3:0]", "Lane n Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n."), makeChapter7Bit("[7:4]", "Lane n Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n."), makeChapter7Bit("[11:8]", "Lane n+1 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n+1."), makeChapter7Bit("[15:12]", "Lane n+1 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n+1."), makeChapter7Bit("[19:16]", "Lane n+2 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n+2."), makeChapter7Bit("[23:20]", "Lane n+2 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n+2."), makeChapter7Bit("[27:24]", "Lane n+3 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n+3."), makeChapter7Bit("[31:28]", "Lane n+3 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for lane n+3.")]]
+          ["10h + 4*g; 0 <= g < ceil(Maximum Link Width / 4)", "64.0 GT/s Lane Equalization Control group g (Lanes 4g..4g+3)", [makeChapter7Bit("[3:0]", "Lane 4g Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for Lane 4g."), makeChapter7Bit("[7:4]", "Lane 4g Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for Lane 4g."), makeChapter7Bit("[11:8]", "Lane 4g+1 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for Lane 4g+1."), makeChapter7Bit("[15:12]", "Lane 4g+1 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for Lane 4g+1."), makeChapter7Bit("[19:16]", "Lane 4g+2 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for Lane 4g+2."), makeChapter7Bit("[23:20]", "Lane 4g+2 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for Lane 4g+2."), makeChapter7Bit("[27:24]", "Lane 4g+3 Downstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for Lane 4g+3."), makeChapter7Bit("[31:28]", "Lane 4g+3 Upstream Port 64.0 GT/s Transmitter Preset", "Transmitter Preset for Lane 4g+3.")]]
         ]
       },
       {
