@@ -2271,13 +2271,14 @@
               { id: "lmr_port_status", label: "Margining Port Status", range: "[31:16]" }
             ]
           },
-          {
-            offset: "08h + 4*n; 0 <= n < Maximum Link Width",
+          ...Array.from({ length: 16 }, (_, lane) => ({
+            offset: `${(0x08 + 4 * lane).toString(16).padStart(2, "0").toUpperCase()}h`,
+            condition: `Present when Maximum Link Width > ${lane}.`,
             fields: [
-              { id: "lmr_lane_ctl", label: "Margining Lane Control", range: "[15:0]" },
-              { id: "lmr_lane_status", label: "Margining Lane Status", range: "[31:16]" }
+              { id: `lmr_lane_${lane}_ctl`, label: `Margining Lane Control: Lane ${lane} (Conditional)`, range: "[15:0]" },
+              { id: `lmr_lane_${lane}_status`, label: `Margining Lane Status: Lane ${lane} (Conditional)`, range: "[31:16]" }
             ]
-          }
+          }))
         ],
         bitfields: {
           lmr_hdr: {
@@ -2307,28 +2308,33 @@
               { range: "[1]", title: "Margining Software Ready", description: "When driver software is required, indicates that software initialization is complete." }
             ]
           },
-          lmr_lane_ctl: {
-            name: "Margining Lane Control",
-            offset: "08h + 4*n; 0 <= n < Maximum Link Width",
-            range: "[15:0]",
-            bits: [
-              { range: "[2:0]", title: "Receiver Number", description: "Selects the Receiver number targeted by the margining command." },
-              { range: "[5:3]", title: "Margin Type", description: "Selects the margining command or measurement type." },
-              { range: "[6]", title: "Usage Model", description: "Selects the usage model for the margining operation." },
-              { range: "[15:8]", title: "Margin Payload", description: "Command-specific payload interpreted together with Margin Type." }
-            ]
-          },
-          lmr_lane_status: {
-            name: "Margining Lane Status",
-            offset: "0Ah + 4*n; 0 <= n < Maximum Link Width",
-            range: "[15:0]",
-            bits: [
-              { range: "[2:0]", title: "Receiver Number Status", description: "Reports the Receiver number associated with the current margining result." },
-              { range: "[5:3]", title: "Margin Type Status", description: "Reports the margin type associated with the current result." },
-              { range: "[6]", title: "Usage Model Status", description: "Reports the usage model associated with the current result." },
-              { range: "[15:8]", title: "Margin Payload Status", description: "Reports the command-specific margining result payload." }
-            ]
-          }
+          ...Object.fromEntries(Array.from({ length: 16 }, (_, lane) => {
+            const condition = `Present only when Maximum Link Width > ${lane}.`;
+            return [
+              [`lmr_lane_${lane}_ctl`, {
+                name: `Margining Lane ${lane} Control`,
+                offset: `${(0x08 + 4 * lane).toString(16).padStart(2, "0").toUpperCase()}h`,
+                range: "[15:0]",
+                bits: [
+                  { range: "[2:0]", title: "Receiver Number", description: `Selects the Receiver number targeted by the margining command. ${condition}` },
+                  { range: "[5:3]", title: "Margin Type", description: `Selects the margining command or measurement type. ${condition}` },
+                  { range: "[6]", title: "Usage Model", description: `Selects the usage model for the margining operation. ${condition}` },
+                  { range: "[15:8]", title: "Margin Payload", description: `Command-specific payload interpreted together with Margin Type. ${condition}` }
+                ]
+              }],
+              [`lmr_lane_${lane}_status`, {
+                name: `Margining Lane ${lane} Status`,
+                offset: `${(0x0A + 4 * lane).toString(16).padStart(2, "0").toUpperCase()}h`,
+                range: "[15:0]",
+                bits: [
+                  { range: "[2:0]", title: "Receiver Number Status", description: `Reports the Receiver number associated with the current margining result. ${condition}` },
+                  { range: "[5:3]", title: "Margin Type Status", description: `Reports the margin type associated with the current result. ${condition}` },
+                  { range: "[6]", title: "Usage Model Status", description: `Reports the usage model associated with the current result. ${condition}` },
+                  { range: "[15:8]", title: "Margin Payload Status", description: `Reports the command-specific margining result payload. ${condition}` }
+                ]
+              }]
+            ];
+          }).flat())
         }
       },
       {
@@ -3739,6 +3745,7 @@
         const offsetDiv = document.createElement("div");
         offsetDiv.className = "struct-offset-flex";
         offsetDiv.textContent = row.offset;
+        if (row.condition) offsetDiv.title = row.condition;
         rowDiv.append(contentDiv, offsetDiv);
     
         bitfieldContainer.appendChild(rowDiv);
