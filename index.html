@@ -155,9 +155,12 @@
     .struct-offset-flex {
       width: 40px;
       /* Fixed width */
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      line-height: 24px;
+      text-align: center;
+      overflow: hidden;
+      padding: 0 3px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
       background: #f0f0f0;
       border-left: 1px solid #ccc;
       font-weight: bold;
@@ -585,6 +588,8 @@
             offset: "06h",
             range: "[15:0]",
             bits: [
+              { range: "[0]", title: "Immediate Readiness", description: "When Set, the Function guarantees that it is ready to complete valid Configuration Requests without the normal post-reset configuration-access delay." },
+              { range: "[2:1]", title: "Reserved", description: "Reserved." },
               { range: "[3]", title: "Interrupt Status", description: "Reflects the state of the interrupt in the function.", values: { "0": "Not Pending", "1": "Pending" } },
               { range: "[4]", title: "Capabilities List", description: "Indicates the presence of a Capabilities list.", values: { "0": "No", "1": "Yes" } },
               { range: "[5]", title: "66 MHz Capable", description: "RO for PCIe. Hardwired to 0." },
@@ -614,7 +619,7 @@
           cardbus: { name: "CardBus CIS Pointer", offset: "28h", range: "[31:0]", bits: [{ range: "[31:0]", title: "CardBus CIS Pointer", description: "Not used by PCI Express; hardwired to zero." }] },
           subvendor: { name: "Subsystem Vendor ID", offset: "2Ch", range: "[15:0]", bits: [{ range: "[15:0]", title: "Subsystem Vendor ID", description: "Vendor ID of the add-in card." }] },
           subsysid: { name: "Subsystem ID", offset: "2Eh", range: "[15:0]", bits: [{ range: "[15:0]", title: "Subsystem ID", description: "Device ID of the add-in card." }] },
-          rombar: { name: "Expansion ROM Base Address", offset: "30h", range: "[31:0]", bits: [{ range: "[0]", title: "Address Decode Enable", description: "Enables expansion ROM decoding." }, { range: "[31:11]", title: "Base Address", description: "Base address." }] },
+          rombar: { name: "Expansion ROM Base Address", offset: "30h", range: "[31:0]", bits: [{ range: "[0]", title: "Address Decode Enable", description: "Enables expansion ROM decoding." }, { range: "[3:1]", title: "Expansion ROM Validation Status", description: "Reports whether Expansion ROM validation is unsupported, in progress, passed, failed, or completed with a warning, including optional trust-test results." }, { range: "[7:4]", title: "Expansion ROM Validation Details", description: "Provides optional implementation-specific progress or result details for Expansion ROM validation." }, { range: "[10:8]", title: "Reserved", description: "Reserved." }, { range: "[31:11]", title: "Base Address", description: "Base address." }] },
           capptr: { name: "Capabilities Pointer", offset: "34h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Capabilities Pointer", description: "Points to the first capability in the list." }] },
           reserved: { name: "Reserved", offset: "35h", range: "[23:0]", bits: [{ range: "[23:0]", title: "Reserved", description: "Reserved." }] },
           reserved2: { name: "Reserved", offset: "38h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Reserved", description: "Reserved." }] },
@@ -772,6 +777,8 @@
             offset: "06h",
             range: "[15:0]",
             bits: [
+              { range: "[0]", title: "Immediate Readiness", description: "When Set, the Function guarantees that it is ready to complete valid Configuration Requests without the normal post-reset configuration-access delay." },
+              { range: "[2:1]", title: "Reserved", description: "Reserved." },
               { range: "[3]", title: "Interrupt Status", description: "Reflects the state of the interrupt in the function.", values: { "0": "Not Pending", "1": "Pending" } },
               { range: "[4]", title: "Capabilities List", description: "Indicates the presence of a Capabilities list.", values: { "0": "No", "1": "Yes" } },
               { range: "[5]", title: "66 MHz Capable", description: "RO for PCIe. Hardwired to 0." },
@@ -829,7 +836,7 @@
           io_limit_upper: { name: "I/O Limit Upper 16 Bits", offset: "32h", range: "[15:0]", bits: [{ range: "[15:0]", title: "I/O Limit Upper", description: "Upper 16 bits of the I/O limit address." }] },
           capptr: { name: "Capabilities Pointer", offset: "34h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Capabilities Pointer", description: "Points to the first capability in the list." }] },
           reserved: { name: "Reserved", offset: "35h", range: "[23:0]", bits: [{ range: "[23:0]", title: "Reserved", description: "Reserved." }] },
-          rombar: { name: "Expansion ROM Base Address", offset: "38h", range: "[31:0]", bits: [{ range: "[0]", title: "Address Decode Enable", description: "Enables expansion ROM decoding." }, { range: "[31:11]", title: "Base Address", description: "Base address." }] },
+          rombar: { name: "Expansion ROM Base Address", offset: "38h", range: "[31:0]", bits: [{ range: "[0]", title: "Address Decode Enable", description: "Enables expansion ROM decoding." }, { range: "[3:1]", title: "Expansion ROM Validation Status", description: "Reports whether Expansion ROM validation is unsupported, in progress, passed, failed, or completed with a warning, including optional trust-test results." }, { range: "[7:4]", title: "Expansion ROM Validation Details", description: "Provides optional implementation-specific progress or result details for Expansion ROM validation." }, { range: "[10:8]", title: "Reserved", description: "Reserved." }, { range: "[31:11]", title: "Base Address", description: "Base address." }] },
           intline: { name: "Interrupt Line", offset: "3Ch", range: "[7:0]", bits: [{ range: "[7:0]", title: "Interrupt Line", description: "System interrupt routing information." }] },
           intpin: { name: "Interrupt Pin", offset: "3Dh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Interrupt Pin", description: "Identifies the legacy interrupt pin used (1=INTA, etc.)." }] },
           bridgectl: {
@@ -1710,7 +1717,8 @@
               { range: "[17:13]", title: "Header Log Size", description: "Number of DWORDs implemented in the Header Log." },
               { range: "[18]", title: "Logged TLP was Flit Mode", description: "Indicates that the logged TLP was captured while operating in Flit Mode." },
               { range: "[23:19]", title: "Logged TLP Size", description: "Number of DWORDs captured in the Header Log and overlapping TLP Prefix Log space." },
-              { range: "[24]", title: "RC ECS Handling Capable", description: "Indicates Root Complex ERR_COR Subclass handling support." }
+              { range: "[24]", title: "RC ECS Handling Capable", description: "Indicates Root Complex ERR_COR Subclass handling support." },
+              { range: "[31:25]", title: "Reserved", description: "Reserved." }
             ]
           },
           header_log_0: { name: "Header Log DW0", offset: "1Ch", range: "[31:0]", bits: [{ range: "[31:0]", title: "Header Log DW0", description: "First DWORD of the TLP Header." }] },
@@ -1728,6 +1736,7 @@
               { range: "[3]", title: "ECS Legacy Handling by SFW Enable", description: "Enables system-firmware handling of ECS Legacy ERR_COR Messages." },
               { range: "[4]", title: "ECS SIG_SFW Handling by SFW Enable", description: "Enables system-firmware handling of ECS SIG_SFW ERR_COR Messages." },
               { range: "[5]", title: "ECS SIG_OS Handling by SFW Enable", description: "Enables system-firmware handling of ECS SIG_OS ERR_COR Messages." },
+              { range: "[15:6]", title: "Reserved", description: "Reserved." },
               { range: "[31:16]", title: "SFW Handling Source ID", description: "Requester ID from the first ERR_COR Message handled by system firmware." }
             ]
           },
@@ -1746,6 +1755,7 @@
               { range: "[8:7]", title: "ERR_COR Subclass", description: "Subclass from the first applicable ERR_COR Message." },
               { range: "[9]", title: "SFW Handling ERR_COR Received", description: "An ERR_COR Message selected for system-firmware handling was received." },
               { range: "[10]", title: "Multiple SFW Handling ERR_COR Received", description: "Another system-firmware-handled ERR_COR Message was received before the first was cleared." },
+              { range: "[26:11]", title: "Reserved", description: "Reserved." },
               { range: "[31:27]", title: "Advanced Error Interrupt Message Number", description: "MSI/MSI-X vector used for AER interrupts." }
             ]
           },
@@ -1814,6 +1824,8 @@
               { range: "[2]", title: "ASPM L1.2 Supported", description: "Supports ASPM L1.2.", values: { "0": "No", "1": "Yes" } },
               { range: "[3]", title: "ASPM L1.1 Supported", description: "Supports ASPM L1.1.", values: { "0": "No", "1": "Yes" } },
               { range: "[4]", title: "L1 PM Substates Supported", description: "Supports L1 PM Substates.", values: { "0": "No", "1": "Yes" } },
+              { range: "[5]", title: "Link Activation Supported", description: "For a Downstream Port, indicates support for Link Activation; reserved for an Upstream Port." },
+              { range: "[7:6]", title: "Reserved", description: "Reserved." },
               { range: "[15:8]", title: "Port Common Mode Restore Time", description: "Time required to restore common mode." },
               { range: "[23:16]", title: "Port T_POWER_ON Scale", description: "Scale for T_POWER_ON.", values: { "0": "2us", "1": "10us", "2": "100us" } },
               { range: "[31:24]", title: "Port T_POWER_ON Value", description: "Value for T_POWER_ON." }
@@ -1828,6 +1840,9 @@
               { range: "[1]", title: "PCI-PM L1.1 Enable", description: "Enables PCI-PM L1.1.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[2]", title: "ASPM L1.2 Enable", description: "Enables ASPM L1.2.", values: { "0": "Disable", "1": "Enable" } },
               { range: "[3]", title: "ASPM L1.1 Enable", description: "Enables ASPM L1.1.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[4]", title: "Link Activation Interrupt Enable", description: "Enables an interrupt when Link Activation completes; reserved for an Upstream Port." },
+              { range: "[5]", title: "Link Activation Control", description: "Starts the Link Activation process when Set; reserved for an Upstream Port." },
+              { range: "[7:6]", title: "Reserved", description: "Reserved." },
               { range: "[15:8]", title: "Common Mode Restore Time", description: "Time required to restore common mode." },
               { range: "[28:16]", title: "LTR L1.2 Threshold Value", description: "LTR Threshold Value for L1.2." },
               { range: "[31:29]", title: "LTR L1.2 Threshold Scale", description: "LTR Threshold Scale for L1.2.", values: { "0": "1ns", "1": "32ns", "2": "1024ns", "3": "32768ns", "4": "1048576ns", "5": "33554432ns" } }
@@ -1838,7 +1853,9 @@
             offset: "0Ch",
             range: "[31:0]",
             bits: [
+              { range: "[31:8]", title: "Reserved", description: "Reserved." },
               { range: "[7:3]", title: "T_POWER_ON", description: "T_POWER_ON value." },
+              { range: "[2]", title: "Reserved", description: "Reserved." },
               { range: "[1:0]", title: "T_POWER_ON Scale", description: "T_POWER_ON scale.", values: { "0": "2us", "1": "10us", "2": "100us" } }
             ]
           },
@@ -1847,6 +1864,7 @@
             offset: "10h",
             range: "[31:0]",
             bits: [
+              { range: "[31:2]", title: "Reserved", description: "Reserved." },
               { range: "[0]", title: "L1 PM Substates Entry Failure", description: "Indicates that an enabled L1 PM Substate could not be entered." },
               { range: "[1]", title: "L1.2 Entry Successful", description: "Indicates successful entry into L1.2." }
             ]
@@ -2093,7 +2111,8 @@
               { range: "[1]", title: "Equalization 16.0 GT/s Phase 1 Successful", description: "Indicates successful completion of equalization phase 1." },
               { range: "[2]", title: "Equalization 16.0 GT/s Phase 2 Successful", description: "Indicates successful completion of equalization phase 2." },
               { range: "[3]", title: "Equalization 16.0 GT/s Phase 3 Successful", description: "Indicates successful completion of equalization phase 3." },
-              { range: "[4]", title: "Link Equalization Request 16.0 GT/s", description: "Requests that the 16.0 GT/s Link equalization procedure be performed." }
+              { range: "[4]", title: "Link Equalization Request 16.0 GT/s", description: "Requests that the 16.0 GT/s Link equalization procedure be performed." },
+              { range: "[31:5]", title: "Reserved", description: "Reserved." }
             ]
           },
           pl_16g_local_parity: { name: "16.0 GT/s Local Data Parity Mismatch Status", offset: "10h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Local Data Parity Mismatch Status", description: "Per-lane vector indicating a Data Parity mismatch detected by the local Receiver." }] },
@@ -2196,6 +2215,7 @@
             bits: [
               { range: "[0]", title: "Equalization Bypass to Highest NRZ Rate Supported", description: "Indicates support for skipping equalization of intermediate data rates when training to the highest common NRZ rate." },
               { range: "[1]", title: "No Equalization Needed Supported", description: "Indicates support for signaling that equalization is not needed." },
+              { range: "[7:2]", title: "Reserved", description: "Reserved." },
               { range: "[8]", title: "Modified TS Usage Mode 0 Supported – PCI Express", description: "Indicates support for PCI Express Modified TS Usage Mode 0; this bit must be Set." },
               { range: "[9]", title: "Modified TS Usage Mode 1 Supported – Training Set Message", description: "Indicates support for vendor-specific Training Set Messages." },
               { range: "[10]", title: "Modified TS Usage Mode 2 Supported – Alternate Protocol", description: "Indicates support for negotiating alternate protocols." },
@@ -2209,7 +2229,9 @@
             bits: [
               { range: "[0]", title: "Equalization Bypass to Highest NRZ Rate Disable", description: "When Set, prevents training from skipping equalization of intermediate NRZ rates." },
               { range: "[1]", title: "No Equalization Needed Disable", description: "When Set, requires the Port to always indicate that equalization is needed." },
-              { range: "[10:8]", title: "Modified TS Usage Mode Selected", description: "Selects the Modified TS usage mode used by a Downstream Port on the next entry to L0." }
+              { range: "[7:2]", title: "Reserved", description: "Reserved." },
+              { range: "[10:8]", title: "Modified TS Usage Mode Selected", description: "Selects the Modified TS usage mode used by a Downstream Port on the next entry to L0." },
+              { range: "[31:11]", title: "Reserved", description: "Reserved." }
             ]
           },
           pl_32g_status: {
@@ -2232,9 +2254,9 @@
             ]
           },
           pl_32g_rx_ts1: { name: "Received Modified TS Data 1", offset: "10h", range: "[31:0]", bits: [{ range: "[2:0]", title: "Received Modified TS Usage Mode", description: "Modified TS Usage field from the most recently received Modified TS1/TS2." }, { range: "[15:3]", title: "Received Modified TS Information 1", description: "Modified TS Information 1 field from the received Ordered Set." }, { range: "[31:16]", title: "Received Modified TS Vendor ID", description: "Training Set Message or Alternate Protocol Vendor ID from the received Ordered Set." }] },
-          pl_32g_rx_ts2: { name: "Received Modified TS Data 2", offset: "14h", range: "[31:0]", bits: [{ range: "[23:0]", title: "Received Modified TS Information 2", description: "Modified TS Information 2 field from Symbols 12 through 14 of the received Ordered Set." }, { range: "[25:24]", title: "Alternate Protocol Negotiation Status", description: "Reports whether alternate-protocol negotiation is unsupported, disabled, failed, or successful." }] },
+          pl_32g_rx_ts2: { name: "Received Modified TS Data 2", offset: "14h", range: "[31:0]", bits: [{ range: "[23:0]", title: "Received Modified TS Information 2", description: "Modified TS Information 2 field from Symbols 12 through 14 of the received Ordered Set." }, { range: "[25:24]", title: "Alternate Protocol Negotiation Status", description: "Reports whether alternate-protocol negotiation is unsupported, disabled, failed, or successful." }, { range: "[31:26]", title: "Reserved", description: "Reserved." }] },
           pl_32g_tx_ts1: { name: "Transmitted Modified TS Data 1", offset: "18h", range: "[31:0]", bits: [{ range: "[2:0]", title: "Transmitted Modified TS Usage Mode", description: "Modified TS Usage field transmitted during Configuration.Complete." }, { range: "[15:3]", title: "Transmitted Modified TS Information 1", description: "Modified TS Information 1 field transmitted in Modified TS2." }, { range: "[31:16]", title: "Transmitted Modified TS Vendor ID", description: "Training Set Message or Alternate Protocol Vendor ID transmitted in Modified TS2." }] },
-          pl_32g_tx_ts2: { name: "Transmitted Modified TS Data 2", offset: "1Ch", range: "[31:0]", bits: [{ range: "[23:0]", title: "Transmitted Modified TS Information 2", description: "Modified TS Information 2 field transmitted in Symbols 12 through 14." }, { range: "[25:24]", title: "Alternate Protocol Negotiation Status", description: "Reports the status of alternate-protocol negotiation." }] },
+          pl_32g_tx_ts2: { name: "Transmitted Modified TS Data 2", offset: "1Ch", range: "[31:0]", bits: [{ range: "[23:0]", title: "Transmitted Modified TS Information 2", description: "Modified TS Information 2 field transmitted in Symbols 12 through 14." }, { range: "[25:24]", title: "Alternate Protocol Negotiation Status", description: "Reports the status of alternate-protocol negotiation." }, { range: "[31:26]", title: "Reserved", description: "Reserved." }] },
           pl_32g_eq_ctl: {
             name: "32.0 GT/s Lane Equalization Control group g",
             offset: "20h + 4*g; 0 <= g < ceil(Maximum Link Width / 4)",
@@ -2296,7 +2318,8 @@
             offset: "04h",
             range: "[15:0]",
             bits: [
-              { range: "[0]", title: "Margining Uses Driver Software", description: "Indicates if margining uses driver software.", values: { "0": "No", "1": "Yes" } }
+              { range: "[0]", title: "Margining Uses Driver Software", description: "Indicates if margining uses driver software.", values: { "0": "No", "1": "Yes" } },
+              { range: "[15:1]", title: "Reserved", description: "Reserved." }
             ]
           },
           lmr_port_status: {
@@ -2305,7 +2328,8 @@
             range: "[15:0]",
             bits: [
               { range: "[0]", title: "Margining Ready", description: "Indicates that the Margining feature is ready to accept margining commands." },
-              { range: "[1]", title: "Margining Software Ready", description: "When driver software is required, indicates that software initialization is complete." }
+              { range: "[1]", title: "Margining Software Ready", description: "When driver software is required, indicates that software initialization is complete." },
+              { range: "[15:2]", title: "Reserved", description: "Reserved." }
             ]
           },
           ...Object.fromEntries(Array.from({ length: 16 }, (_, lane) => {
@@ -2319,6 +2343,7 @@
                   { range: "[2:0]", title: "Receiver Number", description: `Selects the Receiver number targeted by the margining command. ${condition}` },
                   { range: "[5:3]", title: "Margin Type", description: `Selects the margining command or measurement type. ${condition}` },
                   { range: "[6]", title: "Usage Model", description: `Selects the usage model for the margining operation. ${condition}` },
+                  { range: "[7]", title: "RsvdP", description: "" },
                   { range: "[15:8]", title: "Margin Payload", description: `Command-specific payload interpreted together with Margin Type. ${condition}` }
                 ]
               }],
@@ -2330,6 +2355,7 @@
                   { range: "[2:0]", title: "Receiver Number Status", description: `Reports the Receiver number associated with the current margining result. ${condition}` },
                   { range: "[5:3]", title: "Margin Type Status", description: `Reports the margin type associated with the current result. ${condition}` },
                   { range: "[6]", title: "Usage Model Status", description: `Reports the usage model associated with the current result. ${condition}` },
+                  { range: "[7]", title: "RsvdP", description: "" },
                   { range: "[15:8]", title: "Margin Payload Status", description: `Reports the command-specific margining result payload. ${condition}` }
                 ]
               }]
@@ -2405,7 +2431,8 @@
               { range: "[7]", title: "ACS I/O Request Blocking Enable", description: "Blocks applicable upstream I/O Requests." },
               { range: "[9:8]", title: "ACS DSP Memory Target Access Control", description: "Controls access to applicable Downstream Port Memory BAR Space." },
               { range: "[11:10]", title: "ACS USP Memory Target Access Control", description: "Controls access to Switch Upstream Port Memory BAR Space." },
-              { range: "[12]", title: "ACS Unclaimed Request Redirect Control", description: "Controls forwarding of unclaimed Requests upstream." }
+              { range: "[12]", title: "ACS Unclaimed Request Redirect Control", description: "Controls forwarding of unclaimed Requests upstream." },
+              { range: "[15:13]", title: "Reserved", description: "Reserved." }
             ]
           },
           acs_egress_vector: {
@@ -2480,7 +2507,9 @@
             offset: "08h",
             range: "[31:0]",
             bits: [
-              { range: "[1]", title: "LTR Enable Preserved Across FLR", description: "Indicates whether Function 0 preserves LTR Mechanism Enable across Function Level Reset." }
+              { range: "[0]", title: "Reserved", description: "Reserved." },
+              { range: "[1]", title: "LTR Enable Preserved Across FLR", description: "Indicates whether Function 0 preserves LTR Mechanism Enable across Function Level Reset." },
+              { range: "[31:2]", title: "Reserved", description: "Reserved." }
             ]
           }
         }
@@ -2627,7 +2656,10 @@
             ? `When Set, suppresses recording and reporting of ${name}.`
             : `Selects Fatal when Set and Non-Fatal when Clear for ${name}.`;
         return makeChapter7Bit(`[${bit}]`, `${name}${suffix}`, description);
-      });
+      }).concat(
+        makeChapter7Bit("[11:6]", "Reserved", "Reserved."),
+        makeChapter7Bit("[3:1]", "Reserved", "Reserved.")
+      );
     }
 
     function chapter7AerCorrectableBits(kind) {
@@ -2643,7 +2675,11 @@
         kind === "Status"
           ? `Indicates that a ${name} condition was detected.`
           : `When Set, suppresses reporting of ${name}.`
-      ));
+      )).concat(
+        makeChapter7Bit("[31:16]", "Reserved", "Reserved."),
+        makeChapter7Bit("[11:9]", "Reserved", "Reserved."),
+        makeChapter7Bit("[5:1]", "Reserved", "Reserved.")
+      );
     }
 
     function chapter7FberLaneCounters(firstLane) {
@@ -2882,9 +2918,9 @@
           ["00h", "Vendor-Specific Capability Header", [
             ...chapter7HeaderBits(false).slice(0, 2),
             makeChapter7Bit("[23:16]", "Capability Length", "Total length of the vendor-specific capability structure in bytes."),
-            makeChapter7Bit("[31:24]", "Vendor-Specific Data", "Needs Manual Verification: this byte is vendor-defined; the Base Specification does not define its payload semantics.")
+            makeChapter7Bit("[31:24]", "Vendor-Specific Information", "Contains information whose layout and meaning are defined by the device vendor.")
           ]],
-          ["04h", "Vendor-Specific Registers", chapter7WholeRegisterBits("[31:0]", "Vendor-Specific Registers", "Needs Manual Verification: the payload is vendor-defined and outside the standardized header definition.")]
+          ["04h", "Vendor-Specific Registers", chapter7WholeRegisterBits("[31:0]", "Vendor-Specific Registers", "Contains vendor-defined register data; its interpretation is supplied by the vendor.")]
         ]
       },
       {
@@ -2893,10 +2929,10 @@
         name: "Conventional PCI Advanced Features Capability (AF)",
         description: "Conventional PCI capability used to report and control advanced feature transactions.",
         registers: [
-          ["00h", "AF Capability Header", chapter7HeaderBits(false)],
-          ["03h", "AF Capabilities", [makeChapter7Flag("[0]", "Transaction Pending Supported", "Reports support for transaction-pending status."), makeChapter7Flag("[1]", "Function Level Reset Supported", "Reports support for Function Level Reset."), makeChapter7Reserved("[31:2]")]],
-          ["04h", "AF Control", [makeChapter7Flag("[0]", "Initiate FLR", "Writing 1 initiates Function Level Reset when supported."), makeChapter7Reserved("[31:1]")]],
-          ["05h", "AF Status", [makeChapter7Flag("[0]", "Transaction Pending", "Indicates the Function has outstanding transactions."), makeChapter7Reserved("[31:1]")]]
+          ["00h", "AF Capability Header", [...chapter7HeaderBits(false).slice(0, 2), makeChapter7Bit("[23:16]", "Length", "Reports the Advanced Features capability structure length in bytes; the defined value is 06h."), makeChapter7Bit("[31:24]", "Reserved", "Reserved.")]],
+          ["03h", "AF Capabilities", [makeChapter7Flag("[0]", "Transaction Pending Supported", "Reports support for transaction-pending status."), makeChapter7Flag("[1]", "Function Level Reset Supported", "Reports support for Function Level Reset."), makeChapter7Bit("[31:2]", "Reserved", "Reserved.")]],
+          ["04h", "AF Control", [makeChapter7Flag("[0]", "Initiate FLR", "Writing 1 initiates Function Level Reset when supported."), makeChapter7Bit("[31:1]", "Reserved", "Reserved.")]],
+          ["05h", "AF Status", [makeChapter7Flag("[0]", "Transaction Pending", "Indicates the Function has outstanding transactions."), makeChapter7Bit("[31:1]", "Reserved", "Reserved.")]]
         ]
       },
       {
@@ -2905,7 +2941,7 @@
         name: "Subsystem ID and Subsystem Vendor ID Capability",
         description: "Provides Subsystem Vendor ID and Subsystem ID for functions that do not expose them in the Type 0 header.",
         registers: [
-          ["00h", "Subsystem Capability Header", chapter7HeaderBits(false)],
+          ["00h", "Subsystem Capability Header", [...chapter7HeaderBits(false).slice(0, 2), makeChapter7Bit("[31:16]", "Reserved", "Reserved.")]],
           ["04h", "Subsystem ID and Subsystem Vendor ID", [makeChapter7Bit("[15:0]", "Subsystem Vendor ID", "Vendor ID assigned to the subsystem."), makeChapter7Bit("[31:16]", "Subsystem ID", "Subsystem-specific identifier assigned by the vendor.")]]
         ]
       },
@@ -2914,7 +2950,7 @@
         type: "Cap",
         name: "Null Capability",
         description: "A capability-list terminator or placeholder with no function-specific register payload.",
-        registers: [["00h", "Null Capability Header", chapter7HeaderBits(false)]]
+        registers: [["00h", "Null Capability Header", [...chapter7HeaderBits(false).slice(0, 2), makeChapter7Bit("[31:16]", "Reserved", "Reserved.")]]]
       },
       {
         id: "power_budget_extcap",
@@ -3745,7 +3781,7 @@
         const offsetDiv = document.createElement("div");
         offsetDiv.className = "struct-offset-flex";
         offsetDiv.textContent = row.offset;
-        if (row.condition) offsetDiv.title = row.condition;
+        offsetDiv.title = row.condition || row.offset;
         rowDiv.append(contentDiv, offsetDiv);
     
         bitfieldContainer.appendChild(rowDiv);
