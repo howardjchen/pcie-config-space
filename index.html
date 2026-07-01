@@ -1398,7 +1398,7 @@
         id: "msi_cap",
         type: "Cap",
         name: "MSI Capability",
-        description: "Four mutually exclusive layouts: 32-bit/no PVM = Header 00h, Address 04h, Data/EMD 08h; 64-bit/no PVM adds Upper Address 08h and moves Data/EMD to 0Ch; 32-bit/PVM adds Mask 0Ch and Pending 10h; 64-bit/PVM adds Mask 10h and Pending 14h. Without PVM, unsupported EMD is outside the capability and undefined; with PVM, unsupported EMD is RsvdP.",
+        description: "MSI Capability Structure for a 64-bit Message Address with Per-Vector Masking (PVM).",
         rows: [
           {
             offset: "00h",
@@ -1417,51 +1417,53 @@
           {
             offset: "08h",
             fields: [
-              { id: "msi_addr_hi", label: "Upper Address (64-bit) OR Data/EMD (32-bit)", range: "[31:0]" }
+              { id: "msi_addr_hi", label: "Message Upper Address", range: "[31:0]" }
             ]
           },
           {
             offset: "0Ch",
             fields: [
-              { id: "msi_data", label: "Data/EMD (64-bit) OR Mask (32-bit + PVM)", range: "[31:0]" }
+              { id: "msi_data", label: "Message Data", range: "[15:0]" },
+              { id: "msi_ext_data", label: "Extended Message Data (Optional)", range: "[31:16]" }
             ]
           },
           {
             offset: "10h",
             fields: [
-              { id: "msi_mask", label: "Mask (64-bit + PVM) OR Pending (32-bit + PVM)", range: "[31:0]" }
+              { id: "msi_mask", label: "Mask Bits (Optional — PVM)", range: "[31:0]" }
             ]
           },
           {
             offset: "14h",
             fields: [
-              { id: "msi_pending", label: "Pending Bits (64-bit + PVM only)", range: "[31:0]" }
+              { id: "msi_pending", label: "Pending Bits (Optional — PVM)", range: "[31:0]" }
             ]
           }
         ],
         bitfields: {
-          capid: { name: "Capability ID", offset: "00h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Capability ID", description: "ID = 05h for MSI." }] },
-          nextptr: { name: "Next Item Pointer", offset: "01h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Next Item Pointer", description: "Pointer to the next capability." }] },
+          capid: { name: "Capability ID", offset: "00h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Capability ID", description: "Read-only value 05h, identifying this structure as the MSI Capability." }] },
+          nextptr: { name: "Next Capability Pointer", offset: "01h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Next Capability Pointer", description: "Read-only offset to the next PCI-compatible Capability structure; 00h indicates the final item in the Capability list." }] },
           msi_ctrl: {
             name: "Message Control",
             offset: "02h",
             range: "[15:0]",
             bits: [
-              { range: "[0]", title: "MSI Enable", description: "Enables MSI.", values: { "0": "Disable", "1": "Enable" } },
-              { range: "[3:1]", title: "Multiple Message Capable", description: "Read-only number of vectors requested; encodings 110b and 111b are reserved.", values: { "0": "1", "1": "2", "2": "4", "3": "8", "4": "16", "5": "32" } },
-              { range: "[6:4]", title: "Multiple Message Enable", description: "Read/write number of vectors allocated; encodings 110b and 111b are reserved.", values: { "0": "1", "1": "2", "2": "4", "3": "8", "4": "16", "5": "32" } },
-              { range: "[7]", title: "64-bit Address Capable", description: "Read-only; required for PCI Express Endpoints that implement MSI and required in Flit Mode.", values: { "0": "32-bit", "1": "64-bit" } },
-              { range: "[8]", title: "Per-vector Masking Capable", description: "Indicates support for masking.", values: { "0": "No", "1": "Yes" } },
-              { range: "[9]", title: "Extended Message Data Capable", description: "The Function can provide the upper 16 bits of MSI message data." },
-              { range: "[10]", title: "Extended Message Data Enable", description: "Enables use of Extended Message Data as the upper 16 bits of the MSI write; read-only when EMD is unsupported." },
-              { range: "[15:11]", title: "RsvdP", description: "Reserved and preserved by software." }
+              { range: "[0]", title: "MSI Enable", description: "When Set while MSI-X Enable is Clear, permits the Function to request service using MSI and prohibits use of INTx. When Clear, MSI generation is prohibited. The default is 0b; changing this bit during active operation can lose or mis-handle pending interrupt conditions.", values: { "0": "MSI disabled", "1": "MSI enabled" } },
+              { range: "[3:1]", title: "Multiple Message Capable", description: "Read-only power-of-two count of MSI vectors requested by the Function. A non-power-of-two requirement is rounded up; for example, three required vectors are reported as four.", values: { "0": "1 vector requested", "1": "2 vectors requested", "2": "4 vectors requested", "3": "8 vectors requested", "4": "16 vectors requested", "5": "32 vectors requested", "6": "Reserved", "7": "Reserved" } },
+              { range: "[6:4]", title: "Multiple Message Enable", description: "System software writes the power-of-two number of MSI vectors allocated to the Function. The allocation must not exceed Multiple Message Capable, and this field must not be changed while MSI Enable is Set. The default is 000b.", values: { "0": "1 vector allocated", "1": "2 vectors allocated", "2": "4 vectors allocated", "3": "8 vectors allocated", "4": "16 vectors allocated", "5": "32 vectors allocated", "6": "Reserved", "7": "Reserved" } },
+              { range: "[7]", title: "64-bit Address Capable", description: "Read-only indication that the Function supports a 64-bit MSI Message Address. This bit must be Set for PCI Express Endpoints and when Flit Mode is supported.", values: { "0": "64-bit Message Address not supported", "1": "64-bit Message Address supported" } },
+              { range: "[8]", title: "Per-Vector Masking Capable (Optional)", description: "Read-only indication that the Function implements the optional MSI Mask Bits and Pending Bits registers. It must be Set for SR-IOV PFs and VFs; an SIOV PF may report either value.", values: { "0": "Per-vector masking not supported", "1": "Per-vector masking supported" } },
+              { range: "[9]", title: "Extended Message Data Capable (Optional)", description: "Read-only indication that the Function implements the optional Extended Message Data field and can provide the upper 16 bits of MSI message data.", values: { "0": "Extended Message Data not supported", "1": "Extended Message Data supported" } },
+              { range: "[10]", title: "Extended Message Data Enable (Optional)", description: "When Set, enables optional Extended Message Data as the upper 16 bits of the MSI Memory Write data; when Clear, the upper 16 bits are 0000h. The default is 0b. This bit is read/write when Extended Message Data Capable is Set and otherwise is hardwired to 0b.", values: { "0": "Extended Message Data disabled", "1": "Extended Message Data enabled" } },
+              { range: "[15:11]", title: "Reserved (RsvdP)", description: "Reserved and preserved by software." }
             ]
           },
-          msi_addr: { name: "Message Address", offset: "04h (all four layouts)", range: "[31:0]", bits: [{ range: "[31:2]", title: "Message Address", description: "Read/write system-specified message address." }, { range: "[1:0]", title: "Reserved", description: "RsvdP; always returns zero and writes have no effect." }] },
-          msi_addr_hi: { name: "Offset 08h by layout", offset: "08h", range: "[31:0]", bits: [{ range: "[31:0]", title: "64-bit: Message Upper Address; 32-bit: Message Data / EMD", description: "64-bit layouts implement Message Upper Address. In 32-bit layouts bits 15:0 are Message Data; bits 31:16 are EMD when EMD Capable is Set, otherwise undefined without PVM and RsvdP with PVM." }] },
-          msi_data: { name: "Offset 0Ch by layout", offset: "0Ch", range: "[31:0]", bits: [{ range: "[31:0]", title: "64-bit: Message Data / EMD; 32-bit + PVM: Mask Bits", description: "For 64-bit layouts bits 15:0 are Message Data and bits 31:16 are EMD when capable; unsupported EMD is undefined without PVM and RsvdP with PVM. For the 32-bit/PVM layout this DWORD is Mask Bits." }] },
-          msi_mask: { name: "Offset 10h by layout", offset: "10h", range: "[31:0]", bits: [{ range: "[31:0]", title: "64-bit + PVM: Mask Bits; 32-bit + PVM: Pending Bits", description: "Present only in a PVM layout; each implemented vector has one Mask or read-only Pending bit at the layout-defined offset." }] },
-          msi_pending: { name: "Pending Bits", offset: "14h (64-bit + PVM only)", range: "[31:0]", bits: [{ range: "[31:0]", title: "Pending Bits", description: "Read-only Pending Bits for the 64-bit/PVM layout; unimplemented vector bits are Reserved." }] }
+          msi_addr: { name: "Message Address", offset: "04h", range: "[31:0]", bits: [{ range: "[31:2]", title: "Message Address", description: "System-programmed lower portion of the MSI target address. When MSI Enable is Set, this field supplies Address[31:2] for the DWORD-aligned MSI Memory Write; Address[1:0] are 00b. The default value is undefined." }, { range: "[1:0]", title: "Reserved (RsvdP)", description: "Reserved and preserved by software. Reads always return 00b and writes have no effect." }] },
+          msi_addr_hi: { name: "Message Upper Address", offset: "08h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Message Upper Address", description: "System-programmed Address[63:32] for the MSI target. When MSI Enable is Set, a nonzero value forms a 64-bit address with Message Address; zero selects the 32-bit address from Message Address alone. The default value is undefined." }] },
+          msi_data: { name: "Message Data", offset: "0Ch", range: "[15:0]", bits: [{ range: "[15:0]", title: "Message Data", description: "System-programmed lower 16 bits of the MSI Memory Write data. Multiple Message Enable determines how many low-order bits the Function may modify to select an allocated vector; those programmable low-order bits must be zero in this register when enabled. All four Byte Enables are Set for the MSI write. The default value is undefined." }] },
+          msi_ext_data: { name: "Extended Message Data (Optional)", offset: "0Eh", range: "[15:0]", bits: [{ range: "[15:0]", title: "Extended Message Data (Optional / RsvdP if unsupported)", description: "Optional system-programmed upper 16 bits of the MSI Memory Write data. When Extended Message Data Enable is Set, this value is transmitted; otherwise the upper 16 bits are 0000h. In this PVM layout the field is read/write when Extended Message Data Capable is Set and RsvdP otherwise. The default value is 0000h." }] },
+          msi_mask: { name: "Mask Bits (Optional — PVM)", offset: "10h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Mask Bits (Optional — PVM)", description: "Optional register present when Per-Vector Masking Capable is Set. One read/write mask bit exists per implemented MSI vector. Setting bit N prohibits sending vector N; clearing it permits sending that vector. Implemented but currently unallocated bits are ignored by hardware, unimplemented bits are Reserved, and every implemented bit defaults to 0b." }] },
+          msi_pending: { name: "Pending Bits (Optional — PVM)", offset: "14h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Pending Bits (Optional — PVM)", description: "Optional register present when Per-Vector Masking Capable is Set. One read-only status bit exists per implemented MSI vector. A Set bit N indicates that vector N has a pending message. Implemented but currently unallocated bits are ignored by hardware, unimplemented bits are Reserved, and every implemented bit defaults to 0b." }] }
         }
       },
     
