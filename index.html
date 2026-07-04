@@ -442,7 +442,7 @@
      *     }
      *   }
      */
-    
+
     const structures = [
       /* =========================
        * Type 0 / Type 1 Headers
@@ -629,7 +629,7 @@
           maxlat: { name: "Max_Lat", offset: "3Fh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Max_Lat", description: "Not used by PCI Express; hardwired to zero." }] }
         }
       },
-    
+
       {
         id: "type1",
         type: "Header",
@@ -797,7 +797,7 @@
           classcode: { name: "Class Code", offset: "09h", range: "[23:0]", bits: [{ range: "[23:0]", title: "Class Code", description: "Identifies the general function of the device." }] },
           cacheline: { name: "Cache Line Size", offset: "0Ch", range: "[7:0]", bits: [{ range: "[7:0]", title: "Cache Line Size", description: "Specifies the system cacheline size in 32-bit units." }] },
           latency: { name: "Latency Timer", offset: "0Dh", range: "[7:0]", bits: [{ range: "[7:0]", title: "Latency Timer", description: "Not used in PCIe, hardwired to 0." }] },
-    
+
           hdrtype: { name: "Header Type", offset: "0Eh", range: "[7:0]", bits: [{ range: "[6:0]", title: "Header Layout", description: "Identifies the layout of the header (01h for Bridge)." }, { range: "[7]", title: "Multi-Function Device", description: "Indicates if the device has multiple functions." }] },
           bist: { name: "BIST", offset: "0Fh", range: "[7:0]", bits: [{ range: "[3:0]", title: "Completion Code", description: "Result of the BIST." }, { range: "[5:4]", title: "Reserved", description: "Reserved." }, { range: "[6]", title: "Start BIST", description: "Set to invoke BIST." }, { range: "[7]", title: "BIST Capable", description: "Indicates support for BIST." }] },
           bar0: { name: "BAR0", offset: "10h", range: "[31:0]", bits: [{ range: "[0]", title: "Memory/IO", description: "0=Memory, 1=IO." }, { range: "[31:1]", title: "Base Address", description: "Base address." }] },
@@ -861,7 +861,7 @@
           }
         }
       },
-    
+
       /* =========================
        * PCI Power Management Cap
        * ========================= */
@@ -925,7 +925,7 @@
           pm_data: { name: "Data", offset: "07h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Data", description: "Optional read-only power or heat-dissipation data; VFs read zero." }] }
         }
       },
-    
+
       /* =========================
        * PCI Express Capability
        * ========================= */
@@ -1390,7 +1390,7 @@
           }
         }
       },
-    
+
       /* =========================
        * MSI / MSI-X Capabilities
        * ========================= */
@@ -1466,7 +1466,7 @@
           msi_pending: { name: "Pending Bits (Optional — PVM)", offset: "14h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Pending Bits (Optional — PVM)", description: "Optional register present when Per-Vector Masking Capable is Set. One read-only status bit exists per implemented MSI vector. A Set bit N indicates that vector N has a pending message. Implemented but currently unallocated bits are ignored by hardware, unimplemented bits are Reserved, and every implemented bit defaults to 0b." }] }
         }
       },
-    
+
       {
         id: "msix_cap",
         type: "Cap",
@@ -1542,7 +1542,7 @@
           msix_pending_bits_hi: { name: "MSI-X Pending Bit Array QWORD, upper DWORD", offset: "PBA base + (k div 64)*8 + 4", range: "[31:0]", bits: [{ range: "[31:0]", title: "Pending Bits 63:32", description: "Upper half paired with the preceding DWORD to form the defined 64-bit PBA entry. RO or RW, but software only reads." }] }
         }
       },
-    
+
       /* =========================
        * Advanced Error Reporting
        * ========================= */
@@ -2284,25 +2284,22 @@
         rows: [
           {
             offset: "00h",
-            fields: [
-              { id: "lmr_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }
-            ]
+            fields: [{ id: "lmr_hdr", label: "ExtCap ID / Version / Next", range: "[31:0]" }]
           },
           {
             offset: "04h",
             fields: [
               { id: "lmr_port_cap", label: "Margining Port Capabilities", range: "[15:0]" },
-              { id: "lmr_port_status", label: "Margining Port Status", range: "[31:16]" }
+              { id: "lmr_port_sts", label: "Margining Port Status",       range: "[31:16]" }
             ]
           },
-          ...Array.from({ length: 16 }, (_, lane) => ({
-            offset: `${(0x08 + 4 * lane).toString(16).padStart(2, "0").toUpperCase()}h`,
-            condition: `Present when Maximum Link Width > ${lane}.`,
+          {
+            offset: "08h + 4*n; 0 <= n < Maximum Link Width (Lane 0 mandatory, Lanes 1-31 optional)",
             fields: [
-              { id: `lmr_lane_${lane}_ctl`, label: `Margining Lane Control: Lane ${lane} (Conditional)`, range: "[15:0]" },
-              { id: `lmr_lane_${lane}_status`, label: `Margining Lane Status: Lane ${lane} (Conditional)`, range: "[31:16]" }
+              { id: "lmr_lane_ctl", label: "Margining Lane Control",  range: "[15:0]" },
+              { id: "lmr_lane_sts", label: "Margining Lane Status",   range: "[31:16]" }
             ]
-          }))
+          }
         ],
         bitfields: {
           lmr_hdr: {
@@ -2580,26 +2577,98 @@
           }
         }
       }
-    
+
       /* You can continue appending here:
          - Other common ExtCaps: L1 PM Substates, LTR, ARI, Resizable BAR, ACS, DPC, etc.
          - Or vendor defined / DVSEC.
       */
+    ,
+
+      {
+        id: "vc_extcap",
+        type: "ExtCap",
+        name: "Virtual Channel (VC)",
+        description: "Reports and controls Virtual Channel resources. Structure per Figure 7-228.",
+        rows: [
+          { offset: "00h",  fields: [{ id: "vc_hdr",           label: "PCI Express Extended Capability Header", range: "[31:0]"  }] },
+          { offset: "04h",  fields: [{ id: "vc_cap1_evc",      label: "ExVC cnt",                               range: "[2:0]"   },
+                                     { id: "vc_cap1_body",     label: "Port VC Capability Register 1",          range: "[31:3]"  }] },
+          { offset: "08h",  fields: [{ id: "vc_cap2_body",     label: "Port VC Capability Register 2",          range: "[23:0]"  },
+                                     { id: "vc_cap2_offset",   label: "VC Arb Table Offset",                    range: "[31:24]" }] },
+          { offset: "0Ch",  fields: [{ id: "vc_ctrl",          label: "Port VC Control Register",               range: "[15:0]"  },
+                                     { id: "vc_status",        label: "Port VC Status Register",                range: "[31:16]" }] },
+          { offset: "10h",  fields: [{ id: "vc_rescap_body",   label: "VC Resource Capability Register (0)",    range: "[23:0]"  },
+                                     { id: "vc_rescap_offset", label: "Port Arb Table Offset",                  range: "[31:24]" }] },
+          { offset: "14h",  fields: [{ id: "vc_resctl",        label: "VC Resource Control Register (0)",       range: "[31:0]"  }] },
+          { offset: "18h",  fields: [{ id: "vc_ressts",        label: "VC Resource Status Register (0)",        range: "[15:0]"  },
+                                     { id: "vc_rsvdp",         label: "RsvdP",                                  range: "[31:16]" }] }
+        ],
+        bitfields: {
+          vc_hdr:           { name: "Enhanced Capability Header",          offset: "00h", range: "[31:0]",  bits: [makeChapter7Bit("[15:0]","PCI Express Extended Capability ID","ID = 0002h or 0009h for VC."), makeChapter7Bit("[19:16]","Capability Version","Version = 1h."), makeChapter7Bit("[31:20]","Next Capability Offset","Offset to the next Extended Capability.")] },
+          vc_cap1_evc:      { name: "Extended VC Count",                   offset: "04h", range: "[2:0]",   bits: [makeChapter7Bit("[2:0]","Extended VC Count","Number of extended Virtual Channels supported in addition to VC0. Maximum value is 7.")] },
+          vc_cap1_body:     { name: "Port VC Capability Register 1",       offset: "04h", range: "[31:3]",  bits: [makeChapter7Reserved("[3]", "RsvdP"), makeChapter7Bit("[6:4]","Low Priority Extended VC Count","Number of extended VCs in the low-priority VC group."), makeChapter7Reserved("[7]", "RsvdP"), makeChapter7Bit("[9:8]","Reference Clock","Reference clock for time-based WRR Port Arbitration.", { 0: "100 ns reference clock", 1: "Reserved", 2: "Reserved", 3: "Reserved" }), makeChapter7Bit("[11:10]","Port Arbitration Table Entry Size","Encoded size of each Port Arbitration Table entry.", { 0: "1-bit entry", 1: "2-bit entry", 2: "4-bit entry", 3: "8-bit entry" }), makeChapter7Reserved("[31:12]", "RsvdP")] },
+          vc_cap2_body:     { name: "Port VC Capability Register 2",       offset: "08h", range: "[23:0]",  bits: [makeChapter7Bit("[7:0]","VC Arbitration Capability","Bit vector of supported VC arbitration mechanisms."), makeChapter7Reserved("[23:8]", "RsvdP")] },
+          vc_cap2_offset:   { name: "VC Arbitration Table Offset",         offset: "08h", range: "[31:24]", bits: [makeChapter7Bit("[31:24]","VC Arbitration Table Offset","Zero-based DQWORD offset to the VC Arbitration Table; 00h = absent.")] },
+          vc_ctrl:          { name: "Port VC Control Register",            offset: "0Ch", range: "[15:0]",  bits: [makeChapter7Flag("[0]","Load VC Arbitration Table","Request hardware to load the VC Arbitration Table; always reads 0b."), makeChapter7Bit("[3:1]","VC Arbitration Select","Selects one supported VC arbitration mechanism."), makeChapter7Flag("[4]","All VCs Enabled","Indicates all VCs intended for use have been enabled."), makeChapter7Reserved("[15:5]", "RsvdP")] },
+          vc_status:        { name: "Port VC Status Register",             offset: "0Eh", range: "[31:16]", bits: [makeChapter7Flag("[16]","VC Arbitration Table Status","Set when any VC Arbitration Table entry is written; cleared when hardware finishes loading."), makeChapter7Reserved("[31:17]", "RsvdZ")] },
+          vc_rescap_body:   { name: "VC Resource Capability Register (0)", offset: "10h", range: "[23:0]",  bits: [makeChapter7Bit("[7:0]","Port Arbitration Capability","Bit vector of supported Port Arbitration mechanisms."), makeChapter7Reserved("[13:8]", "RsvdP"), makeChapter7Bit("[14]","Undefined","Legacy undefined bit; software must ignore."), makeChapter7Flag("[15]","Reject Snoop Transactions","Permits rejection of transactions without No Snoop when applicable."), makeChapter7Bit("[22:16]","Maximum Time Slots","Maximum time slots minus one for time-based WRR Port Arbitration."), makeChapter7Reserved("[23]", "RsvdP")] },
+          vc_rescap_offset: { name: "Port Arbitration Table Offset",       offset: "10h", range: "[31:24]", bits: [makeChapter7Bit("[31:24]","Port Arbitration Table Offset","Zero-based DQWORD offset to the Port Arbitration Table; 00h = absent.")] },
+          vc_resctl:        { name: "VC Resource Control Register (0)",    offset: "14h", range: "[31:0]",  bits: chapter7VcResourceControlBits() },
+          vc_ressts:        { name: "VC Resource Status Register (0)",     offset: "18h", range: "[15:0]",  bits: [makeChapter7Flag("[0]","Port Arbitration Table Status","Set when any Port Arbitration Table entry is written; cleared when hardware finishes loading."), makeChapter7Flag("[1]","VC Negotiation Pending","Indicates Virtual Channel negotiation is in pending state."), makeChapter7Reserved("[15:2]", "RsvdZ")] },
+          vc_rsvdp:         { name: "RsvdP",                               offset: "18h", range: "[31:16]", bits: [makeChapter7Reserved("[31:16]", "RsvdP")] }
+        }
+      },
+
+      {
+        id: "mfvc_extcap",
+        type: "ExtCap",
+        name: "Multi-Function Virtual Channel (MFVC)",
+        description: "Virtual Channel controls for Multi-Function Devices. Structure per Figure 7-239.",
+        rows: [
+          { offset: "00h",  fields: [{ id: "mfvc_hdr",           label: "PCI Express Extended Capability Header",    range: "[31:0]"  }] },
+          { offset: "04h",  fields: [{ id: "mfvc_cap1_evc",      label: "ExVC cnt",                                  range: "[2:0]"   },
+                                     { id: "mfvc_cap1_body",     label: "MFVC Port VC Capability Register 1",        range: "[31:3]"  }] },
+          { offset: "08h",  fields: [{ id: "mfvc_cap2_body",     label: "MFVC Port VC Capability Register 2",        range: "[23:0]"  },
+                                     { id: "mfvc_cap2_offset",   label: "VC Arb Table Offset",                       range: "[31:24]" }] },
+          { offset: "0Ch",  fields: [{ id: "mfvc_ctrl",          label: "MFVC Port VC Control Register",             range: "[15:0]"  },
+                                     { id: "mfvc_status",        label: "MFVC Port VC Status Register",              range: "[31:16]" }] },
+          { offset: "10h",  fields: [{ id: "mfvc_rescap_body",   label: "MFVC VC Resource Capability Register (0)",  range: "[23:0]"  },
+                                     { id: "mfvc_rescap_offset", label: "Function Arb Table Offset",                 range: "[31:24]" }] },
+          { offset: "14h",  fields: [{ id: "mfvc_resctl",        label: "MFVC VC Resource Control Register (0)",     range: "[31:0]"  }] },
+          { offset: "18h",  fields: [{ id: "mfvc_ressts",        label: "MFVC VC Resource Status Register (0)",      range: "[15:0]"  },
+                                     { id: "mfvc_rsvdp",         label: "RsvdP",                                     range: "[31:16]" }] }
+        ],
+        bitfields: {
+          mfvc_hdr:           { name: "Enhanced Capability Header",               offset: "00h", range: "[31:0]",  bits: [makeChapter7Bit("[15:0]","PCI Express Extended Capability ID","ID = 0008h for MFVC."), makeChapter7Bit("[19:16]","Capability Version","Version = 1h."), makeChapter7Bit("[31:20]","Next Capability Offset","Offset to the next Extended Capability.")] },
+          mfvc_cap1_evc:      { name: "Extended VC Count",                        offset: "04h", range: "[2:0]",   bits: [makeChapter7Bit("[2:0]","Extended VC Count","Number of extended Virtual Channels supported in addition to VC0.")] },
+          mfvc_cap1_body:     { name: "MFVC Port VC Capability Register 1",       offset: "04h", range: "[31:3]",  bits: [makeChapter7Reserved("[3]", "RsvdP"), makeChapter7Bit("[6:4]","Low Priority Extended VC Count","Number of extended VCs in the low-priority VC group."), makeChapter7Reserved("[7]", "RsvdP"), makeChapter7Bit("[9:8]","Reference Clock","Reference clock for time-based WRR Function Arbitration.", { 0: "100 ns reference clock", 1: "Reserved", 2: "Reserved", 3: "Reserved" }), makeChapter7Bit("[11:10]","Function Arbitration Table Entry Size","Encoded size of each Function Arbitration Table entry.", { 0: "1-bit entry", 1: "2-bit entry", 2: "4-bit entry", 3: "8-bit entry" }), makeChapter7Reserved("[31:12]", "RsvdP")] },
+          mfvc_cap2_body:     { name: "MFVC Port VC Capability Register 2",       offset: "08h", range: "[23:0]",  bits: [makeChapter7Bit("[7:0]","VC Arbitration Capability","Bit vector of supported VC arbitration mechanisms."), makeChapter7Reserved("[23:8]", "RsvdP")] },
+          mfvc_cap2_offset:   { name: "VC Arbitration Table Offset",              offset: "08h", range: "[31:24]", bits: [makeChapter7Bit("[31:24]","VC Arbitration Table Offset","Zero-based DQWORD offset to the VC Arbitration Table; 00h = absent.")] },
+          mfvc_ctrl:          { name: "MFVC Port VC Control Register",            offset: "0Ch", range: "[15:0]",  bits: [makeChapter7Flag("[0]","Load VC Arbitration Table","Request hardware to load the VC Arbitration Table; always reads 0b."), makeChapter7Bit("[3:1]","VC Arbitration Select","Selects one supported VC arbitration mechanism."), makeChapter7Flag("[4]","All VCs Enabled","Indicates all VCs intended for use have been enabled."), makeChapter7Reserved("[15:5]", "RsvdP")] },
+          mfvc_status:        { name: "MFVC Port VC Status Register",             offset: "0Eh", range: "[31:16]", bits: [makeChapter7Flag("[16]","VC Arbitration Table Status","Set when any VC Arbitration Table entry is written; cleared when hardware finishes loading."), makeChapter7Reserved("[31:17]", "RsvdZ")] },
+          mfvc_rescap_body:   { name: "MFVC VC Resource Capability Register (0)", offset: "10h", range: "[23:0]",  bits: [makeChapter7Bit("[7:0]","Function Arbitration Capability","Bit vector of supported Function Arbitration mechanisms."), makeChapter7Reserved("[15:8]", "RsvdP"), makeChapter7Bit("[22:16]","Maximum Time Slots","Maximum time slots minus one for time-based WRR Function Arbitration."), makeChapter7Reserved("[23]", "RsvdP")] },
+          mfvc_rescap_offset: { name: "Function Arbitration Table Offset",        offset: "10h", range: "[31:24]", bits: [makeChapter7Bit("[31:24]","Function Arbitration Table Offset","Zero-based DQWORD offset to the Function Arbitration Table; 00h = absent.")] },
+          mfvc_resctl:        { name: "MFVC VC Resource Control Register (0)",    offset: "14h", range: "[31:0]",  bits: chapter7VcResourceControlBits(true) },
+          mfvc_ressts:        { name: "MFVC VC Resource Status Register (0)",     offset: "18h", range: "[15:0]",  bits: [makeChapter7Flag("[0]","Function Arbitration Table Status","Set when any Function Arbitration Table entry is written; cleared when hardware finishes loading."), makeChapter7Flag("[1]","VC Negotiation Pending","Indicates Virtual Channel negotiation is in pending state."), makeChapter7Reserved("[15:2]", "RsvdZ")] },
+          mfvc_rsvdp:         { name: "RsvdP",                                    offset: "18h", range: "[31:16]", bits: [makeChapter7Reserved("[31:16]", "RsvdP")] }
+        }
+      }
+
     ];
-    
+
     /* =========================
      * Chapter 7 completion data
      * =========================
      * Generated entries below keep the same structure shape used above:
      * rows[] drive the bit map and bitfields{} drives the detail pane.
      */
-    
+
     function makeChapter7Bit(range, title, description, values) {
       const item = { range, title, description };
       if (values) item.values = values;
       return item;
     }
-    
+
     function makeChapter7Reserved(range, behavior = "Needs Manual Verification") {
       return makeChapter7Bit(range, behavior, behavior === "RsvdP"
         ? "Reserved and preserved by software."
@@ -2607,15 +2676,15 @@
           ? "Reserved; reads zero and software writes zero."
           : "Needs Manual Verification: the source-table Reserved/RsvdP/RsvdZ access behavior is not encoded here.");
     }
-    
+
     function makeChapter7Flag(range, title, description) {
       return makeChapter7Bit(range, title, description, { "0": "Not set / disabled / inactive", "1": "Set / enabled / active" });
     }
-    
+
     function chapter7FieldId(prefix, label) {
       return `${prefix}_${label.toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "")}`;
     }
-    
+
     function chapter7HeaderBits(isExtended) {
       return isExtended
         ? [
@@ -2629,7 +2698,7 @@
             makeChapter7Reserved("[31:16]")
           ];
     }
-    
+
     function chapter7WholeRegisterBits(range, label, description) {
       return [makeChapter7Bit(range, label, description)];
     }
@@ -2816,10 +2885,10 @@
       const arbitration = functionArbitration ? "Function" : "Port";
       return [
         makeChapter7Bit("[7:0]", "TC/VC Map", "Each Set bit maps the corresponding Traffic Class to this VC resource."),
-        makeChapter7Reserved("[15:8]"),
+        makeChapter7Reserved("[15:8]", "RsvdP"),
         makeChapter7Flag("[16]", `Load ${arbitration} Arbitration Table`, `Requests hardware to load the programmed ${arbitration} Arbitration Table.`),
         makeChapter7Bit("[19:17]", `${arbitration} Arbitration Select`, `Selects one supported ${arbitration} Arbitration mechanism.`),
-        makeChapter7Reserved("[23:20]"),
+        makeChapter7Reserved("[23:20]", "RsvdP"),
         makeChapter7Bit("[26:24]", "VC ID", "Assigns a Virtual Channel identifier to this VC resource."),
         makeChapter7Bit("[29:27]", "Shared Flow Control Usage Limit", "Limits the percentage of shared Flow Control credits this VC may consume."),
         makeChapter7Flag("[30]", "Shared Flow Control Usage Limit Enable", "Enables enforcement of Shared Flow Control Usage Limit."),
@@ -2834,7 +2903,7 @@
         makeChapter7Reserved("[15:2]")
       ];
     }
-    
+
     const chapter7ExtCapabilityHeaders = {
       power_budget_extcap: ["0004h", "1h"], device3_extcap: ["002Fh", "1h"],
       pl_64g_extcap: ["0031h", "1h"], flit_logging_extcap: ["0032h", "1h"],
@@ -2872,20 +2941,20 @@
         if (offset === "00h" && chapter7CapabilityIds[def.id]) {
           bits[0] = makeChapter7Bit("[7:0]", "Capability ID", `ID = ${chapter7CapabilityIds[def.id]} for ${def.name}.`);
         }
-    
+
         bitfields[fieldId] = {
           name: label,
           offset,
           range,
           bits
         };
-    
+
         return {
           offset,
           fields: [{ id: fieldId, label, range }]
         };
       });
-    
+
       return {
         id: def.id,
         type: def.type,
@@ -2895,7 +2964,7 @@
         bitfields
       };
     }
-    
+
     const chapter7MissingStructures = [
       {
         id: "vpd_cap",
@@ -2931,10 +3000,20 @@
         name: "Conventional PCI Advanced Features Capability (AF)",
         description: "Conventional PCI capability used to report and control advanced feature transactions.",
         registers: [
-          ["00h", "AF Capability Header", [...chapter7HeaderBits(false).slice(0, 2), makeChapter7Bit("[23:16]", "Length", "Reports the Advanced Features capability structure length in bytes; the defined value is 06h."), makeChapter7Bit("[31:24]", "Reserved", "Reserved.")]],
-          ["03h", "AF Capabilities", [makeChapter7Flag("[0]", "Transaction Pending Supported", "Reports support for transaction-pending status."), makeChapter7Flag("[1]", "Function Level Reset Supported", "Reports support for Function Level Reset."), makeChapter7Bit("[31:2]", "Reserved", "Reserved.")]],
-          ["04h", "AF Control", [makeChapter7Flag("[0]", "Initiate FLR", "Writing 1 initiates Function Level Reset when supported."), makeChapter7Bit("[31:1]", "Reserved", "Reserved.")]],
-          ["05h", "AF Status", [makeChapter7Flag("[0]", "Transaction Pending", "Indicates the Function has outstanding transactions."), makeChapter7Bit("[31:1]", "Reserved", "Reserved.")]]
+          ["00h", "AF Capability Header / AF Capabilities", [
+            makeChapter7Bit("[7:0]",  "Capability ID",     "ID = 13h for Advanced Features."),
+            makeChapter7Bit("[15:8]", "Next Cap Pointer",  "Pointer to the next capability, or 00h."),
+            makeChapter7Bit("[23:16]", "Length",           "Reports the Advanced Features capability structure length in bytes; the defined value is 06h."),
+            makeChapter7Flag("[24]",  "Transaction Pending Supported", "Reports support for transaction-pending status."),
+            makeChapter7Flag("[25]",  "Function Level Reset Supported", "Reports support for Function Level Reset."),
+            makeChapter7Reserved("[31:26]")
+          ]],
+          ["04h", "AF Control / Status", [
+            makeChapter7Flag("[0]",  "Initiate FLR",        "Writing 1 initiates Function Level Reset when supported."),
+            makeChapter7Reserved("[7:1]"),
+            makeChapter7Flag("[8]",  "Transaction Pending", "Indicates the Function has outstanding transactions."),
+            makeChapter7Reserved("[31:9]")
+          ]]
         ]
       },
       {
@@ -3061,8 +3140,7 @@
         description: "Reports and controls Process Address Space ID support for memory requests.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "PASID Capability", [makeChapter7Flag("[0]", "Exec Permission Supported", "Supports PASID execute permission checks."), makeChapter7Flag("[1]", "Privileged Mode Supported", "Supports PASID privileged-mode indication."), makeChapter7Bit("[6:2]", "Max PASID Width", "Maximum PASID width supported."), makeChapter7Reserved("[15:7]")], "[15:0]"],
-          ["06h", "PASID Control", [makeChapter7Flag("[0]", "PASID Enable", "Enables use of PASID by this Function."), makeChapter7Flag("[1]", "Exec Permission Enable", "Enables execute permission use."), makeChapter7Flag("[2]", "Privileged Mode Enable", "Enables privileged-mode use."), makeChapter7Reserved("[15:3]")], "[15:0]"]
+          ["04h", "PASID Capability / Control", [makeChapter7Reserved("[3:0]"), makeChapter7Flag("[4]", "Execute Permission Supported", "Indicates support for Execute Permission in PASID TLP Prefix."), makeChapter7Flag("[5]", "Privileged Mode Supported", "Indicates support for Privileged Mode in PASID TLP Prefix."), makeChapter7Reserved("[7:6]"), makeChapter7Bit("[12:8]", "Max PASID Width", "Maximum number of PASID bits supported, minus one."), makeChapter7Reserved("[15:13]"), makeChapter7Reserved("[17:16]"), makeChapter7Flag("[18]", "PASID Enable", "Enables the PASID TLP Prefix capability."), makeChapter7Flag("[19]", "Execute Permission Enable", "Enables Execute Permission checking."), makeChapter7Flag("[20]", "Privileged Mode Enable", "Enables Privileged Mode checking."), makeChapter7Reserved("[31:21]")]]
         ]
       },
       {
@@ -3073,8 +3151,7 @@
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "FRS Queueing Capability", [makeChapter7Bit("[11:0]", "FRS Queue Max Depth", "Maximum number of FRS messages that can be queued."), makeChapter7Bit("[20:16]", "FRS Interrupt Message Number", "MSI/MSI-X vector used for FRS interrupts."), makeChapter7Reserved("[31:21]")]],
-          ["08h", "FRS Queueing Status", [makeChapter7Flag("[0]", "FRS Message Received", "A new FRS Message was received or generated."), makeChapter7Flag("[1]", "FRS Message Overflow", "An FRS Message arrived while the queue was full."), makeChapter7Reserved("[15:2]")], "[15:0]"],
-          ["0Ah", "FRS Queueing Control", [makeChapter7Flag("[0]", "FRS Interrupt Enable", "Enables interrupt signaling for FRS queue events."), makeChapter7Reserved("[15:1]")], "[15:0]"],
+          ["08h", "FRS Queueing Control / Status", [makeChapter7Flag("[0]", "FRS Message Received", "A new FRS Message was received or generated."), makeChapter7Flag("[1]", "FRS Message Overflow", "An FRS Message arrived while the queue was full."), makeChapter7Reserved("[15:2]"), makeChapter7Flag("[16]", "FRS Interrupt Enable", "Enables interrupt signaling for FRS queue events."), makeChapter7Reserved("[31:17]")]],
           ["0Ch", "FRS Message Queue", [makeChapter7Bit("[15:0]", "FRS Message Queue Function ID", "Requester ID from the oldest queued FRS Message."), makeChapter7Bit("[19:16]", "FRS Message Queue Reason", "FRS Reason from the oldest queued message."), makeChapter7Bit("[31:20]", "FRS Message Queue Depth", "Current number of messages in the queue.")]]
         ]
       },
@@ -3142,43 +3219,7 @@
           ["10h", "NOP Flit Status", [makeChapter7Flag("[0]", "NOP.Debug Flit Request in Progress", "Indicates that requested NOP.Debug Flit transmission has started but is not complete."), makeChapter7Reserved("[31:1]")]]
         ]
       },
-      {
-        id: "vc_extcap",
-        type: "ExtCap",
-        name: "Virtual Channel (VC)",
-        description: "Reports and controls repeated Virtual Channel resources and optional arbitration tables.",
-        registers: [
-          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Port VC Capability Register 1", chapter7VcPortCapability1Bits()],
-          ["08h", "Port VC Capability Register 2", chapter7VcPortCapability2Bits()],
-          ["0Ch", "Port VC Control", chapter7VcPortControlBits(), "[15:0]"],
-          ["0Eh", "Port VC Status", [makeChapter7Flag("[0]", "VC Arbitration Table Status", "Indicates that programmed table contents have not yet been completely loaded into VC arbitration logic."), makeChapter7Reserved("[15:1]")], "[15:0]"],
-          ["10h + 0Ch*n; 0 <= n <= Extended VC Count", "VC Resource Capability n (repeated)", chapter7VcResourceCapabilityBits()],
-          ["14h + 0Ch*n; 0 <= n <= Extended VC Count", "VC Resource Control n (repeated)", chapter7VcResourceControlBits()],
-          ["18h + 0Ch*n; 0 <= n <= Extended VC Count", "VC Resource Status n (repeated)", chapter7VcResourceStatusBits(), "[15:0]"],
-          ["16 * VC Arbitration Table Offset; absent when offset = 0", "VC Arbitration Table (optional)", chapter7WholeRegisterBits("[31:0]", "VC Arbitration Table Entries", "Programmable packed entries; location comes from Port VC Capability Register 2, not from the resource-block extent.")],
-          ["16 * Port Arbitration Table Offset for resource n; absent when offset = 0", "Port Arbitration Table n (optional)", chapter7WholeRegisterBits("[31:0]", "Port Arbitration Table Entries", "Programmable packed Port Number entries; each resource capability supplies its table location.")]
-        ]
-      },
-      {
-        id: "mfvc_extcap",
-        type: "ExtCap",
-        name: "Multi-Function Virtual Channel (MFVC)",
-        description: "Virtual Channel controls with repeated MFVC resources and optional arbitration tables.",
-        registers: [
-          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "MFVC Port VC Capability Register 1", chapter7VcPortCapability1Bits("Function")],
-          ["08h", "MFVC Port VC Capability Register 2", chapter7VcPortCapability2Bits("MFVC ")],
-          ["0Ch", "MFVC Port VC Control", chapter7VcPortControlBits("MFVC "), "[15:0]"],
-          ["0Eh", "MFVC Port VC Status", [makeChapter7Flag("[0]", "VC Arbitration Table Status", "Indicates that programmed MFVC table contents have not yet been completely loaded."), makeChapter7Reserved("[15:1]")], "[15:0]"],
-          ["10h + 0Ch*n; 0 <= n <= Extended VC Count", "MFVC VC Resource Capability n (repeated)", chapter7VcResourceCapabilityBits(true)],
-          ["14h + 0Ch*n; 0 <= n <= Extended VC Count", "MFVC VC Resource Control n (repeated)", chapter7VcResourceControlBits(true)],
-          ["18h + 0Ch*n; 0 <= n <= Extended VC Count", "MFVC VC Resource Status n (repeated)", chapter7VcResourceStatusBits(true), "[15:0]"],
-          ["16 * MFVC VC Arbitration Table Offset; absent when offset = 0", "MFVC VC Arbitration Table (optional)", chapter7WholeRegisterBits("[31:0]", "MFVC VC Arbitration Table Entries", "Programmable packed entries; location comes from MFVC Port VC Capability Register 2.")],
-          ["16 * Function Arbitration Table Offset for resource n; absent when offset = 0", "Function Arbitration Table n (optional)", chapter7WholeRegisterBits("[31:0]", "Function Arbitration Table Entries", "Programmable packed Function Number or Function Group entries; each resource capability supplies its table location.")]
-        ]
-      },
-      {
+                  {
         id: "dsn_extcap",
         type: "ExtCap",
         name: "Device Serial Number",
@@ -3233,6 +3274,7 @@
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "Element Self Description", [makeChapter7Bit("[3:0]", "Element Type", "Configuration Space element, system egress/internal sink, or internal Root Complex Link."), makeChapter7Reserved("[7:4]"), makeChapter7Bit("[15:8]", "Number of Link Entries", "Number of Link Entries following this register."), makeChapter7Bit("[23:16]", "Component ID", "Identifies the Root Complex Component containing this element."), makeChapter7Bit("[31:24]", "Port Number", "Port Number of this element within its Root Complex Component.")]],
           ["08h", "Reserved", [makeChapter7Reserved("[31:0]")]],
+          ["0Ch", "Link Entry Reserved (first DWORD)", [makeChapter7Reserved("[31:0]")]],
           ["10h", "Link Description", [makeChapter7Flag("[0]", "Link Valid", "Indicates that this Link Entry declares a valid Link."), makeChapter7Flag("[1]", "Link Type", "Selects memory-mapped RCRB address or Configuration Space target format."), makeChapter7Flag("[2]", "Associate RCRB Header", "Associates the declaring element with an RCRB Header in the target RCRB."), makeChapter7Reserved("[15:3]"), makeChapter7Bit("[23:16]", "Target Component ID", "Identifies the Root Complex Component targeted by this Link Entry."), makeChapter7Bit("[31:24]", "Target Port Number", "Port Number of the target element within its Component.")]],
           ["14h", "Link Entry Reserved", [makeChapter7Reserved("[31:0]")]],
           ["18h", "Link Address Low", [makeChapter7Bit("[31:0]", "Link Address Bits 31:0", "Lower target RCRB base address or encoded Configuration Space address, depending on Link Type.")]],
@@ -3247,8 +3289,7 @@
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "Root Complex Link Capabilities", [makeChapter7Bit("[3:0]", "Link Speed", "Supported internal link speed encoding."), makeChapter7Bit("[9:4]", "Link Width", "Supported internal link width encoding."), makeChapter7Reserved("[31:10]")]],
-          ["08h", "Root Complex Link Control", [makeChapter7Flag("[0]", "Link Disable", "Disables the internal link when supported."), makeChapter7Reserved("[15:1]")], "[15:0]"],
-          ["0Ah", "Root Complex Link Status", [makeChapter7Bit("[3:0]", "Current Link Speed", "Current internal link speed encoding."), makeChapter7Bit("[9:4]", "Negotiated Link Width", "Current internal link width encoding."), makeChapter7Reserved("[15:10]")], "[15:0]"]
+          ["08h", "Root Complex Link Control / Status", [makeChapter7Flag("[0]", "Link Disable", "Disables the internal link when supported."), makeChapter7Reserved("[15:1]"), makeChapter7Bit("[19:16]", "Current Link Speed", "Current internal link speed encoding."), makeChapter7Bit("[25:20]", "Negotiated Link Width", "Current internal link width encoding."), makeChapter7Reserved("[31:26]")]]
         ]
       },
       {
@@ -3269,8 +3310,7 @@
         description: "Controls multicast group addressing, receive, and blocking behavior.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Multicast Capability", [makeChapter7Bit("[5:0]", "MC_Max_Group", "Maximum supported Multicast Group number, encoded as the number of groups minus one."), makeChapter7Reserved("[7:6]"), makeChapter7Bit("[13:8]", "MC_Window_Size_Requested", "For Endpoints, log2 of the requested Multicast Window size."), makeChapter7Reserved("[14]"), makeChapter7Flag("[15]", "MC_ECRC_Regeneration_Supported", "Indicates support for regenerating ECRC on forwarded Multicast TLPs.")], "[15:0]"],
-          ["06h", "Multicast Control", [makeChapter7Bit("[5:0]", "MC_Num_Group", "Number of Multicast Groups configured for use, encoded as the number minus one."), makeChapter7Reserved("[14:6]"), makeChapter7Flag("[15]", "MC_Enable", "Enables the Multicast mechanism for this component.")], "[15:0]"],
+          ["04h", "Multicast Capability / Control", [makeChapter7Bit("[5:0]", "MC_Max_Group", "Maximum supported Multicast Group number, encoded as the number of groups minus one."), makeChapter7Reserved("[7:6]"), makeChapter7Bit("[13:8]", "MC_Window_Size_Requested", "For Endpoints, log2 of the requested Multicast Window size."), makeChapter7Reserved("[14]"), makeChapter7Flag("[15]", "MC_ECRC_Regeneration_Supported", "Indicates support for regenerating ECRC on forwarded Multicast TLPs."), makeChapter7Bit("[21:16]", "MC_Num_Group", "Number of Multicast Groups configured for use, encoded as the number minus one."), makeChapter7Reserved("[30:22]"), makeChapter7Flag("[31]", "MC_Enable", "Enables the Multicast mechanism for this component.")]],
           ["08h", "MC Base Address", [makeChapter7Bit("[5:0]", "MC_Index_Position", "Bit position of the least-significant Multicast Group number bit in the address."), makeChapter7Reserved("[11:6]"), makeChapter7Bit("[31:12]", "MC_Base_Address [31:12]", "Lower portion of the Multicast address range base address.")]],
           ["0Ch", "MC Base Address Upper", [makeChapter7Bit("[31:0]", "MC_Base_Address [63:32]", "Upper 32 bits of the Multicast address range base address.")]],
           ["10h", "MC Receive Low", [makeChapter7Bit("[31:0]", "MC_Receive [31:0]", "Each Set bit accepts or forwards TLPs for the corresponding Multicast Group.")]],
@@ -3292,8 +3332,7 @@
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "DPA Capability", [makeChapter7Bit("[4:0]", "Substate_Max", "Maximum substate number; total supported substates equal this value plus one."), makeChapter7Reserved("[7:5]"), makeChapter7Bit("[9:8]", "Transition Latency Unit", "Scale applied to Transition Latency Value 0 and 1: 1 ms, 10 ms, or 100 ms."), makeChapter7Reserved("[11:10]"), makeChapter7Bit("[13:12]", "Power Allocation Scale", "Scale applied to each Substate Power Allocation value."), makeChapter7Reserved("[15:14]"), makeChapter7Bit("[23:16]", "Transition Latency Value 0", "First maximum transition latency value."), makeChapter7Bit("[31:24]", "Transition Latency Value 1", "Second maximum transition latency value.")]],
           ["08h", "DPA Latency Indicator", [makeChapter7Bit("[31:0]", "Transition Latency Indicator Bits", "For each supported substate, selects Transition Latency Value 0 or Transition Latency Value 1.")]],
-          ["0Ch", "DPA Status", [makeChapter7Bit("[4:0]", "Substate Status", "Current DPA substate."), makeChapter7Reserved("[7:5]"), makeChapter7Flag("[8]", "Substate Control Enabled", "When Set, Substate Control determines the current substate; software clears this bit by writing 1."), makeChapter7Reserved("[15:9]")], "[15:0]"],
-          ["0Eh", "DPA Control", [makeChapter7Bit("[4:0]", "Substate Control", "Requested Function substate when Substate Control Enabled is Set."), makeChapter7Reserved("[15:5]")], "[15:0]"],
+          ["0Ch", "DPA Control / Status", [makeChapter7Bit("[4:0]", "Substate Status", "Current DPA substate."), makeChapter7Reserved("[7:5]"), makeChapter7Flag("[8]", "Substate Control Enabled", "When Set, Substate Control determines the current substate; software clears this bit by writing 1."), makeChapter7Reserved("[15:9]"), makeChapter7Bit("[20:16]", "Substate Control", "Requested Function substate when Substate Control Enabled is Set."), makeChapter7Reserved("[31:21]")]],
           ["10h", "DPA Power Allocation Array", [makeChapter7Bit("[7:0]", "Substate Power Allocation", "Power allocation value for the associated substate, scaled by Power Allocation Scale."), makeChapter7Reserved("[31:8]")]]
         ]
       },
@@ -3316,10 +3355,8 @@
         description: "Controls containment and exposes conditional RP PIO registers followed by variable-length logs.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "DPC Capability", [makeChapter7Bit("[4:0]", "DPC Interrupt Message Number", "MSI/MSI-X vector used for DPC interrupts."), makeChapter7Flag("[5]", "RP Extensions for DPC", "Indicates support for Root Port-specific DPC extensions and RP PIO logging."), makeChapter7Flag("[6]", "Poisoned TLP Egress Blocking Supported", "Supports blocking transmission of poisoned TLPs."), makeChapter7Flag("[7]", "DPC Software Triggering Supported", "Supports software-triggered DPC."), makeChapter7Bit("[11:8]", "RP PIO Log Size [3:0]", "Low four bits of the number of DWORDs allocated for RP PIO logs."), makeChapter7Flag("[12]", "DL_Active ERR_COR Signaling Supported", "Supports ERR_COR signaling when the Link enters DL_Active."), makeChapter7Bit("[13]", "RP PIO Log Size [4]", "High bit of RP PIO Log Size for Flit Mode."), makeChapter7Reserved("[15:14]")], "[15:0]"],
-          ["06h", "DPC Control", [makeChapter7Bit("[1:0]", "DPC Trigger Enable", "Enables DPC and selects whether ERR_NONFATAL also triggers containment."), makeChapter7Flag("[2]", "DPC Completion Control", "Selects CA or UR Completion Status for Completions formed during DPC."), makeChapter7Flag("[3]", "DPC Interrupt Enable", "Enables interrupt generation when DPC triggers."), makeChapter7Flag("[4]", "DPC ERR_COR Enable", "Enables ERR_COR signaling when DPC triggers."), makeChapter7Flag("[5]", "Poisoned TLP Egress Blocking Enable", "Enables blocking of poisoned TLP transmission."), makeChapter7Flag("[6]", "DPC Software Trigger", "Writing 1 triggers DPC when enabled and supported."), makeChapter7Flag("[7]", "DL_Active ERR_COR Enable", "Enables ERR_COR signaling on transition to DL_Active."), makeChapter7Flag("[8]", "DPC SIG_SFW Enable", "Enables ECS SIG_SFW ERR_COR signaling for applicable DPC events."), makeChapter7Reserved("[15:9]")], "[15:0]"],
-          ["08h", "DPC Status", [makeChapter7Flag("[0]", "DPC Trigger Status", "Indicates that DPC has triggered and the Port is in containment."), makeChapter7Bit("[2:1]", "DPC Trigger Reason", "Reports uncorrectable error, ERR_NONFATAL, ERR_FATAL, or an extended trigger reason."), makeChapter7Flag("[3]", "DPC Interrupt Status", "Indicates that DPC triggered while interrupt signaling was enabled."), makeChapter7Flag("[4]", "DPC RP Busy", "Indicates Root Port internal activity that must complete before clearing Trigger Status."), makeChapter7Bit("[6:5]", "DPC Trigger Reason Extension", "Reports RP PIO error or software trigger when Trigger Reason is the extension encoding."), makeChapter7Reserved("[7]"), makeChapter7Bit("[12:8]", "RP PIO First Error Pointer", "Identifies the first Set error bit in RP PIO Status."), makeChapter7Flag("[13]", "DPC SIG_SFW Status", "Indicates that a SIG_SFW ERR_COR Message was sent for a DPC event."), makeChapter7Reserved("[15:14]")], "[15:0]"],
-          ["0Ah", "DPC Error Source ID", [makeChapter7Bit("[15:0]", "DPC Error Source ID", "Requester ID associated with the DPC event.")], "[15:0]"],
+          ["04h", "DPC Capability / Control", [makeChapter7Bit("[4:0]", "DPC Interrupt Message Number", "MSI/MSI-X vector used for DPC interrupts."), makeChapter7Flag("[5]", "RP Extensions for DPC", "Indicates support for Root Port-specific DPC extensions and RP PIO logging."), makeChapter7Flag("[6]", "Poisoned TLP Egress Blocking Supported", "Supports blocking transmission of poisoned TLPs."), makeChapter7Flag("[7]", "DPC Software Triggering Supported", "Supports software-triggered DPC."), makeChapter7Bit("[11:8]", "RP PIO Log Size [3:0]", "Low four bits of the number of DWORDs allocated for RP PIO logs."), makeChapter7Flag("[12]", "DL_Active ERR_COR Signaling Supported", "Supports ERR_COR signaling when the Link enters DL_Active."), makeChapter7Bit("[13]", "RP PIO Log Size [4]", "High bit of RP PIO Log Size for Flit Mode."), makeChapter7Reserved("[15:14]"), makeChapter7Bit("[17:16]", "DPC Trigger Enable", "Enables DPC and selects whether ERR_NONFATAL also triggers containment."), makeChapter7Flag("[18]", "DPC Completion Control", "Selects CA or UR Completion Status for Completions formed during DPC."), makeChapter7Flag("[19]", "DPC Interrupt Enable", "Enables interrupt generation when DPC triggers."), makeChapter7Flag("[20]", "DPC ERR_COR Enable", "Enables ERR_COR signaling when DPC triggers."), makeChapter7Flag("[21]", "Poisoned TLP Egress Blocking Enable", "Enables blocking of poisoned TLP transmission."), makeChapter7Flag("[22]", "DPC Software Trigger", "Writing 1 triggers DPC when enabled and supported."), makeChapter7Flag("[23]", "DL_Active ERR_COR Enable", "Enables ERR_COR signaling on transition to DL_Active."), makeChapter7Flag("[24]", "DPC SIG_SFW Enable", "Enables ECS SIG_SFW ERR_COR signaling for applicable DPC events."), makeChapter7Reserved("[31:25]")]],
+          ["08h", "DPC Status / Error Source ID", [makeChapter7Flag("[0]", "DPC Trigger Status", "Indicates that DPC has triggered and the Port is in containment."), makeChapter7Bit("[2:1]", "DPC Trigger Reason", "Reports uncorrectable error, ERR_NONFATAL, ERR_FATAL, or an extended trigger reason."), makeChapter7Flag("[3]", "DPC Interrupt Status", "Indicates that DPC triggered while interrupt signaling was enabled."), makeChapter7Flag("[4]", "DPC RP Busy", "Indicates Root Port internal activity that must complete before clearing Trigger Status."), makeChapter7Bit("[6:5]", "DPC Trigger Reason Extension", "Reports RP PIO error or software trigger when Trigger Reason is the extension encoding."), makeChapter7Reserved("[7]"), makeChapter7Bit("[12:8]", "RP PIO First Error Pointer", "Identifies the first Set error bit in RP PIO Status."), makeChapter7Flag("[13]", "DPC SIG_SFW Status", "Indicates that a SIG_SFW ERR_COR Message was sent for a DPC event."), makeChapter7Reserved("[15:14]"), makeChapter7Bit("[31:16]", "DPC Error Source ID", "Requester ID associated with the DPC event.")]],
           ["0Ch", "RP PIO Status", chapter7RpPioBits("Status")],
           ["10h", "RP PIO Mask", chapter7RpPioBits("Mask")],
           ["14h", "RP PIO Severity", chapter7RpPioBits("Severity")],
@@ -3401,8 +3438,7 @@
         description: "SFI capability, control, status, and CAM access registers.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "SFI Capability", [makeChapter7Flag("[0]", "SFI OOB PD Supported", "The slot supports reporting out-of-band presence detect state."), makeChapter7Flag("[1]", "Enhanced SFI Supported", "The capability supports the Enhanced SFI feature set."), makeChapter7Flag("[2]", "SFI CAM Unsupported", "The SFI Configuration Access Mechanism is not supported."), makeChapter7Flag("[3]", "SFI Hidden In-Band", "The capability is hidden from in-band Configuration Requests but remains visible through PCIe-MI."), makeChapter7Reserved("[15:4]")], "[15:0]"],
-          ["06h", "SFI Control", [makeChapter7Flag("[0]", "SFI PD State Mask", "Masks Presence Detect State in Slot Status."), makeChapter7Flag("[1]", "SFI DLL State Mask", "Masks Data Link Layer Link Active in Link Status."), makeChapter7Flag("[2]", "SFI OOB PD Changed Enable", "Enables ERR_COR signaling for an out-of-band presence-detect change."), makeChapter7Flag("[3]", "SFI DLL State Changed Enable", "Enables ERR_COR signaling for a Data Link Layer state change."), makeChapter7Bit("[5:4]", "SFI DPF Control", "Selects the Downstream Port Filtering level."), makeChapter7Flag("[6]", "SFI HPS Suppress", "Suppresses Hot-Plug Surprise capability and behavior."), makeChapter7Flag("[7]", "SFI DRS Mask", "Masks DRS Message Received in Link Status 2."), makeChapter7Flag("[8]", "SFI DRS Signaling Enable", "Enables ERR_COR signaling for SFI DRS Received."), makeChapter7Flag("[9]", "SFI DRS Trigger", "Writing one emulates receipt of a DRS Message when not masked."), makeChapter7Bit("[11:10]", "SFI Quarantine Mode", "Selects the conditions that transition the Port into quarantine."), makeChapter7Flag("[12]", "SFI RO In-Band", "Forces in-band accesses to this capability to be read-only."), makeChapter7Reserved("[15:13]")], "[15:0]"],
+          ["04h", "SFI Capability / Control", [makeChapter7Flag("[0]", "SFI OOB PD Supported", "The slot supports reporting out-of-band presence detect state."), makeChapter7Flag("[1]", "Enhanced SFI Supported", "The capability supports the Enhanced SFI feature set."), makeChapter7Flag("[2]", "SFI CAM Unsupported", "The SFI Configuration Access Mechanism is not supported."), makeChapter7Flag("[3]", "SFI Hidden In-Band", "The capability is hidden from in-band Configuration Requests but remains visible through PCIe-MI."), makeChapter7Reserved("[15:4]"), makeChapter7Flag("[16]", "SFI PD State Mask", "Masks Presence Detect State in Slot Status."), makeChapter7Flag("[17]", "SFI DLL State Mask", "Masks Data Link Layer Link Active in Link Status."), makeChapter7Flag("[18]", "SFI OOB PD Changed Enable", "Enables ERR_COR signaling for an out-of-band presence-detect change."), makeChapter7Flag("[19]", "SFI DLL State Changed Enable", "Enables ERR_COR signaling for a Data Link Layer state change."), makeChapter7Bit("[21:20]", "SFI DPF Control", "Selects the Downstream Port Filtering level."), makeChapter7Flag("[22]", "SFI HPS Suppress", "Suppresses Hot-Plug Surprise capability and behavior."), makeChapter7Flag("[23]", "SFI DRS Mask", "Masks DRS Message Received in Link Status 2."), makeChapter7Flag("[24]", "SFI DRS Signaling Enable", "Enables ERR_COR signaling for SFI DRS Received."), makeChapter7Flag("[25]", "SFI DRS Trigger", "Writing one emulates receipt of a DRS Message when not masked."), makeChapter7Bit("[27:26]", "SFI Quarantine Mode", "Selects the conditions that transition the Port into quarantine."), makeChapter7Flag("[28]", "SFI RO In-Band", "Forces in-band accesses to this capability to be read-only."), makeChapter7Reserved("[31:29]")]],
           ["08h", "SFI Status", [makeChapter7Flag("[0]", "SFI PD State", "Actual in-band presence-detect state."), makeChapter7Flag("[1]", "SFI OOB PD State", "Actual out-of-band presence-detect state."), makeChapter7Flag("[2]", "SFI OOB PD Changed", "The out-of-band presence-detect state changed."), makeChapter7Flag("[3]", "SFI DLL State", "Actual Data Link Layer active state."), makeChapter7Flag("[4]", "SFI DLL State Changed", "The Data Link Layer state changed."), makeChapter7Flag("[5]", "SFI DRS Received", "Actual DRS Message Received state."), makeChapter7Flag("[6]", "SFI Quarantine", "The Port is quarantined."), makeChapter7Reserved("[31:7]")]],
           ["0Ch", "SFI CAM Address", [makeChapter7Bit("[27:0]", "SFI CAM Address", "Target Bus, Device, Function, Extended Register Number, and Register Number for SFI CAM access."), makeChapter7Reserved("[31:28]")]],
           ["10h", "SFI CAM Data", [makeChapter7Bit("[31:0]", "SFI CAM Data", "Data transferred by the selected SFI CAM read or write operation.")]]
@@ -3491,7 +3527,7 @@
         ]
       }
     ];
-    
+
     const chapter7ById = Object.fromEntries(chapter7MissingStructures.map(item => [item.id, item]));
     const chapter7Register = (id, name) => chapter7ById[id].registers.find(register => register[1] === name);
 
@@ -3634,17 +3670,17 @@
     }
 
     structures.forEach(addUnspecifiedBitRanges);
-    
+
     /* ===== State ===== */
     let currentStructureId = structures[0]?.id;
     let currentFieldKey = null;
-    
+
     /* ===== DOM References ===== */
     const structListBody = document.getElementById("structure-list-body");
     const structTitle = document.getElementById("struct-title");
     const bitfieldContainer = document.getElementById("bitfield-container");
     const bitfieldPlaceholder = document.getElementById("bitfield-placeholder");
-    
+
     const fieldTitle = document.getElementById("field-title");
     const fieldSubtitle = document.getElementById("field-subtitle");
     const bitBarContainer = document.getElementById("bit-bar-container");
@@ -3652,14 +3688,14 @@
     const bitBar = document.getElementById("bit-bar");
     const bitList = document.getElementById("bit-list");
     const bitsPlaceholder = document.getElementById("bits-placeholder");
-    
+
     /* ===== Resizable Logic ===== */
     // ... (Keep existing resizable logic) ...
     const splitterH = document.getElementById("splitter-h");
     const splitterV = document.getElementById("splitter-v");
     const topPane = document.getElementById("top-pane");
     const leftPane = document.querySelector(".bottom-left");
-    
+
     // Horizontal Splitter
     let isDraggingH = false;
     splitterH.addEventListener("mousedown", (e) => {
@@ -3668,7 +3704,7 @@
       document.body.style.cursor = "row-resize";
       e.preventDefault();
     });
-    
+
     // Vertical Splitter
     let isDraggingV = false;
     splitterV.addEventListener("mousedown", (e) => {
@@ -3677,7 +3713,7 @@
       document.body.style.cursor = "col-resize";
       e.preventDefault();
     });
-    
+
     document.addEventListener("mousemove", (e) => {
       if (isDraggingH) {
         const toolbarHeight = document.querySelector(".toolbar").offsetHeight;
@@ -3693,7 +3729,7 @@
         }
       }
     });
-    
+
     document.addEventListener("mouseup", () => {
       if (isDraggingH) {
         isDraggingH = false;
@@ -3706,9 +3742,9 @@
         document.body.style.cursor = "";
       }
     });
-    
+
     /* ===== Render functions ===== */
-    
+
     function renderStructureList() {
       structListBody.innerHTML = "";
       structures.forEach(struct => {
@@ -3716,80 +3752,80 @@
         tr.className = "struct-row";
         tr.dataset.id = struct.id;
         if (struct.id === currentStructureId) tr.classList.add("table-active");
-    
+
         const tdId = document.createElement("td");
         const tdType = document.createElement("td");
         const tdName = document.createElement("td");
         const tdDesc = document.createElement("td");
-    
+
         tdId.textContent = struct.id;
         tdType.textContent = struct.type || "";
         tdName.textContent = struct.name;
         tdDesc.textContent = struct.description || "";
-    
+
         tr.append(tdId, tdType, tdName, tdDesc);
-    
+
         tr.addEventListener("click", () => {
           currentStructureId = struct.id;
           currentFieldKey = pickDefaultFieldKey(struct);
           updateAll();
         });
-    
+
         structListBody.appendChild(tr);
       });
     }
-    
+
     const pickDefaultFieldKey = struct => Object.keys(struct?.bitfields || {})[0] || null;
-    
+
     function renderBitfieldMap(struct) {
       bitfieldContainer.innerHTML = "";
       structTitle.textContent = struct.name || "Structure";
-    
+
       const hasRows = Array.isArray(struct.rows) && struct.rows.length > 0;
       bitfieldPlaceholder.style.display = hasRows ? "none" : "block";
       if (!hasRows) return;
-    
+
       struct.rows.forEach(row => {
         const rowDiv = document.createElement("div");
         rowDiv.className = "struct-row-flex";
-    
+
         // 1. Content Area (Fields)
         const contentDiv = document.createElement("div");
         contentDiv.className = "struct-content-flex";
-    
+
         // Input is low-to-high; render high-to-low.
         [...(row.fields || [])].reverse().forEach(field => {
           const fieldDiv = document.createElement("div");
           fieldDiv.className = "struct-field-flex";
           fieldDiv.dataset.fieldKey = field.id;
           fieldDiv.textContent = field.label;
-    
+
           fieldDiv.style.width = `${parseRangeWidth(field.range) / 32 * 100}%`;
-    
+
           if (field.id === currentFieldKey) {
             fieldDiv.classList.add("selected");
           }
-    
+
           fieldDiv.addEventListener("click", () => {
             currentFieldKey = field.id;
             updateBitfieldSelection();
             renderBitDetails(struct);
           });
-    
+
           contentDiv.appendChild(fieldDiv);
         });
-    
+
         // 2. Offset (Right)
         const offsetDiv = document.createElement("div");
         offsetDiv.className = "struct-offset-flex";
         offsetDiv.textContent = row.offset;
         offsetDiv.title = row.condition || row.offset;
         rowDiv.append(contentDiv, offsetDiv);
-    
+
         bitfieldContainer.appendChild(rowDiv);
       });
     }
-    
+
     function parseRangeWidth(rangeStr) {
       // rangeStr example: "[31:0]" or "[15:0]" or "[7]"
       if (!rangeStr) return 32;
@@ -3799,37 +3835,37 @@
       const low = match[2] ? parseInt(match[2], 10) : high;
       return (high - low) + 1;
     }
-    
+
     function updateBitfieldSelection() {
       bitfieldContainer.querySelectorAll(".struct-field-flex").forEach(cell =>
         cell.classList.toggle("selected", cell.dataset.fieldKey === currentFieldKey));
     }
-    
+
     function renderBitDetails(struct) {
       bitList.innerHTML = "";
       bitsPlaceholder.style.display = "none";
       bitBarContainer.style.display = "none";
       fieldSubtitle.textContent = "";
-    
+
       if (!currentFieldKey || !struct.bitfields || !struct.bitfields[currentFieldKey]) {
         fieldTitle.textContent = "Select a register";
         bitsPlaceholder.style.display = "block";
         return;
       }
-    
+
       const field = struct.bitfields[currentFieldKey];
       fieldTitle.textContent = field.name || currentFieldKey;
       fieldSubtitle.textContent = `(${field.name || currentFieldKey})`; // Mimic "Status (Status)"
-    
+
       // 1. Render Bit Bar
       bitBarContainer.style.display = "block";
       renderBitBar(field);
-    
+
       // 2. Render Description List
-      (field.bits || []).forEach(bit => {
+      visibleFieldBits(field).forEach(bit => {
         const li = document.createElement("li");
         li.className = "bit-list-item";
-    
+
         const titleDiv = document.createElement("div");
         titleDiv.className = "bit-list-title";
         // Format: "3 - Interrupt Status (RO)"
@@ -3837,13 +3873,13 @@
         // Parse range to see if single bit or range
         const rangeText = bit.range.replace(/[\[\]]/g, "");
         titleDiv.textContent = `${rangeText} - ${bit.title}`;
-    
+
         const descDiv = document.createElement("div");
         descDiv.className = "bit-list-desc";
         descDiv.textContent = bit.description;
-    
+
         li.append(titleDiv, descDiv);
-    
+
         if (bit.values) {
           const valuesTable = document.createElement("table");
           valuesTable.className = "bit-values-table";
@@ -3860,50 +3896,71 @@
           }
           li.appendChild(valuesTable);
         }
-    
+
         bitList.appendChild(li);
       });
     }
-    
+
     function renderBitBar(field) {
       bitNumbers.innerHTML = "";
       bitBar.innerHTML = "";
-    
+
       const { high, low } = parseRange(field.range);
-    
+
       // Create numbers row
       const numSpanHigh = document.createElement("span");
       numSpanHigh.textContent = high;
       const numSpanLow = document.createElement("span");
       numSpanLow.textContent = low;
-    
+
       bitNumbers.append(numSpanHigh, numSpanLow);
-    
+
       // Create bit boxes
       for (let b = high; b >= low; b--) {
         const box = document.createElement("div");
         box.className = "bit-box";
-    
+
         // Check if this bit is defined in field.bits
         const bitDef = (field.bits || []).find(def => {
           const r = parseRange(def.range);
           return b <= r.high && b >= r.low;
         });
-    
+
         if (bitDef) {
-          // If defined, check if it is Reserved. 
+          // If defined, check if it is Reserved.
           // If NOT Reserved, add .active (white). Reserved stays default (gray).
           box.classList.toggle("active", !/reserved|rsvd|manual verification/i.test(bitDef.title));
           box.title = `Bit ${b}: ${bitDef.title}`;
         } else {
           box.title = `Bit ${b}`;
         }
-    
+
         bitBar.appendChild(box);
       }
     }
-    
-    
+
+    function visibleFieldBits(field) {
+      const fieldRange = parseRange(field.range);
+
+      return (field.bits || []).map(bit => {
+        const bitRange = parseRange(bit.range);
+        const high = Math.min(bitRange.high, fieldRange.high);
+        const low = Math.max(bitRange.low, fieldRange.low);
+
+        if (high < low) return null;
+
+        return {
+          ...bit,
+          range: formatRange(high, low)
+        };
+      }).filter(Boolean);
+    }
+
+    function formatRange(high, low) {
+      return high === low ? `[${high}]` : `[${high}:${low}]`;
+    }
+
+
     function parseRange(rangeStr) {
       const match = rangeStr.match(/\[(\d+)(?::(\d+))?\]/);
       if (!match) return { high: 0, low: 0 };
@@ -3911,7 +3968,7 @@
       const low = match[2] ? parseInt(match[2], 10) : high;
       return { high, low };
     }
-    
+
     function updateAll() {
       renderStructureList();
       const struct = structures.find(s => s.id === currentStructureId);
@@ -3920,7 +3977,7 @@
         renderBitDetails(struct);
       }
     }
-    
+
     // Init
     updateAll();
   </script>
