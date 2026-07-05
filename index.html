@@ -4003,7 +4003,7 @@
           ...bit,
           range: formatRange(high, low)
         };
-      }).filter(Boolean);
+      }).filter(Boolean).sort((a, b) => parseRange(a.range).low - parseRange(b.range).low);
     }
 
     function formatRange(high, low) {
