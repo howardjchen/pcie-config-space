@@ -1471,7 +1471,7 @@
         id: "msix_cap",
         type: "Cap",
         name: "MSI-X Capability",
-        description: "MSI-X table and PBA location / control.",
+        description: "MSI-X capability control and locations for the MSI-X Table and PBA.",
         rows: [
           {
             offset: "00h",
@@ -1484,38 +1484,16 @@
           {
             offset: "04h",
             fields: [
-              { id: "msix_table", label: "Table BIR/Offset", range: "[31:0]" }
+              { id: "msix_table_bir", label: "Table BIR", range: "[2:0]" },
+              { id: "msix_table_offset", label: "Table Offset", range: "[31:3]" }
             ]
           },
           {
             offset: "08h",
             fields: [
-              { id: "msix_pba", label: "PBA BIR/Offset", range: "[31:0]" }
+              { id: "msix_pba_bir", label: "PBA BIR", range: "[2:0]" },
+              { id: "msix_pba_offset", label: "PBA Offset", range: "[31:3]" }
             ]
-          },
-          {
-            offset: "Table + 00h",
-            fields: [{ id: "msix_table_addr_lo", label: "Message Address Lower", range: "[31:0]" }]
-          },
-          {
-            offset: "Table + 04h",
-            fields: [{ id: "msix_table_addr_hi", label: "Message Address Upper", range: "[31:0]" }]
-          },
-          {
-            offset: "Table + 08h",
-            fields: [{ id: "msix_table_data", label: "Message Data", range: "[31:0]" }]
-          },
-          {
-            offset: "Table + 0Ch",
-            fields: [{ id: "msix_vector_ctrl", label: "Vector Control", range: "[31:0]" }]
-          },
-          {
-            offset: "PBA + 8*(k div 64)",
-            fields: [{ id: "msix_pending_bits", label: "Pending Bit Array QWORD bits 31:0", range: "[31:0]" }]
-          },
-          {
-            offset: "PBA + 8*(k div 64) + 4",
-            fields: [{ id: "msix_pending_bits_hi", label: "Pending Bit Array QWORD bits 63:32", range: "[31:0]" }]
           }
         ],
         bitfields: {
@@ -1532,14 +1510,10 @@
               { range: "[15]", title: "MSI-X Enable", description: "Enables MSI-X.", values: { "0": "Disable", "1": "Enable" } }
             ]
           },
-          msix_table: { name: "Table Offset / BIR", offset: "04h", range: "[31:0]", bits: [{ range: "[2:0]", title: "Table BIR", description: "Read-only BAR/EA selector 0 through 5; 6 and 7 are reserved, and Type 1 Functions also reserve 2 through 5." }, { range: "[31:3]", title: "Table Offset", description: "Read-only QWORD-aligned offset. MSI-X Table/PBA may share a naturally aligned 4-KB range but must not overlap; non-MSI-X space must not share that range. For SR-IOV Devices, use the PF SR-IOV System Page Size instead of fixed 4 KB." }] },
-          msix_pba: { name: "PBA Offset / BIR", offset: "08h", range: "[31:0]", bits: [{ range: "[2:0]", title: "PBA BIR", description: "Read-only BAR/EA selector 0 through 5; 6 and 7 are reserved, and Type 1 Functions also reserve 2 through 5." }, { range: "[31:3]", title: "PBA Offset", description: "Read-only QWORD-aligned offset. MSI-X Table/PBA may share a naturally aligned 4-KB range but must not overlap; non-MSI-X space must not share that range. For SR-IOV Devices, use the PF SR-IOV System Page Size instead of fixed 4 KB." }] },
-          msix_table_addr_lo: { name: "MSI-X Table Message Address Lower", offset: "Table base + k*16 + 00h", range: "[31:0]", bits: [{ range: "[1:0]", title: "Reserved", description: "Reserved; reads zero and software writes zero." }, { range: "[31:2]", title: "Message Address Lower", description: "Read/write lower message-address bits." }] },
-          msix_table_addr_hi: { name: "MSI-X Table Message Address Upper", offset: "Table base + k*16 + 04h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Message Address Upper", description: "Read/write upper message-address bits." }] },
-          msix_table_data: { name: "MSI-X Table Message Data", offset: "Table base + k*16 + 08h", range: "[31:0]", bits: [{ range: "[31:0]", title: "Message Data", description: "Read/write MSI-X message data." }] },
-          msix_vector_ctrl: { name: "MSI-X Table Vector Control", offset: "Table base + k*16 + 0Ch", range: "[31:0]", bits: [{ range: "[0]", title: "Mask Bit", description: "Read/write per-vector mask; defaults to one." }, { range: "[15:1]", title: "Reserved", description: "RW or RsvdP; software preserves these bits." }, { range: "[23:16]", title: "ST Lower", description: "Must be RW when a TPH Requester capability is present and ST Table Location = 10b; otherwise RW or RsvdP and software preserves it." }, { range: "[31:24]", title: "ST Upper", description: "Must be RW when a TPH Requester capability is present, ST Table Location = 10b, and Extended TPH Requester Supported is Set; otherwise RW or RsvdP and software preserves it." }] },
-          msix_pending_bits: { name: "MSI-X Pending Bit Array QWORD, lower DWORD", offset: "PBA base + (k div 64)*8", range: "[31:0]", bits: [{ range: "[31:0]", title: "Pending Bits 31:0", description: "Lower half of one 64-bit PBA entry. Each associated bit reports one pending vector; unused trailing bits are Reserved. RO or RW, but software only reads." }] },
-          msix_pending_bits_hi: { name: "MSI-X Pending Bit Array QWORD, upper DWORD", offset: "PBA base + (k div 64)*8 + 4", range: "[31:0]", bits: [{ range: "[31:0]", title: "Pending Bits 63:32", description: "Upper half paired with the preceding DWORD to form the defined 64-bit PBA entry. RO or RW, but software only reads." }] }
+          msix_table_bir: { name: "Table BIR", offset: "04h", range: "[2:0]", bits: [{ range: "[2:0]", title: "Table BIR", description: "Selects the BAR or matching Enhanced Allocation entry that maps the MSI-X Table; values 2–5 are also reserved for Type 1 Functions.", values: { "0": "BAR at 10h", "1": "BAR at 14h", "2": "BAR at 18h", "3": "BAR at 1Ch", "4": "BAR at 20h", "5": "BAR at 24h", "6": "Reserved", "7": "Reserved" } }] },
+          msix_table_offset: { name: "Table Offset", offset: "04h", range: "[31:3]", bits: [{ range: "[31:3]", title: "Table Offset", description: "QWORD-aligned offset from the address selected by Table BIR to the MSI-X Table; for VFs, relative to the VF Memory Space." }] },
+          msix_pba_bir: { name: "PBA BIR", offset: "08h", range: "[2:0]", bits: [{ range: "[2:0]", title: "PBA BIR", description: "Selects the BAR or matching Enhanced Allocation entry that maps the MSI-X PBA; values 2–5 are also reserved for Type 1 Functions.", values: { "0": "BAR at 10h", "1": "BAR at 14h", "2": "BAR at 18h", "3": "BAR at 1Ch", "4": "BAR at 20h", "5": "BAR at 24h", "6": "Reserved", "7": "Reserved" } }] },
+          msix_pba_offset: { name: "PBA Offset", offset: "08h", range: "[31:3]", bits: [{ range: "[31:3]", title: "PBA Offset", description: "QWORD-aligned offset from the address selected by PBA BIR to the MSI-X PBA; for VFs, relative to the VF Memory Space." }] }
         }
       },
 
@@ -2321,7 +2295,7 @@
               { range: "[15:1]", title: "Reserved", description: "Reserved." }
             ]
           },
-          lmr_port_status: {
+          lmr_port_sts: {
             name: "Margining Port Status",
             offset: "06h",
             range: "[15:0]",
@@ -2331,35 +2305,30 @@
               { range: "[15:2]", title: "Reserved", description: "Reserved." }
             ]
           },
-          ...Object.fromEntries(Array.from({ length: 16 }, (_, lane) => {
-            const condition = `Present only when Maximum Link Width > ${lane}.`;
-            return [
-              [`lmr_lane_${lane}_ctl`, {
-                name: `Margining Lane ${lane} Control`,
-                offset: `${(0x08 + 4 * lane).toString(16).padStart(2, "0").toUpperCase()}h`,
-                range: "[15:0]",
-                bits: [
-                  { range: "[2:0]", title: "Receiver Number", description: `Selects the Receiver number targeted by the margining command. ${condition}` },
-                  { range: "[5:3]", title: "Margin Type", description: `Selects the margining command or measurement type. ${condition}` },
-                  { range: "[6]", title: "Usage Model", description: `Selects the usage model for the margining operation. ${condition}` },
-                  { range: "[7]", title: "RsvdP", description: "" },
-                  { range: "[15:8]", title: "Margin Payload", description: `Command-specific payload interpreted together with Margin Type. ${condition}` }
-                ]
-              }],
-              [`lmr_lane_${lane}_status`, {
-                name: `Margining Lane ${lane} Status`,
-                offset: `${(0x0A + 4 * lane).toString(16).padStart(2, "0").toUpperCase()}h`,
-                range: "[15:0]",
-                bits: [
-                  { range: "[2:0]", title: "Receiver Number Status", description: `Reports the Receiver number associated with the current margining result. ${condition}` },
-                  { range: "[5:3]", title: "Margin Type Status", description: `Reports the margin type associated with the current result. ${condition}` },
-                  { range: "[6]", title: "Usage Model Status", description: `Reports the usage model associated with the current result. ${condition}` },
-                  { range: "[7]", title: "RsvdP", description: "" },
-                  { range: "[15:8]", title: "Margin Payload Status", description: `Reports the command-specific margining result payload. ${condition}` }
-                ]
-              }]
-            ];
-          }).flat())
+          lmr_lane_ctl: {
+            name: "Margining Lane Control n",
+            offset: "08h + 4*n",
+            range: "[15:0]",
+            bits: [
+              { range: "[2:0]", title: "Receiver Number", description: "Selects the Receiver targeted by the margining command." },
+              { range: "[5:3]", title: "Margin Type", description: "Selects the margining command or measurement type." },
+              { range: "[6]", title: "Usage Model", description: "Selects the usage model for the margining operation." },
+              { range: "[7]", title: "RsvdP", description: "Reserved and preserved by software." },
+              { range: "[15:8]", title: "Margin Payload", description: "Command-specific payload interpreted with Margin Type." }
+            ]
+          },
+          lmr_lane_sts: {
+            name: "Margining Lane Status n",
+            offset: "0Ah + 4*n",
+            range: "[15:0]",
+            bits: [
+              { range: "[2:0]", title: "Receiver Number Status", description: "Reports the Receiver associated with the current margining result." },
+              { range: "[5:3]", title: "Margin Type Status", description: "Reports the margin type associated with the current result." },
+              { range: "[6]", title: "Usage Model Status", description: "Reports the usage model associated with the current result." },
+              { range: "[7]", title: "RsvdP", description: "Reserved and preserved by software." },
+              { range: "[15:8]", title: "Margin Payload Status", description: "Reports the command-specific margining result payload." }
+            ]
+          }
         }
       },
       {
@@ -2382,9 +2351,9 @@
             ]
           },
           {
-            offset: "08h+",
+            offset: "08h + 4*n; 0 <= n < ceil(Egress Control Vector Size / 32)",
             fields: [
-              { id: "acs_egress_vector", label: "Egress Control Vector", range: "[31:0]" }
+              { id: "acs_egress_vector", label: "Egress Control Vector DWORD n (conditional/repeated)", range: "[31:0]" }
             ]
           }
         ],
@@ -2525,18 +2494,12 @@
               { id: "ea_hdr", label: "Capability Header / Num Entries", range: "[31:0]" }
             ]
           },
-          {
-            offset: "04h",
-            fields: [
-              { id: "ea_num_entries", label: "Type 1 Fixed Bus Numbers / First Entry", range: "[31:0]" }
-            ]
-          },
-          {
-            offset: "08h",
-            fields: [
-              { id: "ea_first_entry", label: "EA Entry Header", range: "[31:0]" }
-            ]
-          }
+          { offset: "04h; Type 1 Functions only", fields: [{ id: "ea_fixed_bus", label: "Type 1 Fixed Bus Numbers", range: "[31:0]" }] },
+          { offset: "Entry[i]; starts at 04h for Type 0 or 08h for Type 1; next entry follows Entry Size", fields: [{ id: "ea_first_entry", label: "EA Entry i First DWORD (repeated)", range: "[31:0]" }] },
+          { offset: "Entry[i] + 04h; present for defined entries with Entry Size >= 2", fields: [{ id: "ea_base_low", label: "EA Entry i Base Lower", range: "[31:0]" }] },
+          { offset: "Entry[i] + 08h; present when Entry Size >= 2", fields: [{ id: "ea_max_offset_low", label: "EA Entry i MaxOffset Lower", range: "[31:0]" }] },
+          { offset: "Entry[i] + 0Ch; conditional 64-bit Base or MaxOffset", fields: [{ id: "ea_upper_1", label: "EA Entry i First Upper DWORD", range: "[31:0]" }] },
+          { offset: "Entry[i] + 10h; conditional 64-bit Base and MaxOffset", fields: [{ id: "ea_upper_2", label: "EA Entry i Second Upper DWORD", range: "[31:0]" }] }
         ],
         bitfields: {
           ea_hdr: {
@@ -2550,7 +2513,7 @@
               { range: "[31:22]", title: "Reserved", description: "Reserved." }
             ]
           },
-          ea_num_entries: {
+          ea_fixed_bus: {
             name: "Type 1 Fixed Bus Numbers / Entry Location",
             offset: "04h",
             range: "[31:0]",
@@ -2574,7 +2537,11 @@
               { range: "[30]", title: "Writable", description: "Indicates whether Base, MaxOffset, and applicable field-size bits are software writable." },
               { range: "[31]", title: "Enable", description: "Enables or disables this Enhanced Allocation entry." }
             ]
-          }
+          },
+          ea_base_low: { name: "EA Entry Base Lower", offset: "Entry + 04h", range: "[31:0]", bits: [{ range: "[0]", title: "Reserved", description: "Reserved." }, { range: "[1]", title: "Field Size", description: "Zero selects a 32-bit field; one selects a 64-bit field." }, { range: "[31:2]", title: "Base[31:2]", description: "Lower Base address bits; address bits 1:0 are interpreted as 00b." }] },
+          ea_max_offset_low: { name: "EA Entry MaxOffset Lower", offset: "Entry + 08h", range: "[31:0]", bits: [{ range: "[0]", title: "Reserved", description: "Reserved." }, { range: "[1]", title: "Field Size", description: "Zero selects a 32-bit field; one selects a 64-bit field." }, { range: "[31:2]", title: "MaxOffset[31:2]", description: "Lower MaxOffset bits; bits 1:0 are interpreted as 11b." }] },
+          ea_upper_1: { name: "EA Entry First Upper DWORD", offset: "Entry + 0Ch", range: "[31:0]", bits: [{ range: "[31:0]", title: "Base[63:32] or MaxOffset[63:32]", description: "First required upper DWORD, ordered according to the 64-bit fields selected by their Field Size bits." }] },
+          ea_upper_2: { name: "EA Entry Second Upper DWORD", offset: "Entry + 10h", range: "[31:0]", bits: [{ range: "[31:0]", title: "MaxOffset[63:32]", description: "Second upper DWORD when both Base and MaxOffset are 64-bit fields." }] }
         }
       }
 
@@ -2597,10 +2564,10 @@
                                      { id: "vc_cap2_offset",   label: "VC Arb Table Offset",                    range: "[31:24]" }] },
           { offset: "0Ch",  fields: [{ id: "vc_ctrl",          label: "Port VC Control Register",               range: "[15:0]"  },
                                      { id: "vc_status",        label: "Port VC Status Register",                range: "[31:16]" }] },
-          { offset: "10h",  fields: [{ id: "vc_rescap_body",   label: "VC Resource Capability Register (0)",    range: "[23:0]"  },
+          { offset: "10h + 0Ch*n; 0 <= n <= Extended VC Count",  fields: [{ id: "vc_rescap_body",   label: "VC Resource Capability Register n (repeated)",    range: "[23:0]"  },
                                      { id: "vc_rescap_offset", label: "Port Arb Table Offset",                  range: "[31:24]" }] },
-          { offset: "14h",  fields: [{ id: "vc_resctl",        label: "VC Resource Control Register (0)",       range: "[31:0]"  }] },
-          { offset: "18h",  fields: [{ id: "vc_ressts",        label: "VC Resource Status Register (0)",        range: "[15:0]"  },
+          { offset: "14h + 0Ch*n; 0 <= n <= Extended VC Count",  fields: [{ id: "vc_resctl",        label: "VC Resource Control Register n (repeated)",       range: "[31:0]"  }] },
+          { offset: "18h + 0Ch*n; 0 <= n <= Extended VC Count",  fields: [{ id: "vc_ressts",        label: "VC Resource Status Register n (repeated)",        range: "[15:0]"  },
                                      { id: "vc_rsvdp",         label: "RsvdP",                                  range: "[31:16]" }] }
         ],
         bitfields: {
@@ -2632,10 +2599,10 @@
                                      { id: "mfvc_cap2_offset",   label: "VC Arb Table Offset",                       range: "[31:24]" }] },
           { offset: "0Ch",  fields: [{ id: "mfvc_ctrl",          label: "MFVC Port VC Control Register",             range: "[15:0]"  },
                                      { id: "mfvc_status",        label: "MFVC Port VC Status Register",              range: "[31:16]" }] },
-          { offset: "10h",  fields: [{ id: "mfvc_rescap_body",   label: "MFVC VC Resource Capability Register (0)",  range: "[23:0]"  },
+          { offset: "10h + 0Ch*n; 0 <= n <= Extended VC Count",  fields: [{ id: "mfvc_rescap_body",   label: "MFVC VC Resource Capability Register n (repeated)",  range: "[23:0]"  },
                                      { id: "mfvc_rescap_offset", label: "Function Arb Table Offset",                 range: "[31:24]" }] },
-          { offset: "14h",  fields: [{ id: "mfvc_resctl",        label: "MFVC VC Resource Control Register (0)",     range: "[31:0]"  }] },
-          { offset: "18h",  fields: [{ id: "mfvc_ressts",        label: "MFVC VC Resource Status Register (0)",      range: "[15:0]"  },
+          { offset: "14h + 0Ch*n; 0 <= n <= Extended VC Count",  fields: [{ id: "mfvc_resctl",        label: "MFVC VC Resource Control Register n (repeated)",     range: "[31:0]"  }] },
+          { offset: "18h + 0Ch*n; 0 <= n <= Extended VC Count",  fields: [{ id: "mfvc_ressts",        label: "MFVC VC Resource Status Register n (repeated)",      range: "[15:0]"  },
                                      { id: "mfvc_rsvdp",         label: "RsvdP",                                     range: "[31:16]" }] }
         ],
         bitfields: {
@@ -2929,6 +2896,19 @@
       const bitfields = {};
       const rows = def.registers.map(register => {
         const offset = register[0];
+        const subfields = register[4];
+        if (subfields) {
+          const fields = subfields.map(({ id, label, range, offset: fieldOffset = offset, bits }) => {
+            const fieldId = id || chapter7FieldId(def.id, label);
+            if (offset === "00h" && chapter7CapabilityIds[def.id]) {
+              const capabilityId = bits.find(bit => bit.range === "[7:0]");
+              if (capabilityId) capabilityId.description = `ID = ${chapter7CapabilityIds[def.id]} for ${def.name}.`;
+            }
+            bitfields[fieldId] = { name: label, offset: fieldOffset, range, bits };
+            return { id: fieldId, label, range };
+          });
+          return { offset, fields };
+        }
         const label = register[1];
         const range = register[3] || "[31:0]";
         const fieldId = chapter7FieldId(def.id, label);
@@ -3040,11 +3020,17 @@
         description: "Reports power-budget data entries selected through a data selector register.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Power Budgeting Data Select", [makeChapter7Bit("[7:0]", "Data Select", "Selects which power-budget data entry is exposed."), makeChapter7Reserved("[15:8]")], "[15:0]"],
-          ["06h", "Power Budgeting Control", [makeChapter7Flag("[0]", "Power Budgeting Enable", "Enables power budgeting operation."), makeChapter7Reserved("[15:1]")], "[15:0]"],
+          ["04h", null, null, null, [
+            { label: "Power Budgeting Data Select", range: "[7:0]", offset: "04h", bits: [makeChapter7Bit("[7:0]", "Data Select", "Selects which power-budget data entry is exposed.")] },
+            { id: "power_budget_04_rsvdp", label: "RsvdP", range: "[15:8]", offset: "05h", bits: [makeChapter7Reserved("[15:8]")] },
+            { label: "Power Budgeting Control", range: "[31:16]", offset: "06h", bits: [makeChapter7Flag("[16]", "Extended Power Budgeting Enable", "Enables extended power-budgeting fields."), makeChapter7Flag("[17]", "Power Limit Enable", "Makes Power Limit PM Sub State meaningful."), makeChapter7Bit("[20:18]", "Power Limit PM Sub State", "Selects the device PM Sub State for the power limit."), makeChapter7Flag("[21]", "Out of Band Power Limit Enable", "Makes Out of Band Power Limit PM Sub State meaningful."), makeChapter7Bit("[24:22]", "Out of Band Power Limit PM Sub State", "Selects the device PM Sub State for the out-of-band power limit."), makeChapter7Reserved("[31:25]")] }
+          ]],
           ["08h", "Power Budgeting Data", [makeChapter7Bit("[7:0]", "Base Power", "Power value for the selected entry."), makeChapter7Bit("[9:8]", "Data Scale", "Scale for the base power value."), makeChapter7Bit("[12:10]", "PM Sub State", "Power-management substate associated with the entry."), makeChapter7Bit("[14:13]", "PM State", "Power-management state associated with the entry."), makeChapter7Bit("[17:15]", "Type", "Type of power information reported."), makeChapter7Bit("[20:18]", "Power Rail", "Power rail for this entry."), makeChapter7Reserved("[31:21]")]],
-          ["0Ch", "Power Budgeting Capability", [makeChapter7Flag("[0]", "System Allocated", "Reports system-allocated power budget support."), makeChapter7Reserved("[7:1]")], "[7:0]"],
-          ["0Dh", "Power Budgeting Sense Detect", [makeChapter7Bit("[7:0]", "Sense Detect", "Reports power-sense detection information.")], "[7:0]"]
+          ["0Ch", null, null, null, [
+            { label: "Power Budgeting Capability", range: "[7:0]", offset: "0Ch", bits: [makeChapter7Flag("[0]", "System Allocated", "Reports system-allocated power budget support."), makeChapter7Reserved("[7:1]")] },
+            { label: "Power Budgeting Sense Detect", range: "[15:8]", offset: "0Dh", bits: [makeChapter7Bit("[15:8]", "Sense Detect", "Reports power-sense detection information.")] },
+            { id: "power_budget_0c_rsvdp", label: "RsvdP", range: "[31:16]", offset: "0Eh", bits: [makeChapter7Reserved("[31:16]")] }
+          ]]
         ]
       },
       {
@@ -3081,8 +3067,10 @@
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
           ["04h", "Flit Error Log 1", [makeChapter7Bit("[31:0]", "Flit Error Log 1", "Captures the first portion of information associated with the logged Flit error.")]],
           ["08h", "Flit Error Log 2", [makeChapter7Bit("[31:0]", "Flit Error Log 2", "Captures the second portion of information associated with the logged Flit error.")]],
-          ["0Ch", "Flit Error Counter Control", [makeChapter7Flag("[0]", "Counter Enable", "Enables flit error counting."), makeChapter7Flag("[1]", "Counter Reset", "Resets flit error counters."), makeChapter7Reserved("[15:2]")], "[15:0]"],
-          ["0Eh", "Flit Error Counter Status", [makeChapter7Flag("[0]", "Counter Valid", "Indicates counter values are valid."), makeChapter7Flag("[1]", "Counter Overflow", "Indicates a counter overflow occurred."), makeChapter7Reserved("[15:2]")], "[15:0]"],
+          ["0Ch", null, null, null, [
+            { label: "Flit Error Counter Control", range: "[15:0]", offset: "0Ch", bits: [makeChapter7Flag("[0]", "Counter Enable", "Enables flit error counting."), makeChapter7Flag("[1]", "Counter Reset", "Resets flit error counters."), makeChapter7Reserved("[15:2]")] },
+            { label: "Flit Error Counter Status", range: "[31:16]", offset: "0Eh", bits: [makeChapter7Flag("[16]", "Counter Valid", "Indicates counter values are valid."), makeChapter7Flag("[17]", "Counter Overflow", "Indicates a counter overflow occurred."), makeChapter7Reserved("[31:18]")] }
+          ]],
           ["10h", "FBER Measurement Control", [makeChapter7Flag("[0]", "Measurement Enable", "Enables FBER measurement."), makeChapter7Flag("[1]", "Measurement Reset", "Resets FBER measurement state."), makeChapter7Reserved("[31:2]")]],
           ["14h", "FBER Measurement Status 1", [makeChapter7Bit("[31:0]", "Flit Counter", "Saturating per-Link counter incremented for every received Flit while FBER measurement is enabled.")]],
           ["18h", "FBER Measurement Status 2", [makeChapter7Bit("[15:0]", "Invalid Flit Counter", "Saturating counter incremented for every invalid Flit received while measurement is enabled."), makeChapter7Reserved("[31:16]")]],
@@ -3129,8 +3117,10 @@
         description: "Extends routing ID interpretation so a device can expose more than eight functions.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "ARI Capability", [makeChapter7Bit("[7:0]", "Next Function Number", "Next ARI function number in the linked list."), makeChapter7Flag("[8]", "MFVC Function Groups Capability", "Reports MFVC function group support."), makeChapter7Flag("[9]", "ACS Function Groups Capability", "Reports ACS function group support."), makeChapter7Reserved("[15:10]")], "[15:0]"],
-          ["06h", "ARI Control", [makeChapter7Bit("[7:0]", "Function Group", "Function group assigned to this function."), makeChapter7Flag("[8]", "MFVC Function Groups Enable", "Enables MFVC function group operation."), makeChapter7Flag("[9]", "ACS Function Groups Enable", "Enables ACS function group operation."), makeChapter7Reserved("[15:10]")], "[15:0]"]
+          ["04h", null, null, null, [
+            { label: "ARI Capability", range: "[15:0]", offset: "04h", bits: [makeChapter7Bit("[7:0]", "Next Function Number", "Next ARI function number in the linked list."), makeChapter7Flag("[8]", "MFVC Function Groups Capability", "Reports MFVC function group support."), makeChapter7Flag("[9]", "ACS Function Groups Capability", "Reports ACS function group support."), makeChapter7Reserved("[15:10]")] },
+            { label: "ARI Control", range: "[31:16]", offset: "06h", bits: [makeChapter7Bit("[23:16]", "Function Group", "Function group assigned to this function."), makeChapter7Flag("[24]", "MFVC Function Groups Enable", "Enables MFVC function group operation."), makeChapter7Flag("[25]", "ACS Function Groups Enable", "Enables ACS function group operation."), makeChapter7Reserved("[31:26]")] }
+          ]]
         ]
       },
       {
@@ -3617,6 +3607,66 @@
       register[0] = `${base} + 0Ch*n; 0 <= n <= SVC Extended VC Count`;
       register[1] += " n (repeated)";
     });
+
+    function splitChapter7Register(id, name, parts) {
+      const register = chapter7Register(id, name);
+      register[4] = parts.map(part => {
+        const [partHigh, partLow] = (part.range.match(/\d+/g) || []).map(Number);
+        const low = partLow ?? partHigh;
+        return {
+          ...part,
+          bits: register[2].filter(bit => {
+            const [bitHigh, bitLow] = (bit.range.match(/\d+/g) || []).map(Number);
+            return bitHigh >= low && (bitLow ?? bitHigh) <= partHigh;
+          })
+        };
+      });
+    }
+
+    splitChapter7Register("vpd_cap", "VPD Capability Header / Address", [
+      { label: "VPD Capability Header", range: "[15:0]", offset: "00h" },
+      { label: "VPD Address", range: "[31:16]", offset: "02h" }
+    ]);
+    splitChapter7Register("af_cap", "AF Capability Header / AF Capabilities", [
+      { label: "AF Capability Header", range: "[23:0]", offset: "00h" },
+      { label: "AF Capabilities", range: "[31:24]", offset: "03h" }
+    ]);
+    splitChapter7Register("af_cap", "AF Control / Status", [
+      { label: "AF Control", range: "[7:0]", offset: "04h" },
+      { label: "AF Status", range: "[15:8]", offset: "05h" }
+    ]);
+    splitChapter7Register("pasid_extcap", "PASID Capability / Control", [
+      { label: "PASID Capability", range: "[15:0]", offset: "04h" },
+      { label: "PASID Control", range: "[31:16]", offset: "06h" }
+    ]);
+    splitChapter7Register("frs_extcap", "FRS Queueing Control / Status", [
+      { label: "FRS Queueing Status", range: "[15:0]", offset: "08h" },
+      { label: "FRS Queueing Control", range: "[31:16]", offset: "0Ah" }
+    ]);
+    splitChapter7Register("rcilc_extcap", "Root Complex Link Control / Status", [
+      { label: "Root Complex Link Control", range: "[15:0]", offset: "08h" },
+      { label: "Root Complex Link Status", range: "[31:16]", offset: "0Ah" }
+    ]);
+    splitChapter7Register("multicast_extcap", "Multicast Capability / Control", [
+      { label: "Multicast Capability", range: "[15:0]", offset: "04h" },
+      { label: "Multicast Control", range: "[31:16]", offset: "06h" }
+    ]);
+    splitChapter7Register("dpa_extcap", "DPA Control / Status", [
+      { label: "DPA Status", range: "[15:0]", offset: "0Ch" },
+      { label: "DPA Control", range: "[31:16]", offset: "0Eh" }
+    ]);
+    splitChapter7Register("dpc_extcap", "DPC Capability / Control", [
+      { label: "DPC Capability", range: "[15:0]", offset: "04h" },
+      { label: "DPC Control", range: "[31:16]", offset: "06h" }
+    ]);
+    splitChapter7Register("dpc_extcap", "DPC Status / Error Source ID", [
+      { label: "DPC Status", range: "[15:0]", offset: "08h" },
+      { label: "DPC Error Source ID", range: "[31:16]", offset: "0Ah" }
+    ]);
+    splitChapter7Register("sfi_extcap", "SFI Capability / Control", [
+      { label: "SFI Capability", range: "[15:0]", offset: "04h" },
+      { label: "SFI Control", range: "[31:16]", offset: "06h" }
+    ]);
 
     structures.push(...chapter7MissingStructures.map(makeChapter7Structure));
 
