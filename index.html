@@ -3968,6 +3968,30 @@
       });
     });
 
+    const structureSortIds = {
+      msi_cap: 0x05
+    };
+
+    function structureSortId(structure) {
+      if (structureSortIds[structure.id] !== undefined) return structureSortIds[structure.id];
+      let found = null;
+      Object.values(structure.bitfields || {}).forEach(field => {
+        (field.bits || []).forEach(bit => {
+          if (found !== null) return;
+          const text = `${bit.title || ""} ${bit.description || ""}`;
+          const match = /(?:ID\s*=\s*|Capability ID(?:[^0-9A-Fa-f]+| for .* is )|Extended Capability ID(?:[^0-9A-Fa-f]+| for .* is ))([0-9A-Fa-f]{1,4})h/i.exec(text);
+          if (match) found = parseInt(match[1], 16);
+        });
+      });
+      return found ?? Number.MAX_SAFE_INTEGER;
+    }
+
+    const typeRank = { Header: 0, Cap: 1, ExtCap: 2 };
+    structures.sort((a, b) =>
+      (typeRank[a.type] ?? 9) - (typeRank[b.type] ?? 9)
+      || structureSortId(a) - structureSortId(b)
+      || a.name.localeCompare(b.name));
+
     /* ===== State ===== */
     let currentStructureId = structures[0]?.id;
     let currentFieldKey = null;
