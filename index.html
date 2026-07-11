@@ -889,21 +889,21 @@
           }
         ],
         bitfields: {
-          capid: { name: "Capability ID", offset: "00h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Capability ID", description: "ID = 01h for Power Management." }] },
-          nextptr: { name: "Next Item Pointer", offset: "01h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Next Item Pointer", description: "Pointer to the next capability." }] },
+          capid: { name: "Capability ID", offset: "00h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Capability ID - (RO)", description: "ID = 01h for Power Management." }] },
+          nextptr: { name: "Next Item Pointer", offset: "01h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Next Item Pointer - (RO)", description: "Pointer to the next capability." }] },
           pmcap: {
             name: "PM Capabilities",
             offset: "02h",
             range: "[15:0]",
             bits: [
-              { range: "[2:0]", title: "Version", description: "PM Spec Version (011b = 1.2).", values: { "2": "1.1", "3": "1.2" } },
-              { range: "[3]", title: "PME Clock", description: "Read-only and hardwired to zero for PCI Express." },
-              { range: "[4]", title: "Immediate Readiness on Return to D0", description: "Indicates that the Function is ready immediately after returning to D0." },
-              { range: "[5]", title: "DSI", description: "Device Specific Initialization.", values: { "0": "No", "1": "Yes" } },
-              { range: "[8:6]", title: "Aux_Current", description: "Auxiliary Current Requirements." },
-              { range: "[9]", title: "D1 Support", description: "Supports D1 Power Management State.", values: { "0": "No", "1": "Yes" } },
-              { range: "[10]", title: "D2 Support", description: "Supports D2 Power Management State.", values: { "0": "No", "1": "Yes" } },
-              { range: "[15:11]", title: "PME Support", description: "Indicates PME# support in various power states." }
+              { range: "[2:0]", title: "Version - (RO)", description: "PM Spec Version (011b = 1.2).", values: { "2": "1.1", "3": "1.2" } },
+              { range: "[3]", title: "PME Clock - (RO)", description: "Read-only and hardwired to zero for PCI Express." },
+              { range: "[4]", title: "Immediate Readiness on Return to D0 - (RO)", description: "Indicates that the Function is ready immediately after returning to D0." },
+              { range: "[5]", title: "DSI - (RO)", description: "Device Specific Initialization.", values: { "0": "No", "1": "Yes" } },
+              { range: "[8:6]", title: "Aux_Current - (RO)", description: "Auxiliary Current Requirements." },
+              { range: "[9]", title: "D1 Support - (RO)", description: "Supports D1 Power Management State.", values: { "0": "No", "1": "Yes" } },
+              { range: "[10]", title: "D2 Support - (RO)", description: "Supports D2 Power Management State.", values: { "0": "No", "1": "Yes" } },
+              { range: "[15:11]", title: "PME Support - (RO)", description: "Indicates PME# support in various power states." }
             ]
           },
           pmcsr: {
@@ -911,18 +911,18 @@
             offset: "04h",
             range: "[15:0]",
             bits: [
-              { range: "[1:0]", title: "Power State", description: "Current power state (00=D0, 01=D1, 10=D2, 11=D3).", values: { "0": "D0", "1": "D1", "2": "D2", "3": "D3hot" } },
+              { range: "[1:0]", title: "Power State - (RW)", description: "Current power state (00=D0, 01=D1, 10=D2, 11=D3).", values: { "0": "D0", "1": "D1", "2": "D2", "3": "D3hot" } },
               { range: "[2]", title: "RsvdP", description: "Reserved and preserved by software." },
-              { range: "[3]", title: "No Soft Reset", description: "Device transitions from D3hot to D0 without internal reset; Set in Flit Mode and a VF matches its PF.", values: { "0": "Reset", "1": "No Reset" } },
+              { range: "[3]", title: "No Soft Reset - (RO)", description: "Device transitions from D3hot to D0 without internal reset; Set in Flit Mode and a VF matches its PF.", values: { "0": "Reset", "1": "No Reset" } },
               { range: "[7:4]", title: "RsvdP", description: "Reserved and preserved by software." },
-              { range: "[8]", title: "PME Enable", description: "Read/write (or RWS where applicable) enable for PME generation.", values: { "0": "Disable", "1": "Enable" } },
-              { range: "[12:9]", title: "Data Select", description: "Selects which data is reported in the Data register; VFs read zero." },
-              { range: "[14:13]", title: "Data Scale", description: "Scaling factor for the Data register; VFs read zero.", values: { "0": "Unknown", "1": "0.1x", "2": "0.01x", "3": "0.001x" } },
-              { range: "[15]", title: "PME Status", description: "Write-one-to-clear indication that a PME event occurred.", values: { "0": "Not Asserted", "1": "Asserted" } }
+              { range: "[8]", title: "PME Enable - (RW/RWS)", description: "Read/write (or RWS where applicable) enable for PME generation.", values: { "0": "Disable", "1": "Enable" } },
+              { range: "[12:9]", title: "Data Select - (RW)", description: "Selects which data is reported in the Data register." },
+              { range: "[14:13]", title: "Data Scale - (RO)", description: "Scaling factor for the Data register.", values: { "0": "Unknown", "1": "0.1x", "2": "0.01x", "3": "0.001x" } },
+              { range: "[15]", title: "PME Status - (RW1CS)", description: "Write-one-to-clear indication that a PME event occurred.", values: { "0": "Not Asserted", "1": "Asserted" } }
             ]
           },
-          pm_bridge_ext: { name: "Reserved / Undefined", offset: "06h", range: "[7:0]", bits: [{ range: "[5:0]", title: "RsvdP", description: "Reserved and preserved by software." }, { range: "[7:6]", title: "Undefined", description: "Read-only undefined bits; software must ignore the values read." }] },
-          pm_data: { name: "Data", offset: "07h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Data", description: "Optional read-only power or heat-dissipation data; VFs read zero." }] }
+          pm_bridge_ext: { name: "Reserved / Undefined", offset: "06h", range: "[7:0]", bits: [{ range: "[5:0]", title: "RsvdP", description: "Reserved and preserved by software." }, { range: "[7:6]", title: "Undefined - (RO)", description: "Read-only undefined bits; software must ignore the values read." }] },
+          pm_data: { name: "Data", offset: "07h", range: "[7:0]", bits: [{ range: "[7:0]", title: "Data - (RO)", description: "Optional read-only power or heat-dissipation data." }] }
         }
       },
 
@@ -3781,6 +3781,189 @@
           bit.description = reservedBehavior === "RsvdZ"
             ? "Reserved; reads zero and software writes zero."
             : "Reserved and preserved by software.";
+        });
+      });
+    });
+
+    function isReservedBitTitle(title) {
+      return /\b(RsvdP|RsvdZ|Reserved)\b/i.test(title || "");
+    }
+
+    function bareBitTitle(title) {
+      return (title || "").replace(/\s-\s\([^)]+\)$/, "");
+    }
+
+    const specRoBitTitles = new Set([
+      "128-bit CAS Completer Supported",
+      "32-bit AtomicOp Completer Supported",
+      "64-bit Address Capable",
+      "64-bit AtomicOp Completer Supported",
+      "ACS Direct Translated P2P",
+      "ACS Enhanced Capability",
+      "ACS P2P Completion Redirect",
+      "ACS P2P Request Redirect",
+      "ACS Source Validation",
+      "ACS Translation Blocking",
+      "ACS Upstream Forwarding",
+      "ARI Forwarding Supported",
+      "Alternate Protocol Details",
+      "Alternate Protocol Negotiation Status",
+      "Alternate Protocol Usage Information",
+      "Alternate Protocol Vendor ID",
+      "ASPM Support",
+      "AtomicOp Routing Supported",
+      "Base Power",
+      "Capability Length",
+      "Captured Slot Power Limit Scale",
+      "Captured Slot Power Limit Value",
+      "Clock Power Management",
+      "Completion Timeout Disable Supported",
+      "Configuration RRS Software Visibility",
+      "Crosslink Supported",
+      "DL_Active ERR_COR Signaling Supported",
+      "Data Link Layer Active Reporting",
+      "DPC Interrupt Message Number",
+      "DPC Software Triggering Supported",
+      "DVSEC ID",
+      "DVSEC Length",
+      "DVSEC Revision",
+      "DVSEC Vendor ID",
+      "Data Scale[1:0]",
+      "Device Specific Mode Supported",
+      "Device/Port Type",
+      "ECRC Check Capable",
+      "ECRC Generation Capable",
+      "ERR_COR Subclass Capable",
+      "Element Type",
+      "Endpoint L0s Acceptable Latency",
+      "Endpoint L1 Acceptable Latency",
+      "Execute Permission Supported",
+      "Extended Fmt Field Supported",
+      "Extended TPH Requester Supported",
+      "Extended Tag Field Supported",
+      "Extended VC Count",
+      "FRS Interrupt Message Number",
+      "FRS Message Queue Depth",
+      "FRS Message Queue Function ID",
+      "FRS Message Queue Reason",
+      "Function Arbitration Capability",
+      "Function Arbitration Table Entry Size",
+      "Function Arbitration Table Offset",
+      "Function Level Reset Capability",
+      "Interrupt Message Number",
+      "Interrupt Vector Mode Supported",
+      "L0s Exit Latency",
+      "L1 Exit Latency",
+      "LTR Mechanism Supported",
+      "Length",
+      "Link Bandwidth Notification",
+      "Low Priority Extended VC Count",
+      "MC_ECRC_Regeneration_Supported",
+      "MC_Max_Group",
+      "MC_Window_Size_Requested",
+      "Max Link Speed",
+      "Max Link Width",
+      "Max PASID Width",
+      "Max Payload Size Supported",
+      "Modified TS Information 2",
+      "Multiple Message Capable",
+      "Next Function Number",
+      "No ST Mode Supported",
+      "Number of Resizable BARs",
+      "PM State",
+      "PM Sub State",
+      "Phantom Functions Supported",
+      "Poisoned TLP Egress Blocking Supported",
+      "Port Arbitration Capability",
+      "Port Arbitration Table Entry Size",
+      "Port Arbitration Table Offset",
+      "Power Rail",
+      "Privileged Mode Supported",
+      "RP Extensions for DPC",
+      "RP PIO Log Size [3:0]",
+      "RP PIO Log Size [4]",
+      "Received Modified TS Information 1",
+      "Received Modified TS Information 2",
+      "Received Modified TS Usage Mode",
+      "Received Modified TS Vendor ID",
+      "Reference Clock",
+      "Role-Based Error Reporting",
+      "Surprise Down Error Reporting",
+      "ST Table Location",
+      "ST Table Size",
+      "Substate_Max",
+      "TPH Completer Supported",
+      "Transition Latency Indicator Bits",
+      "Transmitted Modified TS Information 1",
+      "Transmitted Modified TS Information 2",
+      "Transmitted Modified TS Usage Mode",
+      "Transmitted Modified TS Vendor ID",
+      "Type",
+      "VC Arbitration Capability",
+      "VC Arbitration Table Offset",
+      "VSEC ID",
+      "VSEC Length"
+    ]);
+
+    function inferBitAttribute(structure, field, bit) {
+      const title = bareBitTitle(bit.title);
+      const fieldName = field.name || "";
+      const text = `${field.name || ""} ${title} ${bit.description || ""}`;
+      if (isReservedBitTitle(title)) return "";
+
+      if (structure.type === "Cap" && /^(Capability ID|Next Item Pointer)$/i.test(title)) return "RO";
+      if (/^PM Capabilities$/i.test(fieldName)) return "RO";
+      if (/^PM Control \/ Status$/i.test(fieldName)) {
+        if (/^PME Enable$/i.test(title)) return "RW/RWS";
+        if (/^PME Status$/i.test(title)) return "RW1CS";
+        if (/^Data Scale|No Soft Reset$/i.test(title)) return "RO";
+        return "RW";
+      }
+      if (/^Data$/i.test(fieldName) && /^Data$/i.test(title)) return "RO";
+
+      if (structure.id === "msix_cap" && /^(Table Size|Table BIR|Table Offset|PBA BIR|PBA Offset)$/i.test(title)) return "RO";
+      if (structure.type === "ExtCap" && /^(PCI Express Extended Capability ID|Extended Capability ID|Cap Ver|Capability Version|Next Capability Offset)$/i.test(title)) return "RO";
+      if (structure.id === "rcrb_header_extcap" && /^(Vendor ID|Device ID)$/i.test(title)) return "RO";
+      if (structure.id === "hierarchy_id_extcap" && /^(Hierarchy ID|System GUID Authority ID|System GUID [1-5])$/i.test(title)) return "RO/RW";
+      if (structure.id === "pcie_cap" && fieldName === "PCIe Capabilities Register" && title === "Version") return "RO";
+      if (title === "Slot Clock Configuration") return "HwInit";
+      if (structure.id === "aer_extcap" && /^(Uncorrectable Error Status|Correctable Error Status)$/i.test(fieldName)) return "RW1CS";
+      if (structure.id === "aer_extcap" && /^Uncorrectable Error Severity$/i.test(fieldName)) return "RWS";
+      if (structure.id === "aer_extcap" && /^Advanced Error Capabilities and Control$/i.test(fieldName)) {
+        if (/^(First Error Pointer|TLP Prefix Log Present|Logged TLP was Flit Mode|Logged TLP Size)$/i.test(title)) return "ROS";
+        if (/^(ECRC Generation Enable|ECRC Check Enable|Multiple Header Recording Enable)$/i.test(title)) return "RWS";
+        if (/^Header Log Size$/i.test(title)) return "HwInit";
+        if (/^Multiple Header Recording Capable$/i.test(title)) return "RO";
+      }
+      if (structure.id === "aer_extcap" && /^Root Error Command$/i.test(fieldName) && /^ECS .* Handling by SFW Enable$/i.test(title)) return "RW/RsvdP";
+      if (structure.id === "aer_extcap" && /^Root Error Status$/i.test(fieldName) && title === "First Uncorrectable Fatal") return "RW1CS";
+      if (structure.id === "aer_extcap" && /^Error Source Identification$/i.test(fieldName)) return "ROS";
+      if (/^(Vendor ID|Device ID|Revision ID|Subsystem Vendor ID|Subsystem ID|BIST Capable)$/i.test(title)) return "HwInit";
+      if (/^(Class Code|Capabilities Pointer|Header Layout|Multi-Function Device|Completion Code|Interrupt Pin|Min_Gnt|Max_Lat)$/i.test(title)) return "RO";
+      if (/^(Cache Line Size|Interrupt Line|Start BIST)$/i.test(title)) return "RW";
+      if (specRoBitTitles.has(title)) return "RO";
+
+      if (/write-one-to-clear|cleared by writing 1|RW1C/i.test(text)) return "RW1CS";
+      if (/\bstatus\b/i.test(field.name || "") && /\b(parity error|system error|master abort|target abort|received|signaled)\b/i.test(title)) return "RW1CS";
+      if (/\bstatus\b/i.test(fieldName) && /\b(Unsupported Request|Fatal Error|Non-Fatal Error|Correctable Error|Emergency Power Reduction)\b/i.test(title)) return "RW1CS";
+      if (/RO for PCIe|hardwired|must be hardwired/i.test(text)) return "RO";
+      if (/\b(Base Address|Limit Address|I\/O Base|I\/O Limit|Memory Base|Memory Limit)\b/i.test(title)) return "RW";
+      if (/\bstatus\b/i.test(field.name || title)) return "RO";
+      if (/\b(capability|capabilities|supported|support|capable)\b/i.test(title)) return "HwInit";
+      if (/\b(Table Size|Table Offset|BIR|Data Scale|Power Rail|PM State|PM Sub State|Type|Connector|Present|Count|Number|Vector|Latency)\b/i.test(title)) return "HwInit";
+      if (/\b(control|enable|mask|select|load|reset|abort|go|initiate|trigger|power state|command)\b/i.test(text)) return "RW";
+      if (/undefined/i.test(title)) return "RO";
+      if (/\b(id|version|next|size|current|data|state|table|offset)\b/i.test(title)) return "HwInit";
+      if (/\b(capability|capabilities)\b/i.test(fieldName)) return "HwInit";
+      return "HwInit";
+    }
+
+    structures.forEach(structure => {
+      Object.values(structure.bitfields || {}).forEach(field => {
+        (field.bits || []).forEach(bit => {
+          bit.title = bareBitTitle(bit.title);
+          const attr = inferBitAttribute(structure, field, bit);
+          if (attr) bit.title = `${bit.title} - (${attr})`;
         });
       });
     });
