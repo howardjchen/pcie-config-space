@@ -3785,6 +3785,51 @@
       });
     });
 
+    function cloneMsiVariant(template, id, name, description, use64BitAddress, usePvm) {
+      const copy = JSON.parse(JSON.stringify(template));
+      copy.id = id;
+      copy.name = name;
+      copy.description = description;
+
+      const dataOffset = use64BitAddress ? "0Ch" : "08h";
+      const maskOffset = use64BitAddress ? "10h" : "0Ch";
+      const pendingOffset = use64BitAddress ? "14h" : "10h";
+
+      copy.rows = [
+        copy.rows[0],
+        copy.rows.find(row => row.fields.some(field => field.id === "msi_addr")),
+        ...(use64BitAddress ? [copy.rows.find(row => row.fields.some(field => field.id === "msi_addr_hi"))] : []),
+        { offset: dataOffset, fields: copy.rows.find(row => row.fields.some(field => field.id === "msi_data")).fields },
+        ...(usePvm ? [
+          { offset: maskOffset, fields: copy.rows.find(row => row.fields.some(field => field.id === "msi_mask")).fields },
+          { offset: pendingOffset, fields: copy.rows.find(row => row.fields.some(field => field.id === "msi_pending")).fields }
+        ] : [])
+      ];
+
+      copy.bitfields.msi_data.offset = dataOffset;
+      copy.bitfields.msi_ext_data.offset = use64BitAddress ? "0Eh" : "0Ah";
+      copy.bitfields.msi_mask.offset = maskOffset;
+      copy.bitfields.msi_pending.offset = pendingOffset;
+      if (!use64BitAddress) delete copy.bitfields.msi_addr_hi;
+      if (!usePvm) {
+        delete copy.bitfields.msi_mask;
+        delete copy.bitfields.msi_pending;
+      }
+
+      return copy;
+    }
+
+    const msiTemplateIndex = structures.findIndex(structure => structure.id === "msi_cap");
+    if (msiTemplateIndex >= 0) {
+      const template = structures[msiTemplateIndex];
+      structures.splice(msiTemplateIndex, 1,
+        cloneMsiVariant(template, "msi_cap_32", "MSI Capability - 32-bit Message Address", "MSI Capability Structure using a 32-bit Message Address without Per-Vector Masking.", false, false),
+        cloneMsiVariant(template, "msi_cap_64", "MSI Capability - 64-bit Message Address", "MSI Capability Structure using a 64-bit Message Address without Per-Vector Masking.", true, false),
+        cloneMsiVariant(template, "msi_cap_32_pvm", "MSI Capability - 32-bit Message Address with PVM", "MSI Capability Structure using a 32-bit Message Address with Per-Vector Masking.", false, true),
+        cloneMsiVariant(template, "msi_cap_64_pvm", "MSI Capability - 64-bit Message Address with PVM", "MSI Capability Structure using a 64-bit Message Address with Per-Vector Masking.", true, true)
+      );
+    }
+
     function isReservedBitTitle(title) {
       return /\b(RsvdP|RsvdZ|Reserved)\b/i.test(title || "");
     }
@@ -3969,7 +4014,17 @@
     });
 
     const structureSortIds = {
-      msi_cap: 0x05
+      msi_cap_32: 0x05,
+      msi_cap_64: 0x05,
+      msi_cap_32_pvm: 0x05,
+      msi_cap_64_pvm: 0x05
+    };
+
+    const structureSortSuborders = {
+      msi_cap_32: 0,
+      msi_cap_64: 1,
+      msi_cap_32_pvm: 2,
+      msi_cap_64_pvm: 3
     };
 
     function structureSortId(structure) {
@@ -3990,6 +4045,7 @@
     structures.sort((a, b) =>
       (typeRank[a.type] ?? 9) - (typeRank[b.type] ?? 9)
       || structureSortId(a) - structureSortId(b)
+      || (structureSortSuborders[a.id] ?? 0) - (structureSortSuborders[b.id] ?? 0)
       || a.name.localeCompare(b.name));
 
     /* ===== State ===== */
