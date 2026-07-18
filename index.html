@@ -2514,13 +2514,13 @@
           {
             offset: "00h",
             fields: [
-              { id: "ea_hdr", label: "Capability Header / Num Entries", range: "[31:0]" }
+              { id: "ea_hdr", label: "Enhanced Allocation Capability First DW", range: "[31:0]" }
             ]
           },
-          { offset: "04h; Type 1 Functions only", fields: [{ id: "ea_fixed_bus", label: "Type 1 Fixed Bus Numbers", range: "[31:0]" }] },
-          { offset: "Entry[i]; starts at 04h for Type 0 or 08h for Type 1; next entry follows Entry Size", fields: [{ id: "ea_first_entry", label: "EA Entry i First DWORD (repeated)", range: "[31:0]" }] },
-          { offset: "Entry[i] + 04h; present for defined entries with Entry Size >= 2", fields: [{ id: "ea_base_low", label: "EA Entry i Base Lower", range: "[31:0]" }] },
-          { offset: "Entry[i] + 08h; present when Entry Size >= 2", fields: [{ id: "ea_max_offset_low", label: "EA Entry i MaxOffset Lower", range: "[31:0]" }] },
+          { offset: "04h; Type 1 Functions only", fields: [{ id: "ea_fixed_bus", label: "Enhanced Allocation Capability Second DW", range: "[31:0]" }] },
+          { offset: "Entry[i]; starts at 04h for Type 0 or 08h for Type 1; next entry follows Entry Size", fields: [{ id: "ea_first_entry", label: "First DW of EA Entry i", range: "[31:0]" }] },
+          { offset: "Entry[i] + 04h", fields: [{ id: "ea_base_low", label: "EA Entry i Base Lower", range: "[31:0]" }] },
+          { offset: "Entry[i] + 08h", fields: [{ id: "ea_max_offset_low", label: "EA Entry i MaxOffset Lower", range: "[31:0]" }] },
           { offset: "Entry[i] + 0Ch; conditional 64-bit Base or MaxOffset", fields: [{ id: "ea_upper_1", label: "EA Entry i First Upper DWORD", range: "[31:0]" }] },
           { offset: "Entry[i] + 10h; conditional 64-bit Base and MaxOffset", fields: [{ id: "ea_upper_2", label: "EA Entry i Second Upper DWORD", range: "[31:0]" }] }
         ],
@@ -2533,7 +2533,7 @@
               { range: "[7:0]", title: "Capability ID", description: "Capability ID 14h identifies Enhanced Allocation." },
               { range: "[15:8]", title: "Next Capability Pointer", description: "Pointer to the next PCI-compatible Capability." },
               { range: "[21:16]", title: "Num Entries", description: "Number of Enhanced Allocation entries following the capability header." },
-              { range: "[31:22]", title: "Reserved", description: "Reserved." }
+              { range: "[31:22]", title: "RsvdP", description: "Reserved and preserved by software." }
             ]
           },
           ea_fixed_bus: {
@@ -2543,7 +2543,7 @@
             bits: [
               { range: "[7:0]", title: "Fixed Secondary Bus Number", description: "For a Type 1 Function, fixed Bus Number of the secondary interface." },
               { range: "[15:8]", title: "Fixed Subordinate Bus Number", description: "For a Type 1 Function, highest fixed Bus Number below the bridge." },
-              { range: "[31:16]", title: "Reserved", description: "Reserved. For a Type 0 Function, the first EA entry begins at offset 04h instead." }
+              { range: "[31:16]", title: "RsvdP", description: "Reserved and preserved by software. For a Type 0 Function, the first EA entry begins at offset 04h instead." }
             ]
           },
           ea_first_entry: {
@@ -2552,17 +2552,17 @@
             range: "[31:0]",
             bits: [
               { range: "[2:0]", title: "Entry Size", description: "Number of DWORDs following this entry header." },
-              { range: "[3]", title: "Reserved", description: "Reserved." },
+              { range: "[3]", title: "RsvdP", description: "Reserved and preserved by software." },
               { range: "[7:4]", title: "BAR Equivalent Indicator", description: "Identifies the equivalent BAR, Expansion ROM, VF BAR, resource-behind-bridge, or no equivalent." },
               { range: "[15:8]", title: "Primary Properties", description: "Primary resource type and properties for this allocation." },
               { range: "[23:16]", title: "Secondary Properties", description: "Optional compatible alternate resource type and properties." },
-              { range: "[29:24]", title: "Reserved", description: "Reserved." },
+              { range: "[29:24]", title: "RsvdP", description: "Reserved and preserved by software." },
               { range: "[30]", title: "Writable", description: "Indicates whether Base, MaxOffset, and applicable field-size bits are software writable." },
               { range: "[31]", title: "Enable", description: "Enables or disables this Enhanced Allocation entry." }
             ]
           },
-          ea_base_low: { name: "EA Entry Base Lower", offset: "Entry + 04h", range: "[31:0]", bits: [{ range: "[0]", title: "Reserved", description: "Reserved." }, { range: "[1]", title: "Field Size", description: "Zero selects a 32-bit field; one selects a 64-bit field." }, { range: "[31:2]", title: "Base[31:2]", description: "Lower Base address bits; address bits 1:0 are interpreted as 00b." }] },
-          ea_max_offset_low: { name: "EA Entry MaxOffset Lower", offset: "Entry + 08h", range: "[31:0]", bits: [{ range: "[0]", title: "Reserved", description: "Reserved." }, { range: "[1]", title: "Field Size", description: "Zero selects a 32-bit field; one selects a 64-bit field." }, { range: "[31:2]", title: "MaxOffset[31:2]", description: "Lower MaxOffset bits; bits 1:0 are interpreted as 11b." }] },
+          ea_base_low: { name: "EA Entry Base Lower", offset: "Entry + 04h", range: "[31:0]", bits: [{ range: "[0]", title: "RsvdP", description: "Reserved and preserved by software." }, { range: "[1]", title: "Field Size", description: "Zero selects a 32-bit field; one selects a 64-bit field." }, { range: "[31:2]", title: "Base[31:2]", description: "Lower Base address bits; address bits 1:0 are interpreted as 00b." }] },
+          ea_max_offset_low: { name: "EA Entry MaxOffset Lower", offset: "Entry + 08h", range: "[31:0]", bits: [{ range: "[0]", title: "RsvdP", description: "Reserved and preserved by software." }, { range: "[1]", title: "Field Size", description: "Zero selects a 32-bit field; one selects a 64-bit field." }, { range: "[31:2]", title: "MaxOffset[31:2]", description: "Lower MaxOffset bits; bits 1:0 are interpreted as 11b." }] },
           ea_upper_1: { name: "EA Entry First Upper DWORD", offset: "Entry + 0Ch", range: "[31:0]", bits: [{ range: "[31:0]", title: "Base[63:32] or MaxOffset[63:32]", description: "First required upper DWORD, ordered according to the 64-bit fields selected by their Field Size bits." }] },
           ea_upper_2: { name: "EA Entry Second Upper DWORD", offset: "Entry + 10h", range: "[31:0]", bits: [{ range: "[31:0]", title: "MaxOffset[63:32]", description: "Second upper DWORD when both Base and MaxOffset are 64-bit fields." }] }
         }
@@ -3173,14 +3173,14 @@
         name: "Flattening Portal Bridge (FPB)",
         description: "PCI-compatible Flattening Portal Bridge Capability (ID 15h) controlling FPB routing vectors and vector access windows.",
         registers: [
-          ["00h", "FPB Capability Header", chapter7HeaderBits(false)],
+          ["00h", "FPB Capability Header", [makeChapter7Bit("[7:0]", "Capability ID", "Capability ID 15h identifies the Flattening Portal Bridge Capability."), makeChapter7Bit("[15:8]", "Next Pointer", "Pointer to the next item in the capabilities list; 00h for the final item."), makeChapter7Reserved("[31:16]")]],
           ["04h", "FPB Capabilities", [makeChapter7Flag("[0]", "FPB RID Decode Mechanism Supported", "Indicates support for the FPB RID Vector mechanism."), makeChapter7Flag("[1]", "FPB MEM Low Decode Mechanism Supported", "Indicates support for the FPB MEM Low Vector mechanism."), makeChapter7Flag("[2]", "FPB MEM High Decode Mechanism Supported", "Indicates support for the FPB MEM High Vector mechanism."), makeChapter7Bit("[7:3]", "FPB Num Sec Dev", "Number of Device Numbers on the secondary side minus one, for Switch Upstream Ports."), makeChapter7Bit("[10:8]", "FPB RID Vector Size Supported", "Encoded implemented RID Vector size and permitted granularities."), makeChapter7Reserved("[15:11]"), makeChapter7Bit("[18:16]", "FPB MEM Low Vector Size Supported", "Encoded implemented MEM Low Vector size."), makeChapter7Reserved("[23:19]"), makeChapter7Bit("[26:24]", "FPB MEM High Vector Size Supported", "Encoded implemented MEM High Vector size."), makeChapter7Reserved("[31:27]")]],
           ["08h", "FPB RID Vector Control 1", [makeChapter7Flag("[0]", "FPB RID Decode Mechanism Enable", "Enables the FPB RID Decode mechanism."), makeChapter7Reserved("[3:1]"), makeChapter7Bit("[7:4]", "FPB RID Vector Granularity", "Selects RID Vector granularity in units of 8, 64, or 256 RIDs."), makeChapter7Reserved("[18:8]"), makeChapter7Bit("[31:19]", "FPB RID Vector Start", "RID offset, in units of eight RIDs, where the RID Vector is applied.")]],
           ["0Ch", "FPB RID Vector Control 2", [makeChapter7Reserved("[2:0]"), makeChapter7Bit("[15:3]", "RID Secondary Start", "RID offset where downstream Type 1 Configuration Requests are converted to Type 0."), makeChapter7Reserved("[31:16]")]],
           ["10h", "FPB MEM Low Vector Control", [makeChapter7Flag("[0]", "FPB MEM Low Decode Mechanism Enable", "Enables the FPB MEM Low Decode mechanism."), makeChapter7Reserved("[3:1]"), makeChapter7Bit("[7:4]", "FPB MEM Low Vector Granularity", "Selects granularity from 1 MB through 16 MB."), makeChapter7Reserved("[19:8]"), makeChapter7Bit("[31:20]", "FPB MEM Low Vector Start", "Base address bits 31:20 where the MEM Low Vector is applied.")]],
           ["14h", "FPB MEM High Vector Control 1", [makeChapter7Flag("[0]", "FPB MEM High Decode Mechanism Enable", "Enables the FPB MEM High Decode mechanism."), makeChapter7Reserved("[3:1]"), makeChapter7Bit("[7:4]", "FPB MEM High Vector Granularity", "Selects granularity from 256 MB through 32 GB."), makeChapter7Reserved("[27:8]"), makeChapter7Bit("[31:28]", "FPB MEM High Vector Start Lower", "Lower base-address bits for the MEM High Vector.")]],
           ["18h", "FPB MEM High Vector Control 2", [makeChapter7Bit("[31:0]", "FPB MEM High Vector Start Upper", "Base address bits 63:32 where the MEM High Vector is applied.")]],
-          ["1Ch", "FPB Vector Access Control", [makeChapter7Bit("[15:0]", "Vector Select", "Selects vector entry for indirect access."), makeChapter7Flag("[16]", "Write Enable", "Enables writes through the vector access window."), makeChapter7Reserved("[31:17]")]],
+          ["1Ch", "FPB Vector Access Control", [makeChapter7Bit("[7:0]", "FPB Vector Access Offset", "Selects the DWORD portion of the selected FPB RID, MEM Low, or MEM High Vector for indirect access."), makeChapter7Reserved("[13:8]"), makeChapter7Bit("[15:14]", "FPB Vector Select", "Selects the RID, MEM Low, or MEM High Vector for indirect access.", { "00": "RID", "01": "MEM Low", "10": "MEM High", "11": "Reserved" }), makeChapter7Reserved("[31:16]")]],
           ["20h", "FPB Vector Access Data", [makeChapter7Bit("[31:0]", "FPB Vector Access Data", "Reads or writes the selected DWORD of the RID, MEM Low, or MEM High Vector.")]]
         ]
       },
@@ -3956,6 +3956,12 @@
       const text = `${field.name || ""} ${title} ${bit.description || ""}`;
       if (isReservedBitTitle(title)) return "";
 
+      if (structure.id === "ea_extcap" && /^(Capability ID|Next Capability Pointer|Num Entries)$/i.test(title)) return "HwInit";
+      if (structure.id === "ea_extcap" && /^Enhanced Allocation Entry Header$/i.test(fieldName) && title === "Enable") return "RW/HwInit";
+      if (structure.id === "ea_extcap" && /^(EA Entry Base Lower|EA Entry MaxOffset Lower|EA Entry First Upper DWORD|EA Entry Second Upper DWORD)$/i.test(fieldName)) {
+        if (/^Field Size$/i.test(title) || /^Base/i.test(title) || /^MaxOffset/i.test(title)) return "RW/HwInit";
+      }
+      if (structure.id === "fpb_extcap" && /^FPB Capability Header$/i.test(fieldName) && /^(Capability ID|Next Pointer)$/i.test(title)) return "RO";
       if (structure.type === "Cap" && /^(Capability ID|Next Item Pointer)$/i.test(title)) return "RO";
       if (/^PM Capabilities$/i.test(fieldName)) return "RO";
       if (/^PM Control \/ Status$/i.test(fieldName)) {
@@ -3983,6 +3989,12 @@
       if (structure.id === "aer_extcap" && /^Root Error Command$/i.test(fieldName) && /^ECS .* Handling by SFW Enable$/i.test(title)) return "RW/RsvdP";
       if (structure.id === "aer_extcap" && /^Root Error Status$/i.test(fieldName) && title === "First Uncorrectable Fatal") return "RW1CS";
       if (structure.id === "aer_extcap" && /^Error Source Identification$/i.test(fieldName)) return "ROS";
+      if (structure.id === "fpb_extcap" && /^FPB Capabilities$/i.test(fieldName)) return "HwInit";
+      if (structure.id === "fpb_extcap" && /^FPB Vector Access Data$/i.test(fieldName)) return "RW";
+      if (structure.id === "fpb_extcap" && /^(FPB RID Vector Control|FPB MEM Low Vector Control|FPB MEM High Vector Control|FPB Vector Access Control)/i.test(fieldName)) {
+        if (title === "FPB Vector Select") return "RW";
+        return "RW/RO";
+      }
       if (/^(Vendor ID|Device ID|Revision ID|Subsystem Vendor ID|Subsystem ID|BIST Capable)$/i.test(title)) return "HwInit";
       if (/^(Class Code|Capabilities Pointer|Header Layout|Multi-Function Device|Completion Code|Interrupt Pin|Min_Gnt|Max_Lat)$/i.test(title)) return "RO";
       if (/^(Cache Line Size|Interrupt Line|Start BIST)$/i.test(title)) return "RW";
