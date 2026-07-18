@@ -2286,17 +2286,17 @@
           {
             offset: "04h",
             fields: [
-              { id: "lmr_port_cap", label: "Margining Port Capabilities", range: "[15:0]" },
-              { id: "lmr_port_sts", label: "Margining Port Status",       range: "[31:16]" }
+              { id: "lmr_port_cap", label: "Margining Port Capabilities Register", range: "[15:0]" },
+              { id: "lmr_port_sts", label: "Margining Port Status Register",       range: "[31:16]" }
             ]
           },
-          {
-            offset: "08h + 4*n; 0 <= n < Maximum Link Width (Lane 0 mandatory, Lanes 1-31 optional)",
+          ...Array.from({ length: 32 }, (_, lane) => ({
+            offset: `${(0x08 + 4 * lane).toString(16).toUpperCase().padStart(2, "0")}h`,
             fields: [
-              { id: "lmr_lane_ctl", label: "Margining Lane Control",  range: "[15:0]" },
-              { id: "lmr_lane_sts", label: "Margining Lane Status",   range: "[31:16]" }
+              { id: "lmr_lane_ctl", label: `Margining Lane Control: Lane ${lane}${lane ? " (Optional)" : ""}`, range: "[15:0]" },
+              { id: "lmr_lane_sts", label: `Margining Lane Status: Lane ${lane}${lane ? " (Optional)" : ""}`,  range: "[31:16]" }
             ]
-          }
+          }))
         ],
         bitfields: {
           lmr_hdr: {
