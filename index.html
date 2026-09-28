@@ -2653,9 +2653,10 @@
      * rows[] drive the bit map and bitfields{} drives the detail pane.
      */
 
-    function makeChapter7Bit(range, title, description, values) {
+    function makeChapter7Bit(range, title, description, values, attribute) {
       const item = { range, title, description };
       if (values) item.values = values;
+      if (attribute !== undefined) item.attribute = attribute;
       return item;
     }
 
@@ -2902,7 +2903,8 @@
       flit_perf_extcap: ["0033h", "1h"], flit_error_inj_extcap: ["0034h", "1h"], nop_flit_extcap: ["0037h", "1h"],
       vc_extcap: ["0002h or 0009h", "1h"], mfvc_extcap: ["0008h", "1h"], dsn_extcap: ["0003h", "1h"],
       vsec_extcap: ["000Bh", "1h"], dvsec_extcap: ["0023h", "1h"], rcrb_header_extcap: ["000Ah", "1h"],
-      rcld_extcap: ["0005h", "1h"], rcilc_extcap: ["0006h", "1h"], rcec_assoc_extcap: ["0007h", "2h (08h Bus Numbers register present); otherwise 1h"],
+      rcld_type0_extcap: ["0005h", "1h"], rcld_type1_extcap: ["0005h", "1h"],
+      rcilc_extcap: ["0006h", "1h"], rcec_assoc_extcap: ["0007h", "2h (08h Bus Numbers register present); otherwise 1h"],
       multicast_extcap: ["0012h", "1h"], dpa_extcap: ["0016h", "1h"], tph_extcap: ["0017h", "1h"],
       dpc_extcap: ["001Dh", "1h"], ptm_extcap: ["001Fh", "1h"], rtr_extcap: ["0022h", "1h"],
       hierarchy_id_extcap: ["0028h", "1h"], npem_extcap: ["0029h", "1h"], alternate_protocol_extcap: ["002Bh", "1h"],
@@ -2965,6 +2967,55 @@
         description: def.description,
         rows,
         bitfields
+      };
+    }
+
+    function chapter7RcldStructure(linkType) {
+      const type1 = linkType === 1;
+      const linkAddressLow = type1
+        ? [
+            "18h", "Link Address Low", null, null,
+            [
+              { label: "N", range: "[2:0]", bits: [makeChapter7Bit("[2:0]", "N", "Encoded number n of Bus Number bits; 000b encodes eight bits.", { "000": "n = 8", "001": "n = 1", "010": "n = 2", "011": "n = 3", "100": "n = 4", "101": "n = 5", "110": "n = 6", "111": "n = 7" })] },
+              { label: "RsvdP", range: "[11:3]", bits: [makeChapter7Bit("[11:3]", "RsvdP", "Reserved and hardwired to 0.")] },
+              { label: "Func", range: "[14:12]", bits: [makeChapter7Bit("[14:12]", "Function Number", "Function Number of the target Root Port or RCiEP.")] },
+              { label: "Dev", range: "[19:15]", bits: [makeChapter7Bit("[19:15]", "Device Number", "Device Number of the target Root Port or RCiEP.")] },
+              { label: "Bus", range: "[27:20]", bits: [{ ...makeChapter7Bit("[27:20]", "Bus Number", "Bits (19+n):20 contain the Bus Number, where 1 <= n <= 8."), displayRange: "[19+n:20]" }] },
+              { label: "CSBA", range: "[31:28]", bits: [{ ...makeChapter7Bit("[31:28]", "Configuration Space Base Address", "Bits 31:(20+n) contain the low portion of the PCI Express Configuration Space Base Address, where 1 <= n <= 8."), displayRange: "[31:20+n]" }] }
+            ]
+          ]
+        : ["18h", "Link Address Low", [
+            makeChapter7Reserved("[11:0]", "RsvdZ"),
+            makeChapter7Bit("[31:12]", "Link Address Bits 31:12", "Bits 31:12 of the memory-mapped target RCRB base address.")
+          ]];
+
+      return {
+        id: `rcld_type${linkType}_extcap`,
+        type: "ExtCap",
+        name: `Root Complex Link Declaration - Link Type ${linkType}`,
+        description: `Root Complex Link Declaration with Link Type ${linkType} entries targeting ${type1 ? "Configuration Space" : "a memory-mapped RCRB"}.`,
+        registers: [
+          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
+          ["04h", "Element Self Description", [
+            makeChapter7Bit("[3:0]", "Element Type", "Type of the Root Complex Element.", { "0": "Configuration Space Element", "1": "System Egress Port or internal sink (memory)", "2": "Internal Root Complex Link", "3-F": "Reserved" }),
+            makeChapter7Reserved("[7:4]", "RsvdP"),
+            makeChapter7Bit("[15:8]", "Number of Link Entries", "Number of Link Entries following this register; must be 01h or greater."),
+            makeChapter7Bit("[23:16]", "Component ID", "Identifies the Root Complex Component containing this element."),
+            makeChapter7Bit("[31:24]", "Port Number", "Port Number of this element within its Root Complex Component.")
+          ]],
+          ["08h", "Reserved", [makeChapter7Reserved("[31:0]", "RsvdP")]],
+          ["0Ch", "Link Description", [
+            makeChapter7Flag("[0]", "Link Valid", "Indicates that this Link Entry declares a valid Link."),
+            makeChapter7Bit("[1]", "Link Type", "Defines the Link Address format.", { "0": "Memory-mapped space for an RCRB", "1": "Configuration Space for a Root Port or RCiEP" }),
+            makeChapter7Flag("[2]", "Associate RCRB Header", "Associates the declaring element with an RCRB Header in the target RCRB; Link Type must be 0 when Set."),
+            makeChapter7Reserved("[15:3]", "RsvdP"),
+            makeChapter7Bit("[23:16]", "Target Component ID", "Identifies the Root Complex Component targeted by this Link Entry."),
+            makeChapter7Bit("[31:24]", "Target Port Number", "Port Number of the target element within its Component.")
+          ]],
+          ["10h", "Link Entry Reserved", [makeChapter7Reserved("[31:0]", "RsvdP")]],
+          linkAddressLow,
+          ["18h", "Link Address High", [makeChapter7Bit("[31:0]", type1 ? "Configuration Space Base Address Bits 63:32" : "Link Address Bits 63:32", type1 ? "Bits 63:32 of the PCI Express Configuration Space Base Address." : "Bits 63:32 of the memory-mapped target RCRB base address.")]]
+        ]
       };
     }
 
@@ -3277,22 +3328,8 @@
           ["0Ch", "RCRB Control", [makeChapter7Flag("[0]", "Configuration RRS Software Visibility Enable", "Enables Request Retry Status responses for Configuration Requests associated with this RCRB."), makeChapter7Reserved("[31:1]")]]
         ]
       },
-      {
-        id: "rcld_extcap",
-        type: "ExtCap",
-        name: "Root Complex Link Declaration",
-        description: "Declares Root Complex internal elements followed by one repeated Link Entry for each declared link.",
-        registers: [
-          ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "Element Self Description", [makeChapter7Bit("[3:0]", "Element Type", "Configuration Space element, system egress/internal sink, or internal Root Complex Link."), makeChapter7Reserved("[7:4]"), makeChapter7Bit("[15:8]", "Number of Link Entries", "Number of Link Entries following this register."), makeChapter7Bit("[23:16]", "Component ID", "Identifies the Root Complex Component containing this element."), makeChapter7Bit("[31:24]", "Port Number", "Port Number of this element within its Root Complex Component.")]],
-          ["08h", "Reserved", [makeChapter7Reserved("[31:0]")]],
-          ["0Ch", "Link Entry Reserved (first DWORD)", [makeChapter7Reserved("[31:0]")]],
-          ["10h", "Link Description", [makeChapter7Flag("[0]", "Link Valid", "Indicates that this Link Entry declares a valid Link."), makeChapter7Flag("[1]", "Link Type", "Selects memory-mapped RCRB address or Configuration Space target format."), makeChapter7Flag("[2]", "Associate RCRB Header", "Associates the declaring element with an RCRB Header in the target RCRB."), makeChapter7Reserved("[15:3]"), makeChapter7Bit("[23:16]", "Target Component ID", "Identifies the Root Complex Component targeted by this Link Entry."), makeChapter7Bit("[31:24]", "Target Port Number", "Port Number of the target element within its Component.")]],
-          ["14h", "Link Entry Reserved", [makeChapter7Reserved("[31:0]")]],
-          ["18h", "Link Address Low", [makeChapter7Bit("[31:0]", "Link Address Bits 31:0", "Lower target RCRB base address or encoded Configuration Space address, depending on Link Type.")]],
-          ["1Ch", "Link Address High", [makeChapter7Bit("[31:0]", "Link Address Bits 63:32", "Upper target RCRB or Configuration Space base address.")]]
-        ]
-      },
+      chapter7RcldStructure(0),
+      chapter7RcldStructure(1),
       {
         id: "rcilc_extcap",
         type: "ExtCap",
@@ -3540,6 +3577,71 @@
       }
     ];
 
+    const chapter9Structures = [
+      {
+        id: "sriov_extcap",
+        type: "ExtCap",
+        name: "Single Root I/O Virtualization (SR-IOV)",
+        description: "Describes and controls the Virtual Functions associated with an SR-IOV Physical Function.",
+        registers: [
+          ["00h", "SR-IOV Extended Capability Header", [
+            makeChapter7Bit("[15:0]", "PCI Express Extended Capability ID", "ID = 0010h for the SR-IOV Extended Capability.", undefined, "RO"),
+            makeChapter7Bit("[19:16]", "Capability Version", "Version = 1h.", undefined, "RO"),
+            makeChapter7Bit("[31:20]", "Next Capability Offset", "Offset of the next PCI Express Extended Capability, or 000h when this is the last entry.", undefined, "RO")
+          ]],
+          ["04h", "SR-IOV Capabilities", [
+            makeChapter7Bit("[0]", "VF Migration Capable", "Deprecated MR-IOV capability; new designs should hardwire this bit to 0b.", undefined, "RO"),
+            makeChapter7Bit("[1]", "ARI Capable Hierarchy Preserved", "Indicates that the ARI Capable Hierarchy bit is preserved across specified power-state transitions.", undefined, "RO"),
+            makeChapter7Bit("[2]", "VF 10-Bit Tag Requester Supported", "Indicates whether every VF associated with this PF supports 10-Bit Tag Requester capability for non-UIO Requests.", undefined, "HwInit"),
+            makeChapter7Bit("[3]", "VF 14-Bit Tag Requester Supported", "Indicates whether every VF associated with this PF supports 14-Bit Tag Requester capability for non-UIO Requests.", undefined, "HwInit"),
+            makeChapter7Reserved("[20:4]", "RsvdP"),
+            makeChapter7Bit("[31:21]", "VF Migration Interrupt Message Number", "Deprecated MR-IOV interrupt vector; new designs should hardwire this field to 0.", undefined, "RO")
+          ]],
+          ["08h", "SR-IOV Control / Status", null, null, [
+            { label: "SR-IOV Control", range: "[15:0]", offset: "08h", bits: [
+              makeChapter7Bit("[0]", "VF Enable", "Enables or disables the VFs associated with this PF. Default is 0b.", undefined, "RW"),
+              makeChapter7Bit("[1]", "VF Migration Enable", "Deprecated MR-IOV control; new designs should hardwire this bit to 0b.", undefined, "RW or RO"),
+              makeChapter7Bit("[2]", "VF Migration Interrupt Enable", "Enables the deprecated VF Migration State Change interrupt. Default is 0b.", undefined, "RW"),
+              makeChapter7Bit("[3]", "VF MSE", "Controls Memory Space Enable for all active VFs associated with this PF. Default is 0b.", undefined, "RW"),
+              makeChapter7Bit("[4]", "ARI Capable Hierarchy", "Allows VFs to use Function Numbers 8 through 255 when applicable; writable only in the lowest-numbered PF. Default is 0b.", undefined, "RW or RO"),
+              makeChapter7Bit("[5]", "VF 10-Bit Tag Requester Enable", "When Set, all VFs use 10-Bit Tags for applicable non-UIO Non-Posted Requests.", undefined, "RW or RO"),
+              makeChapter7Bit("[6]", "VF 14-Bit Tag Requester Enable", "When Set, all VFs use 14-Bit Tags for applicable Non-Posted Requests.", undefined, "RW or RO"),
+              makeChapter7Reserved("[15:7]", "RsvdP")
+            ] },
+            { label: "SR-IOV Status", range: "[31:16]", offset: "0Ah", bits: [
+              makeChapter7Bit("[16]", "VF Migration Status", "Deprecated MR-IOV status; new designs should hardwire this bit to 0b.", undefined, "RW1C"),
+              makeChapter7Reserved("[31:17]", "RsvdZ")
+            ] }
+          ]],
+          ["0Ch", "VF Counts", null, null, [
+            { label: "InitialVFs", range: "[15:0]", offset: "0Ch", bits: [makeChapter7Bit("[15:0]", "InitialVFs", "Initial number of VFs; new designs encode the same value as TotalVFs.", undefined, "HwInit")] },
+            { label: "TotalVFs", range: "[31:16]", offset: "0Eh", bits: [makeChapter7Bit("[31:16]", "TotalVFs", "Maximum number of VFs associated with this PF; must equal InitialVFs.", undefined, "HwInit")] }
+          ]],
+          ["10h", "NumVFs / Function Dependency Link", null, null, [
+            { label: "NumVFs", range: "[15:0]", offset: "10h", bits: [makeChapter7Bit("[15:0]", "NumVFs", "Number of VFs made visible when VF Enable is Set; writable only while VF Enable is Clear.", undefined, "RW")] },
+            { label: "Function Dependency Link", range: "[23:16]", offset: "12h", bits: [makeChapter7Bit("[23:16]", "Function Dependency Link", "Links PFs that have vendor-specific dependencies; independent PFs contain their own Function Number.", undefined, "RO")] },
+            { label: "RsvdP", range: "[31:24]", offset: "13h", bits: [makeChapter7Reserved("[31:24]", "RsvdP")] }
+          ]],
+          ["14h", "VF Routing", null, null, [
+            { label: "First VF Offset", range: "[15:0]", offset: "14h", bits: [makeChapter7Bit("[15:0]", "First VF Offset", "Unsigned 16-bit Routing ID offset from this PF to its first VF.", undefined, "RO")] },
+            { label: "VF Stride", range: "[31:16]", offset: "16h", bits: [makeChapter7Bit("[31:16]", "VF Stride", "Unsigned 16-bit Routing ID offset from one associated VF to the next.", undefined, "RO")] }
+          ]],
+          ["18h", "VF Device ID", null, null, [
+            { label: "RsvdP", range: "[15:0]", offset: "18h", bits: [makeChapter7Reserved("[15:0]", "RsvdP")] },
+            { label: "VF Device ID", range: "[31:16]", offset: "1Ah", bits: [makeChapter7Bit("[31:16]", "VF Device ID", "Device ID presented for every VF associated with this PF.", undefined, "RO")] }
+          ]],
+          ["1Ch", "Supported Page Sizes", [makeChapter7Bit("[31:0]", "Supported Page Sizes", "Bit n indicates support for a page size of 2^(n+12) bytes; bits 0, 1, 4, 6, 8, and 10 are required.", undefined, "RO")]],
+          ["20h", "System Page Size", [makeChapter7Bit("[31:0]", "System Page Size", "Selects one supported page size for VF mappings. Exactly one supported bit must be Set; default is bit 0 (4 KB).", undefined, "RW")]],
+          ...Array.from({ length: 6 }, (_, n) => [
+            `${(0x24 + 4 * n).toString(16).toUpperCase()}h`,
+            `VF BAR${n}`,
+            [makeChapter7Bit("[31:0]", `VF BAR${n}`, "Defines a 32-bit memory BAR or one half of a 64-bit memory BAR for every associated VF; I/O Space is not supported.", undefined, "RW")]
+          ]),
+          ["3Ch", "VF Migration State Array Offset", [makeChapter7Bit("[31:0]", "VF Migration State Array Offset", "Deprecated MR-IOV register; new designs should hardwire it to 0000 0000h.", undefined, "RO")]]
+        ]
+      }
+    ];
+
     const chapter7ById = Object.fromEntries(chapter7MissingStructures.map(item => [item.id, item]));
     const chapter7Register = (id, name) => chapter7ById[id].registers.find(register => register[1] === name);
 
@@ -3549,10 +3651,16 @@
       register[1] += " (conditional)";
     }
 
-    [["Link Description", "10h"], ["Link Entry Reserved", "14h"], ["Link Address Low", "18h"], ["Link Address High", "1Ch"]].forEach(([name, base]) => {
-      const register = chapter7Register("rcld_extcap", name);
-      register[0] = `${base} + 10h*n; 0 <= n < Number of Link Entries`;
-      register[1] += " n (repeated)";
+    ["rcld_type0_extcap", "rcld_type1_extcap"].forEach(id => {
+      [["Link Description", "0Ch"], ["Link Entry Reserved", "10h"], ["Link Address Low", "14h"], ["Link Address High", "18h"]].forEach(([name, base]) => {
+        const register = chapter7Register(id, name);
+        register[0] = `${base} + 10h*n; 0 <= n < Number of Link Entries`;
+        const type0Label = { "Link Description": "Link Description", "Link Entry Reserved": "Reserved", "Link Address Low": "Link Address Bits 31:0", "Link Address High": "Link Address Bits 63:32" }[name];
+        if (id === "rcld_type0_extcap") register[4] = [{ id: chapter7FieldId(`${id}_link_entry`, type0Label), label: type0Label, range: "[31:0]", bits: register[2] }];
+        const type1Label = { "Link Description": "Link Description", "Link Entry Reserved": "Reserved", "Link Address High": "CSBA" }[name];
+        if (id === "rcld_type1_extcap" && type1Label) register[4] = [{ id: chapter7FieldId(`${id}_link_entry`, type1Label), label: type1Label, range: "[31:0]", bits: register[2] }];
+        register[1] += " n (repeated)";
+      });
     });
 
     Object.assign(chapter7Register("dpa_extcap", "DPA Power Allocation Array"), {
@@ -3693,7 +3801,7 @@
       { label: "SFI Control", range: "[31:16]", offset: "06h" }
     ]);
 
-    structures.push(...chapter7MissingStructures.map(makeChapter7Structure));
+    structures.push(...chapter7MissingStructures.map(makeChapter7Structure), ...chapter9Structures.map(makeChapter7Structure));
 
     structures.filter(structure => structure.type === "ExtCap").forEach(structure => {
       const headerRow = structure.rows.find(row => row.offset === "00h");
@@ -3954,6 +4062,7 @@
       const title = bareBitTitle(bit.title);
       const fieldName = field.name || "";
       const text = `${field.name || ""} ${title} ${bit.description || ""}`;
+      if (bit.attribute !== undefined) return bit.attribute;
       if (isReservedBitTitle(title)) return "";
 
       if (structure.id === "ea_extcap" && /^(Capability ID|Next Capability Pointer|Num Entries)$/i.test(title)) return "HwInit";
@@ -3961,6 +4070,7 @@
       if (structure.id === "ea_extcap" && /^(EA Entry Base Lower|EA Entry MaxOffset Lower|EA Entry First Upper DWORD|EA Entry Second Upper DWORD)$/i.test(fieldName)) {
         if (/^Field Size$/i.test(title) || /^Base/i.test(title) || /^MaxOffset/i.test(title)) return "RW/HwInit";
       }
+      if (/^rcld_type[01]_extcap$/.test(structure.id) && /^(N|Func|Dev|Bus|CSBA|Configuration Space Base Address|Link Address High)/i.test(fieldName)) return "HwInit";
       if (structure.id === "fpb_extcap" && /^FPB Capability Header$/i.test(fieldName) && /^(Capability ID|Next Pointer)$/i.test(title)) return "RO";
       if (structure.type === "Cap" && /^(Capability ID|Next Item Pointer)$/i.test(title)) return "RO";
       if (/^PM Capabilities$/i.test(fieldName)) return "RO";
@@ -4260,7 +4370,7 @@
         // Format: "3 - Interrupt Status (RO)"
         // We don't have RO/RW in data yet, so just use title
         // Parse range to see if single bit or range
-        const rangeText = bit.range.replace(/[\[\]]/g, "");
+        const rangeText = (bit.displayRange || bit.range).replace(/[\[\]]/g, "");
         titleDiv.textContent = `${rangeText} - ${bit.title}`;
 
         const descDiv = document.createElement("div");
