@@ -3484,13 +3484,115 @@
         id: "sfi_extcap",
         type: "ExtCap",
         name: "SFI",
-        description: "SFI capability, control, status, and CAM access registers.",
+        description: "System Firmware Intermediary controls for hot-plug event mediation, Downstream Port Filtering, quarantine, and proxied Configuration Space access.",
         registers: [
           ["00h", "Enhanced Capability Header", chapter7HeaderBits(true)],
-          ["04h", "SFI Capability / Control", [makeChapter7Flag("[0]", "SFI OOB PD Supported", "The slot supports reporting out-of-band presence detect state."), makeChapter7Flag("[1]", "Enhanced SFI Supported", "The capability supports the Enhanced SFI feature set."), makeChapter7Flag("[2]", "SFI CAM Unsupported", "The SFI Configuration Access Mechanism is not supported."), makeChapter7Flag("[3]", "SFI Hidden In-Band", "The capability is hidden from in-band Configuration Requests but remains visible through PCIe-MI."), makeChapter7Reserved("[15:4]"), makeChapter7Flag("[16]", "SFI PD State Mask", "Masks Presence Detect State in Slot Status."), makeChapter7Flag("[17]", "SFI DLL State Mask", "Masks Data Link Layer Link Active in Link Status."), makeChapter7Flag("[18]", "SFI OOB PD Changed Enable", "Enables ERR_COR signaling for an out-of-band presence-detect change."), makeChapter7Flag("[19]", "SFI DLL State Changed Enable", "Enables ERR_COR signaling for a Data Link Layer state change."), makeChapter7Bit("[21:20]", "SFI DPF Control", "Selects the Downstream Port Filtering level."), makeChapter7Flag("[22]", "SFI HPS Suppress", "Suppresses Hot-Plug Surprise capability and behavior."), makeChapter7Flag("[23]", "SFI DRS Mask", "Masks DRS Message Received in Link Status 2."), makeChapter7Flag("[24]", "SFI DRS Signaling Enable", "Enables ERR_COR signaling for SFI DRS Received."), makeChapter7Flag("[25]", "SFI DRS Trigger", "Writing one emulates receipt of a DRS Message when not masked."), makeChapter7Bit("[27:26]", "SFI Quarantine Mode", "Selects the conditions that transition the Port into quarantine."), makeChapter7Flag("[28]", "SFI RO In-Band", "Forces in-band accesses to this capability to be read-only."), makeChapter7Reserved("[31:29]")]],
-          ["08h", "SFI Status", [makeChapter7Flag("[0]", "SFI PD State", "Actual in-band presence-detect state."), makeChapter7Flag("[1]", "SFI OOB PD State", "Actual out-of-band presence-detect state."), makeChapter7Flag("[2]", "SFI OOB PD Changed", "The out-of-band presence-detect state changed."), makeChapter7Flag("[3]", "SFI DLL State", "Actual Data Link Layer active state."), makeChapter7Flag("[4]", "SFI DLL State Changed", "The Data Link Layer state changed."), makeChapter7Flag("[5]", "SFI DRS Received", "Actual DRS Message Received state."), makeChapter7Flag("[6]", "SFI Quarantine", "The Port is quarantined."), makeChapter7Reserved("[31:7]")]],
-          ["0Ch", "SFI CAM Address", [makeChapter7Bit("[27:0]", "SFI CAM Address", "Target Bus, Device, Function, Extended Register Number, and Register Number for SFI CAM access."), makeChapter7Reserved("[31:28]")]],
-          ["10h", "SFI CAM Data", [makeChapter7Bit("[31:0]", "SFI CAM Data", "Data transferred by the selected SFI CAM read or write operation.")]]
+          ["04h", "SFI Capability / Control", [
+            makeChapter7Bit("[0]", "SFI OOB PD Supported", "Reports whether the slot provides an out-of-band presence-detect state independent of the in-band Presence Detect State. Must be Clear when the Port has no implemented slot.", {
+              "0": "Out-of-band presence detection is not supported; SFI OOB PD State may be hardwired Clear.",
+              "1": "Out-of-band presence detection is supported and reported through SFI OOB PD State."
+            }, "HwInit"),
+            makeChapter7Bit("[1]", "Enhanced SFI Supported", "Reports support for the Enhanced SFI feature set, including BMC-oriented controls such as quarantine and protected in-band access.", {
+              "0": "Enhanced SFI is not supported; fields that depend on eSFI have their specified legacy or hardwired behavior.",
+              "1": "Enhanced SFI is supported."
+            }, "HwInit"),
+            makeChapter7Bit("[2]", "SFI CAM Unsupported", "Reports whether the SFI Configuration Access Method can proxy Configuration Requests to Functions below this Downstream Port.", {
+              "0": "SFI CAM is supported; accesses to SFI CAM Data can generate proxied Configuration Requests.",
+              "1": "SFI CAM is unsupported; CAM Data accesses are handled as Unsupported Requests, subject to SFI RO In-Band behavior."
+            }, "HwInit"),
+            makeChapter7Bit("[3]", "SFI Hidden In-Band", "Controls visibility of the entire SFI Extended Capability to host-originated Configuration Requests. PCIe-MI visibility is unaffected. Must be Clear when eSFI is unsupported.", {
+              "0": "The SFI capability is visible through Configuration Requests and PCIe-MI.",
+              "1": "The SFI capability is hidden from Configuration Requests but remains visible through PCIe-MI."
+            }, "HwInit"),
+            makeChapter7Reserved("[15:4]", "RsvdP"),
+            makeChapter7Bit("[16]", "SFI PD State Mask", "Controls the Presence Detect State reported in Slot Status. A reported-value transition caused by changing this mask generates a Presence Detect Changed event. Default is Clear.", {
+              "0": "Report the actual Presence Detect State unless quarantine or another specified mechanism masks it.",
+              "1": "Force the Slot Status Presence Detect State to 0b regardless of the actual state."
+            }, "RW"),
+            makeChapter7Bit("[17]", "SFI DLL State Mask", "Controls the Data Link Layer Link Active value reported in Link Status. A reported-value transition caused by changing this mask generates a Data Link Layer State Changed event. Default is Clear.", {
+              "0": "Report the actual Data Link Layer Link Active state.",
+              "1": "Force the Link Status Data Link Layer Link Active bit to 0b regardless of the actual state."
+            }, "RW"),
+            makeChapter7Bit("[18]", "SFI OOB PD Changed Enable", "Controls ERR_COR signaling for an SFI OOB PD Changed event, together with the other conditions in §6.7.4.1. RW when OOB PD is supported; otherwise it may be hardwired Clear. Default is Clear.", {
+              "0": "Do not enable ERR_COR signaling for SFI OOB PD Changed.",
+              "1": "Enable ERR_COR signaling when the out-of-band presence-detect state changes."
+            }, "RW/RO"),
+            makeChapter7Bit("[19]", "SFI DLL State Changed Enable", "Controls ERR_COR signaling for an SFI DLL State Changed event, together with the other conditions in §6.7.4.1. Default is Clear.", {
+              "0": "Do not enable ERR_COR signaling for SFI DLL State Changed.",
+              "1": "Enable ERR_COR signaling when the actual Data Link Layer state changes."
+            }, "RW"),
+            makeChapter7Bit("[21:20]", "SFI DPF Control", "Selects which TLPs Downstream Port Filtering blocks. Filtered Requests receive Unsupported Request handling; filtered Completions are silently discarded after flow-control credit updates.", {
+              "00": "DPF disabled; TLPs are not filtered by this mechanism.",
+              "01": "Filter every Downstream Request except Configuration Requests generated by this Port's SFI CAM.",
+              "10": "Filter only Downstream Configuration Requests not generated by this Port's SFI CAM.",
+              "11": "Filter all Upstream and Downstream TLPs except MCTP VDMs, PCIe-MI-initiated SFI CAM Configuration Requests, and their Completions; valid only with eSFI."
+            }, "RW"),
+            makeChapter7Bit("[22]", "SFI HPS Suppress", "Controls whether Hot-Plug Surprise is exposed and operational, allowing mechanisms such as DPC to be used without concurrent HPS behavior. Default is Clear.", {
+              "0": "Leave the Slot Capabilities Hot-Plug Surprise value and its associated functionality unchanged.",
+              "1": "Force Hot-Plug Surprise to Clear and disable the associated Hot-Plug Surprise functionality."
+            }, "RW"),
+            makeChapter7Bit("[23]", "SFI DRS Mask", "Controls the DRS Message Received value reported in Link Status 2. Clearing the mask while the actual state is Set can trigger DRS notification. Default is Clear.", {
+              "0": "Report the actual DRS Message Received state.",
+              "1": "Force the Link Status 2 DRS Message Received bit to 0b while SFI DRS Received continues to show the actual state."
+            }, "RW"),
+            makeChapter7Bit("[24]", "SFI DRS Signaling Enable", "Controls ERR_COR signaling for the SFI DRS Received event, together with the other conditions in §6.7.4.1. Default is Clear.", {
+              "0": "Do not enable ERR_COR signaling for SFI DRS Received.",
+              "1": "Enable ERR_COR signaling when the SFI DRS Received condition becomes satisfied."
+            }, "RW"),
+            makeChapter7Bit("[25]", "SFI DRS Trigger", "Write-only trigger semantics used to emulate receipt of a Device Readiness Status Message. This bit always reads as 0b.", {
+              "0": "No action.",
+              "1": "If the updated SFI DRS Mask value is Clear, behave as if a DRS Message was received; otherwise, take no action."
+            }, "RW"),
+            makeChapter7Bit("[27:26]", "SFI Quarantine Mode", "Selects the event that quarantines the Port. Quarantine hides downstream Functions from in-band Configuration access and blocks them from injecting traffic. The default is implementation-specific.", {
+              "00": "Do not enter quarantine automatically.",
+              "01": "Enter quarantine when either actual in-band or out-of-band presence detect transitions from present to not present.",
+              "10": "Enter quarantine on a present-to-not-present transition or when the Link reports DL_Down.",
+              "11": "Enter quarantine when this value is established by Conventional Reset or by a write to this field."
+            }, "RW/RO"),
+            makeChapter7Bit("[28]", "SFI RO In-Band", "Controls write protection for host-originated Configuration accesses to this SFI capability. PCIe-MI accesses are unaffected. The default is implementation-specific; hardwired Clear when eSFI is unsupported.", {
+              "0": "Apply normal read/write semantics to in-band Configuration accesses.",
+              "1": "Allow in-band reads but prevent in-band writes from modifying the SFI capability; SFI CAM Data reads return zero without issuing a proxied Request."
+            }, "HwInit/RO"),
+            makeChapter7Reserved("[31:29]", "RsvdP")
+          ]],
+          ["08h", "SFI Status", [
+            makeChapter7Bit("[0]", "SFI PD State", "Always reports the actual in-band presence-detect state, even when Slot Status is masked by SFI PD State Mask or quarantine.", {
+              "0": "Presence is not detected.",
+              "1": "Presence is detected."
+            }, "RO"),
+            makeChapter7Bit("[1]", "SFI OOB PD State", "Reports the actual out-of-band presence-detect state independently of in-band detection. Required when SFI OOB PD Supported is Set; otherwise it may be hardwired Clear.", {
+              "0": "Out-of-band presence is not detected or is unsupported.",
+              "1": "Out-of-band presence is detected."
+            }, "RO"),
+            makeChapter7Bit("[2]", "SFI OOB PD Changed", "Sticky indication that SFI OOB PD State changed. Default is Clear and writing 1b clears the indication.", {
+              "0": "No uncleared out-of-band presence-state change is recorded.",
+              "1": "The out-of-band presence state changed; write 1b to clear."
+            }, "RW1C"),
+            makeChapter7Bit("[3]", "SFI DLL State", "Always reports the actual Data Link Layer state associated with Link Status DLL Link Active, even when that reported Link Status bit is masked.", {
+              "0": "The Data Link Layer is not active.",
+              "1": "The Data Link Layer is active."
+            }, "RO"),
+            makeChapter7Bit("[4]", "SFI DLL State Changed", "Sticky indication that the actual SFI DLL State changed. Default is Clear and writing 1b clears the indication.", {
+              "0": "No uncleared Data Link Layer state change is recorded.",
+              "1": "The Data Link Layer state changed; write 1b to clear."
+            }, "RW1C"),
+            makeChapter7Bit("[5]", "SFI DRS Received", "Reports the actual DRS Message Received condition even when Link Status 2 is masked. Writing 1b clears both this indication and the underlying DRS Message Received state. Default is Clear.", {
+              "0": "No uncleared DRS Message Received condition is present.",
+              "1": "A DRS Message Received condition is present; write 1b to clear it."
+            }, "RW1C"),
+            makeChapter7Bit("[6]", "SFI Quarantine", "Indicates that the Port entered quarantine under SFI Quarantine Mode. Clearing it releases the LTSSM from Disabled and removes quarantine masking. With eSFI it is RO in-band and RW1C through PCIe-MI; without eSFI it is hardwired Clear.", {
+              "0": "The Port is not quarantined.",
+              "1": "The Port is quarantined; downstream Functions are hidden in-band and blocked from injecting traffic."
+            }, "RW1C/RO"),
+            makeChapter7Reserved("[31:7]", "RsvdZ")
+          ]],
+          ["0Ch", "SFI CAM Address", [
+            makeChapter7Bit("[27:0]", "SFI CAM Address", "Selects the target of the next SFI CAM Data access using ECAM encoding: bits 27:20 Bus Number, 19:15 Device Number, 14:12 Function Number, 11:8 Extended Register Number, 7:2 Register Number, and 1:0 byte offset. For ARI targets, bits 19:12 form the 8-bit Function Number. The field remains readable and writable even when CAM is unsupported, subject to SFI RO In-Band.", undefined, "RW/RO"),
+            makeChapter7Reserved("[31:28]", "RsvdP")
+          ]],
+          ["10h", "SFI CAM Data", [
+            makeChapter7Bit("[31:0]", "SFI CAM Data", "When CAM is supported, reading or writing this field issues a matching proxied Configuration Request to SFI CAM Address: in-band requests operate only when SFI RO In-Band is Clear, while PCIe-MI requests operate regardless. When CAM is unsupported, accesses are Unsupported Requests. With SFI RO In-Band Set, an in-band read returns zero and an in-band write has no effect.", undefined, "RW/RO")
+          ]]
         ]
       },
       {
@@ -4335,6 +4437,18 @@
       return (high - low) + 1;
     }
 
+    function bitValueNumber(value, width) {
+      if (/^[01]+$/.test(value) && value.length === width) return parseInt(value, 2);
+      return /^\d+$/.test(value) ? Number(value) : Number.MAX_SAFE_INTEGER;
+    }
+
+    function formatBitValue(value, width) {
+      if (/^[01]+$/.test(value) && value.length === width) return `${value}b`;
+      return /^\d+$/.test(value) ? `${Number(value).toString(2).padStart(width, "0")}b` : value;
+    }
+
+    console.assert(formatBitValue("00", 2) === "00b" && bitValueNumber("10", 2) === 2, "Bit value formatting failed");
+
     function updateBitfieldSelection() {
       bitfieldContainer.querySelectorAll(".struct-field-flex").forEach(cell =>
         cell.classList.toggle("selected", cell.dataset.fieldKey === currentFieldKey));
@@ -4382,11 +4496,12 @@
         if (bit.values) {
           const valuesTable = document.createElement("table");
           valuesTable.className = "bit-values-table";
-          for (const [val, meaning] of Object.entries(bit.values)) {
+          const width = parseRangeWidth(bit.range);
+          for (const [val, meaning] of Object.entries(bit.values).sort(([a], [b]) => bitValueNumber(a, width) - bitValueNumber(b, width))) {
             const row = document.createElement("tr");
             const valCell = document.createElement("td");
             valCell.className = "bit-value-cell";
-            valCell.textContent = Number(val).toString(2) + "b";
+            valCell.textContent = formatBitValue(val, width);
             const meanCell = document.createElement("td");
             meanCell.className = "bit-meaning-cell";
             meanCell.textContent = meaning;
